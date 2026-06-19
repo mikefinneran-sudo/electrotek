@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroTek Consultants — Design Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+
+        .header {
+            padding: 32px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 100;
+        }
+        .header h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+        .header .back { font-size: 13px; color: #888; text-decoration: none; transition: color 0.2s; }
+        .header .back:hover { color: #fff; }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+            position: sticky;
+            top: 73px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 99;
+        }
+        .tab {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: #ccc; background: rgba(255,255,255,0.04); }
+        .tab.active { color: #fff; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); }
+        .tab .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+
+        .sub-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 10px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            overflow-x: auto;
+            position: sticky;
+            top: 130px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(16px);
+            z-index: 98;
+        }
+        .sub-tab {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .sub-tab:hover { color: #aaa; }
+        .sub-tab.active { color: #b87333; background: rgba(184,115,51,0.08); border-color: rgba(184,115,51,0.2); }
+
+        .preview-frame { width: 100%; height: calc(100vh - 190px); border: none; display: block; }
+
+        .info-bar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30,30,30,0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 200;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .info-bar .value { font-size: 13px; font-weight: 600; }
+        .info-bar a {
+            font-size: 12px; font-weight: 600; color: #b87333; text-decoration: none;
+            padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(184,115,51,0.3); transition: all 0.2s;
+        }
+        .info-bar a:hover { background: rgba(184,115,51,0.1); border-color: rgba(184,115,51,0.5); }
+        .nav-arrows { display: flex; gap: 4px; }
+        .nav-arrows button {
+            width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .nav-arrows button:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+        @media (max-width: 768px) {
+            .header { padding: 20px 16px; }
+            .tabs, .sub-tabs { padding-left: 16px; padding-right: 16px; }
+            .info-bar { left: 16px; right: 16px; transform: none; gap: 12px; padding: 10px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>ElectroTek Consultants &mdash; Design Options</h1>
+    <a class="back" href="../gallery.html">&larr; All Clients</a>
+</div>
+
+<div class="tabs" id="tabs">
+    <button class="tab active" data-src="index.html" data-name="V1 — Original" data-color="#333" onclick="switchVersion(this)">
+        <span class="dot" style="background:#555"></span>V1 Original
+    </button>
+    <button class="tab" data-src="index-v2.html" data-name="V2 — Revised" data-color="#4A90D9" onclick="switchVersion(this)">
+        <span class="dot" style="background:#4A90D9"></span>V2 Revised
+    </button>
+    <button class="tab" data-src="index-v3.html" data-name="V3 — Refined" data-color="#2D5A3D" onclick="switchVersion(this)">
+        <span class="dot" style="background:#2D5A3D"></span>V3 Refined
+    </button>
+    <button class="tab" data-src="index-v4.html" data-name="V4 — Copper & Ink" data-color="#b87333" onclick="switchVersion(this)">
+        <span class="dot" style="background:#b87333"></span>V4 Copper & Ink
+    </button>
+    <button class="tab" data-src="index-v5.html" data-name="V5 — Revised" data-color="#d4a574" onclick="switchVersion(this)">
+        <span class="dot" style="background:#d4a574"></span>V5 Revised
+    </button>
+</div>
+
+<div class="sub-tabs">
+    <button class="sub-tab active" data-page="index" onclick="switchPage(this)">Homepage</button>
+    <button class="sub-tab" data-page="about.html" onclick="switchPage(this)">About</button>
+    <button class="sub-tab" data-page="contact.html" onclick="switchPage(this)">Contact</button>
+    <button class="sub-tab" data-page="finneran.html" onclick="switchPage(this)">Finneran</button>
+    <button class="sub-tab" data-page="miller.html" onclick="switchPage(this)">Miller</button>
+</div>
+
+<iframe id="preview" class="preview-frame" src="index.html"></iframe>
+
+<div class="info-bar">
+    <div class="nav-arrows">
+        <button onclick="prev()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></button>
+        <button onclick="next()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+    <div class="value" id="current-name">V1 — Original</div>
+    <a id="open-link" href="index.html" target="_blank">Open &nearr;</a>
+</div>
+
+<script>
+    const tabs = document.querySelectorAll('.tab');
+    const subTabs = document.querySelectorAll('.sub-tab');
+    const preview = document.getElementById('preview');
+    const nameEl = document.getElementById('current-name');
+    const linkEl = document.getElementById('open-link');
+    let currentIndex = 0;
+    let currentPage = 'index';
+
+    function getVersionSrc(tab) {
+        if (currentPage === 'index') return tab.dataset.src;
+        return currentPage;
+    }
+
+    function switchVersion(el) {
+        tabs.forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        const src = getVersionSrc(el);
+        preview.src = src;
+        nameEl.textContent = el.dataset.name + (currentPage !== 'index' ? ' — ' + currentPage : '');
+        linkEl.href = src;
+        currentIndex = Array.from(tabs).indexOf(el);
+    }
+
+    function switchPage(el) {
+        subTabs.forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        currentPage = el.dataset.page;
+        const activeTab = tabs[currentIndex];
+        const src = getVersionSrc(activeTab);
+        preview.src = src;
+        nameEl.textContent = activeTab.dataset.name + (currentPage !== 'index' ? ' — ' + currentPage : '');
+        linkEl.href = src;
+    }
+
+    function prev() { currentIndex = (currentIndex - 1 + tabs.length) % tabs.length; switchVersion(tabs[currentIndex]); }
+    function next() { currentIndex = (currentIndex + 1) % tabs.length; switchVersion(tabs[currentIndex]); }
+    document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') prev(); if (e.key === 'ArrowRight') next(); });
+</script>
+
+</body>
+</html>

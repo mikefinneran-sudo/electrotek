@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Failure Analysis | ElectroTek Consultants</title>
+    <meta name="description" content="In-depth evaluation and testing of electrical products, components, and appliances. Determine manufacturing defects, design flaws, and installation errors contributing to fire or failure.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['DM Serif Display', 'Georgia', 'serif'],
+                        body: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        copper: {
+                            DEFAULT: '#B87333',
+                            light: '#C9854A',
+                        },
+                        navy: {
+                            DEFAULT: '#0C1118',
+                            light: '#1B2432',
+                            mid: '#2A3444',
+                        },
+                        cream: '#FAF8F5',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        html {
+            scroll-behavior: smooth;
+            font-size: clamp(0.9375rem, 0.85rem + 0.27vw, 1.125rem);
+        }
+        body {
+            font-family: 'IBM Plex Sans', system-ui, sans-serif;
+            color: #1a1a1a;
+            background: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+        }
+
+        .fluid-hero   { font-size: clamp(2rem, 1.25rem + 3.5vw, 3.5rem); }
+        .fluid-h2     { font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); }
+        .fluid-h3     { font-size: clamp(1.15rem, 1rem + 1vw, 1.65rem); }
+        .fluid-body-lg { font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); }
+        .fluid-stat   { font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); }
+
+        .fluid-section { padding-top: clamp(3rem, 2rem + 4vw, 5rem); padding-bottom: clamp(3rem, 2rem + 4vw, 5rem); }
+
+        .hero-section {
+            background: #0C1118;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('svc-product.png') center/cover no-repeat;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(12,17,24,0.4) 0%, rgba(12,17,24,0.85) 70%, #0C1118 100%);
+            pointer-events: none;
+        }
+
+        .cred-divider {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(180deg, transparent, rgba(184,115,51,0.5), transparent);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .5s ease, transform .5s ease;
+        }
+        .reveal.vis { opacity: 1; transform: none; }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: none; }
+        }
+        .rise { animation: rise .6s ease-out forwards; }
+        .d1 { animation-delay: .08s; opacity: 0; }
+        .d2 { animation-delay: .16s; opacity: 0; }
+
+        /* Services dropdown */
+        .svc-dropdown { display: none; position: absolute; top: 100%; left: 0; padding-top: 8px; min-width: 220px; z-index: 300; }
+        .svc-trigger:hover .svc-dropdown { display: block; }
+        nav { position: relative; z-index: 300; }
+
+        .mob-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(12,17,24,0.97);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+        }
+        .mob-overlay.open { display: flex; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="bg-white border-b" style="border-color:#E2DDD5">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+<img src="logo.png" alt="ElectroTek" class="w-10 h-10 rounded">
+            <span class="font-medium text-gray-900 text-[15px] tracking-tight">ElectroTek Consultants</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8 text-sm">
+            <div class="relative svc-trigger">
+                <a href="index.html#services" class="text-gray-900 font-semibold inline-flex items-center gap-1">
+                    Services
+                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="mt-0.5"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
+                <div class="svc-dropdown">
+                    <div class="bg-white rounded border shadow-lg py-2" style="border-color:#E2DDD5">
+                        <a href="origin-cause.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Origin &amp; Cause</a>
+                        <a href="product-failure.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Product Failure</a>
+                        <a href="vehicle-fire.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Vehicle Fire</a>
+                        <a href="expert-testimony.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Expert Testimony</a>
+                    </div>
+                </div>
+            </div>
+            <a href="about.html" class="text-gray-500 hover:text-gray-900 transition-colors font-medium">About</a>
+            <a href="contact.html" class="font-semibold px-5 py-2.5 bg-copper text-white rounded hover:bg-copper-light transition-colors">Contact</a>
+        </div>
+        <button class="md:hidden text-gray-900" onclick="document.getElementById('mobMenu').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+</nav>
+
+<div id="mobMenu" class="mob-overlay">
+    <button onclick="this.parentElement.classList.remove('open')" class="absolute top-6 right-6 text-white">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <a href="index.html#services" onclick="this.parentElement.classList.remove('open')" class="text-white text-xl font-medium font-body">Services</a>
+    <a href="origin-cause.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Origin &amp; Cause</a>
+    <a href="product-failure.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Product Failure</a>
+    <a href="vehicle-fire.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Vehicle Fire</a>
+    <a href="expert-testimony.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Expert Testimony</a>
+    <a href="about.html" class="text-white text-xl font-medium font-body">About</a>
+    <a href="contact.html" class="mt-4 px-8 py-3 bg-copper text-white rounded text-sm font-semibold font-body">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero-section">
+    <div class="max-w-6xl mx-auto px-6 relative z-10" style="padding-top:60px;padding-bottom:70px">
+        <a href="index.html#services" class="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] uppercase text-copper/80 mb-6 rise hover:text-copper transition-colors">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+            All Services
+        </a>
+        <h1 class="font-display fluid-hero text-white leading-[1.1] mb-6 rise d1">
+            Product Failure<br>Analysis
+        </h1>
+        <p class="fluid-body-lg text-gray-400 leading-relaxed max-w-2xl rise d2" style="font-weight:300">
+            In-depth evaluation and testing of electrical products, components, and appliances to determine whether defects, flaws, or construction errors contributed to a fire or failure.
+        </p>
+    </div>
+</section>
+
+<!-- CREDENTIAL RIBBON -->
+<div class="bg-cream border-t-2 border-copper">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between py-6 md:py-5 gap-5 md:gap-0">
+            <div class="flex items-center gap-3">
+                <span class="font-display fluid-stat text-copper leading-none">40<span class="text-2xl">+</span></span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Years Evaluating<br>Electrical Products</span>
+            </div>
+            <div class="hidden md:block cred-divider"></div>
+            <div class="flex items-center gap-3">
+                <span class="font-display fluid-stat text-copper leading-none">BSEET</span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Electrical Engineering<br>Technology, Purdue</span>
+            </div>
+            <div class="hidden md:block cred-divider"></div>
+            <div class="flex items-center gap-3">
+                <span class="font-display fluid-stat text-copper leading-none">150<span class="text-2xl">+</span></span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Expert Depositions<br>&amp; Trial Testimonies</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- OVERVIEW -->
+<section class="fluid-section">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="reveal md:flex md:gap-16">
+            <div class="md:w-1/3 mb-8 md:mb-0">
+                <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Overview</p>
+                <h2 class="font-display fluid-h2 text-gray-900 leading-tight">Finding the Failure Behind the Fire</h2>
+            </div>
+            <div class="md:w-2/3">
+                <div class="space-y-4 text-[15px] text-gray-600 leading-relaxed">
+                    <p>Our product failure analysis involves in-depth evaluation and testing of electrical products, components, and appliances involved in fire or failure incidents. We examine products from residential appliances to commercial distribution systems to determine the root cause of failure.</p>
+                    <p>We identify potential failure modes such as manufacturing defects, design flaws, material deficiencies, and construction or installation errors. Each examination determines whether the product performed as intended or whether a deficiency contributed to the incident.</p>
+                    <p>Our findings are documented with the rigor required for litigation, subrogation, and regulatory proceedings.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- WHAT WE EXAMINE -->
+<section class="bg-cream fluid-section">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="reveal mb-10">
+            <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Scope</p>
+            <h2 class="font-display fluid-h2 text-gray-900 leading-tight">What We Examine</h2>
+        </div>
+
+        <div class="reveal grid md:grid-cols-2 gap-8">
+            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-manufacturing.png')"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
+                <div class="relative p-8">
+                    <span class="font-display text-2xl text-copper/60 block mb-3">01</span>
+                    <h3 class="font-display fluid-h3 text-white mb-3">Manufacturing Defects</h3>
+                    <p class="text-[15px] text-gray-300 leading-relaxed">Identify deficiencies introduced during the manufacturing process&thinsp;&mdash;&thinsp;improper assembly, faulty components, substandard materials, or quality control failures that led to product malfunction.</p>
+                </div>
+            </div>
+
+            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-design.png')"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
+                <div class="relative p-8">
+                    <span class="font-display text-2xl text-copper/60 block mb-3">02</span>
+                    <h3 class="font-display fluid-h3 text-white mb-3">Design Flaws</h3>
+                    <p class="text-[15px] text-gray-300 leading-relaxed">Evaluate whether the product&rsquo;s design created conditions for failure&thinsp;&mdash;&thinsp;inadequate thermal protection, insufficient clearances, improper material selection, or missing safety features.</p>
+                </div>
+            </div>
+
+            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-wiring.png')"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
+                <div class="relative p-8">
+                    <span class="font-display text-2xl text-copper/60 block mb-3">03</span>
+                    <h3 class="font-display fluid-h3 text-white mb-3">Installation &amp; Wiring Errors</h3>
+                    <p class="text-[15px] text-gray-300 leading-relaxed">Determine whether improper installation, incorrect wiring, or failure to follow manufacturer specifications contributed to the product failure or fire event.</p>
+                </div>
+            </div>
+
+            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-components.png')"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
+                <div class="relative p-8">
+                    <span class="font-display text-2xl text-copper/60 block mb-3">04</span>
+                    <h3 class="font-display fluid-h3 text-white mb-3">Component-Level Testing</h3>
+                    <p class="text-[15px] text-gray-300 leading-relaxed">Laboratory examination of individual components&thinsp;&mdash;&thinsp;circuit boards, connectors, switches, and wiring&thinsp;&mdash;&thinsp;to isolate the specific point of failure and determine the failure mechanism.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- PRODUCT TYPES -->
+<section class="fluid-section">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="reveal md:flex md:gap-16">
+            <div class="md:w-1/3 mb-8 md:mb-0">
+                <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Experience</p>
+                <h2 class="font-display fluid-h2 text-gray-900 leading-tight">Products We Evaluate</h2>
+            </div>
+            <div class="md:w-2/3">
+                <div class="grid grid-cols-2 gap-4 text-[15px] text-gray-600">
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Residential appliances</div>
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Electrical panels &amp; breakers</div>
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>HVAC systems</div>
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Lighting fixtures</div>
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Power tools &amp; equipment</div>
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Commercial distribution systems</div>
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Consumer electronics</div>
+                    <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Wiring &amp; connectors</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer style="background:#0C1118; position:relative; overflow:hidden">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.3;pointer-events:none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="circuit" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+                <rect x="70" y="70" width="60" height="40" rx="2" fill="none" stroke="#B87333" stroke-width="1.2"/>
+                <line x1="70" y1="78" x2="40" y2="78" stroke="#B87333" stroke-width="1"/>
+                <line x1="70" y1="88" x2="30" y2="88" stroke="#B87333" stroke-width="1"/>
+                <line x1="70" y1="98" x2="40" y2="98" stroke="#B87333" stroke-width="1"/>
+                <line x1="130" y1="78" x2="160" y2="78" stroke="#B87333" stroke-width="1"/>
+                <line x1="130" y1="88" x2="170" y2="88" stroke="#B87333" stroke-width="1"/>
+                <line x1="130" y1="98" x2="160" y2="98" stroke="#B87333" stroke-width="1"/>
+                <path d="M40 78v-50h30" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M30 88v-68h80" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M40 98v52h50" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M160 78v-48h-50" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M170 88v62h-60" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M160 98v32h-30" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <circle cx="40" cy="28" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="40" cy="28" r="1" fill="#B87333"/>
+                <circle cx="110" cy="20" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="110" cy="20" r="1" fill="#B87333"/>
+                <circle cx="160" cy="30" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="160" cy="30" r="1" fill="#B87333"/>
+                <circle cx="90" cy="150" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="90" cy="150" r="1" fill="#B87333"/>
+                <circle cx="110" cy="150" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="110" cy="150" r="1" fill="#B87333"/>
+                <circle cx="130" cy="130" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="130" cy="130" r="1" fill="#B87333"/>
+                <rect x="55" y="25" width="12" height="6" rx="1" fill="none" stroke="#B87333" stroke-width="0.7"/>
+                <rect x="145" y="140" width="12" height="6" rx="1" fill="none" stroke="#B87333" stroke-width="0.7"/>
+                <line x1="67" y1="28" x2="70" y2="28" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="55" y1="28" x2="40" y2="28" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="157" y1="143" x2="170" y2="143" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="145" y1="143" x2="130" y2="143" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="130" y1="143" x2="130" y2="130" stroke="#B87333" stroke-width="0.8"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#circuit)"/>
+    </svg>
+    <div class="max-w-6xl mx-auto px-6 relative z-10 pt-16 pb-10">
+        <div class="reveal md:flex md:gap-16 mb-12">
+            <div class="md:w-1/2 mb-12 md:mb-0">
+                <div class="w-12 h-px bg-copper mb-6"></div>
+                <h2 class="font-display fluid-h2 text-white leading-tight mb-6">Discuss Your Case</h2>
+                <p class="text-gray-400 leading-relaxed mb-8 max-w-md" style="font-weight:300">
+                    For case inquiries, expert witness requests, or forensic consultation, contact us directly. We accept assignments for both defense and plaintiff.
+                </p>
+                <a href="contact.html" class="inline-flex items-center gap-2 px-7 py-3.5 bg-copper text-white text-sm font-semibold rounded hover:bg-copper-light transition-colors">
+                    Submit Case Inquiry
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </a>
+            </div>
+            <div class="md:w-1/2">
+                <div class="space-y-8">
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Phone</span>
+                        <a href="tel:+12602383074" class="font-display text-2xl text-white hover:text-copper transition-colors">(260) 238-3074</a>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Email</span>
+                        <a href="mailto:info@electrotekconsultants.com" class="text-lg text-white hover:text-copper transition-colors font-medium">info@electrotekconsultants.com</a>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Office</span>
+                        <div class="text-gray-300">
+                            <p class="font-medium">18925 N State Road 1</p>
+                            <p>Spencerville, IN 46788</p>
+                            <p class="text-gray-500 text-sm mt-2">Mail: PO Box 106, Spencerville, IN 46788</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+<img src="logo.png" alt="ElectroTek" class="w-7 h-7 rounded opacity-60">
+                <span class="text-sm text-gray-500 font-medium">ElectroTek Consultants</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-sm text-gray-600">
+                <span>&copy; 2026 ElectroTek Consultants Inc.</span>
+                <a href="https://waltersignal.io" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-gray-400 transition-colors">
+                    <img src="waltersignal-logo.svg" alt="WalterSignal" class="w-5 h-5 rounded opacity-50">
+                    Designed by WalterSignal
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

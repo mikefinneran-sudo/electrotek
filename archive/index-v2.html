@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroTek Consultants | Forensic Fire Investigation</title>
+    <link rel="stylesheet" href="../../../dist/tailwind.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; background: #ffffff; color: #1a1a1a; }
+        html { scroll-behavior: smooth; }
+
+        /* Nav */
+        .nav-bar {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            transition: box-shadow 0.2s;
+        }
+        .nav-bar.scrolled { box-shadow: 0 1px 12px rgba(0,0,0,0.06); }
+
+        /* Hero - dark immersive block */
+        .hero-section {
+            background: linear-gradient(160deg, #0a2e22 0%, #0e4433 35%, #115740 65%, #1a7a5c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(52,211,153,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* Credential pills - hero variant */
+        .cred-pill-hero {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #bbf7d4;
+            padding: 0.375rem 0.875rem;
+            border-radius: 9999px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+        .cred-pill {
+            background: #f0fdf6;
+            border: 1px solid #bbf7d4;
+            color: #115740;
+            padding: 0.375rem 0.875rem;
+            border-radius: 9999px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: white;
+            color: #0e4433;
+            border-radius: 9999px;
+            padding: 0.875rem 2rem;
+            font-weight: 700;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary:hover { background: #f0fdf6; box-shadow: 0 4px 20px rgba(255,255,255,0.2); }
+        .btn-ghost {
+            border: 1.5px solid rgba(255,255,255,0.25);
+            color: white;
+            border-radius: 9999px;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+        }
+        .btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+        .btn-brand {
+            background: #1a7a5c;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-brand:hover { background: #166b50; box-shadow: 0 4px 16px rgba(26,122,92,0.25); }
+
+        /* Stats animated counters */
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1a7a5c;
+            line-height: 1;
+        }
+        .stat-label { font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem; }
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-radius: 16px;
+            background: white;
+            border: 1px solid #f3f4f6;
+            transition: all 0.25s;
+        }
+        .stat-card:hover { border-color: #e5e7eb; box-shadow: 0 8px 30px rgba(0,0,0,0.04); transform: translateY(-2px); }
+
+        /* Service cards - colored top accent */
+        .service-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a7a5c, #34d399);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .service-card:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+            transform: translateY(-3px);
+        }
+        .service-card:hover::before { opacity: 1; }
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f0fdf6 0%, #dcfce9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a7a5c;
+        }
+
+        /* Who we serve - dark band */
+        .serve-section {
+            background: linear-gradient(160deg, #0a2e22, #115740);
+            position: relative;
+            overflow: hidden;
+        }
+        .serve-section::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -15%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(52,211,153,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .serve-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.25s;
+        }
+        .serve-card:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .serve-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            color: #34d399;
+        }
+
+        /* Team */
+        .team-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: all 0.25s;
+        }
+        .team-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.06); transform: translateY(-2px); }
+        .team-header {
+            padding: 2.5rem 2.5rem 0;
+            position: relative;
+        }
+        .team-avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.75rem;
+            color: white;
+            box-shadow: 0 8px 24px rgba(26,122,92,0.2);
+        }
+        .team-body { padding: 1.5rem 2.5rem 2.5rem; }
+
+        /* Process timeline */
+        .process-step {
+            position: relative;
+            padding-left: 4rem;
+        }
+        .process-step::before {
+            content: '';
+            position: absolute;
+            left: 1.1875rem;
+            top: 2.75rem;
+            bottom: -1.5rem;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        .process-step:last-child::before { display: none; }
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1a7a5c, #34d399);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 0.875rem;
+        }
+
+        /* Section label */
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #1a7a5c;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-label::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: #1a7a5c;
+            border-radius: 1px;
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="nav-bar fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="#" class="flex items-center gap-3">
+                    <img src="logo.png" alt="ElectroTek" class="w-9 h-9 rounded-lg">
+                    <span class="font-bold text-gray-900 tracking-tight text-[0.9375rem]">ElectroTek Consultants</span>
+                </a>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#services" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Services</a>
+                    <a href="#process" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Process</a>
+                    <a href="#team" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Team</a>
+                    <a href="#contact" class="btn-brand text-sm py-2 px-5">Contact Us</a>
+                </div>
+                <button id="mobile-toggle" class="md:hidden text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-white hidden flex-col items-center justify-center gap-6 text-lg">
+        <a href="#services" onclick="closeMobile()" class="text-gray-700 font-medium">Services</a>
+        <a href="#process" onclick="closeMobile()" class="text-gray-700 font-medium">Process</a>
+        <a href="#team" onclick="closeMobile()" class="text-gray-700 font-medium">Team</a>
+        <a href="#contact" onclick="closeMobile()" class="btn-brand mt-4">Contact Us</a>
+        <button onclick="closeMobile()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-700">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+
+    <main>
+
+        <!-- ============================================ -->
+        <!-- HERO - dark immersive with grid overlay      -->
+        <!-- ============================================ -->
+        <section class="hero-section text-white pt-32 pb-24 md:pt-44 md:pb-36">
+            <div class="hero-grid-overlay"></div>
+            <div class="max-w-6xl mx-auto px-6 relative z-10">
+                <div class="grid md:grid-cols-5 gap-12 items-center">
+                    <div class="md:col-span-3">
+                        <div class="flex flex-wrap gap-2.5 mb-8">
+                            <span class="cred-pill-hero">CFEI / CFI / CVFI Certified</span>
+                            <span class="cred-pill-hero">NFPA 921 Committee</span>
+                        </div>
+                        <h1 class="text-4xl md:text-[3.5rem] font-extrabold leading-[1.1] mb-6 tracking-tight">
+                            Origin & Cause<br>Analysis. Expert<br>Testimony.
+                        </h1>
+                        <p class="text-lg text-white/60 leading-relaxed mb-10 max-w-xl">
+                            Independent forensic investigation of electrical fires, product failures, and vehicle fire origins. Serving insurance carriers, counsel, and manufacturers since 1995.
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="#contact" class="btn-primary">
+                                Request Consultation
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                            <a href="#services" class="btn-ghost">Our Services</a>
+                        </div>
+                    </div>
+                    <!-- Right side: stats stack -->
+                    <div class="md:col-span-2 hidden md:flex flex-col gap-4">
+                        <div class="bg-white/[0.06] border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+                            <div class="text-4xl font-extrabold text-white mb-1">30+</div>
+                            <div class="text-white/50 text-sm">Years of forensic practice</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white/[0.06] border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
+                                <div class="text-2xl font-extrabold text-white mb-1">150+</div>
+                                <div class="text-white/50 text-xs">Expert testimonies</div>
+                            </div>
+                            <div class="bg-white/[0.06] border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
+                                <div class="text-2xl font-extrabold text-white mb-1">14</div>
+                                <div class="text-white/50 text-xs">Years on NFPA 921</div>
+                            </div>
+                        </div>
+                        <div class="bg-white/[0.06] border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
+                            <div class="text-sm text-white/50">Admitted under Daubert standard in</div>
+                            <div class="text-lg font-bold text-white mt-1">Federal & State Courts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- STATS - mobile visible                       -->
+        <!-- ============================================ -->
+        <section class="py-12 md:hidden bg-gray-50">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="stat-card"><div class="stat-number text-2xl">30+</div><div class="stat-label text-xs">Years in Practice</div></div>
+                    <div class="stat-card"><div class="stat-number text-2xl">150+</div><div class="stat-label text-xs">Expert Testimonies</div></div>
+                    <div class="stat-card"><div class="stat-number text-2xl">14</div><div class="stat-label text-xs">Years on NFPA 921</div></div>
+                    <div class="stat-card"><div class="stat-number text-2xl">6</div><div class="stat-label text-xs">Certifications</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SERVICES                                      -->
+        <!-- ============================================ -->
+        <section id="services" class="py-24 md:py-32">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="max-w-2xl mb-16 reveal">
+                    <p class="section-label mb-4">Services</p>
+                    <h2 class="text-3xl md:text-[2.75rem] font-extrabold text-gray-900 tracking-tight leading-tight mb-5">What We Investigate</h2>
+                    <p class="text-gray-500 text-lg leading-relaxed">
+                        Forensic analysis and expert opinion for matters involving electrical systems, product failures, and fire causation.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="service-card reveal">
+                        <div class="service-icon mb-5">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Origin & Cause Support</h3>
+                        <p class="text-gray-500 text-[0.9375rem] leading-relaxed">
+                            Detailed analysis to determine whether an electrical device was the cause of ignition or a victim of the fire. Arc mapping, conductor examination, and failure mode identification.
+                        </p>
+                    </div>
+
+                    <div class="service-card reveal">
+                        <div class="service-icon mb-5">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Product Failure Analysis</h3>
+                        <p class="text-gray-500 text-[0.9375rem] leading-relaxed">
+                            Examination of appliances and electrical components to identify manufacturing defects, design flaws, or installation errors. From small appliances to distribution panels.
+                        </p>
+                    </div>
+
+                    <div class="service-card reveal">
+                        <div class="service-icon mb-5">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Expert Witness Testimony</h3>
+                        <p class="text-gray-500 text-[0.9375rem] leading-relaxed">
+                            Deposition and trial testimony for both plaintiff and defense. Consistently admitted under Daubert standard in federal and state courts.
+                        </p>
+                    </div>
+
+                    <div class="service-card reveal">
+                        <div class="service-icon mb-5">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Vehicle Fire Investigation</h3>
+                        <p class="text-gray-500 text-[0.9375rem] leading-relaxed">
+                            CVFI-certified analysis of passenger vehicles, commercial trucks, and agricultural equipment. 12V systems, alternator failures, and after-market wiring.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- WHO WE SERVE - dark band                     -->
+        <!-- ============================================ -->
+        <section class="serve-section py-24 md:py-28 text-white">
+            <div class="max-w-6xl mx-auto px-6 relative z-10">
+                <div class="text-center mb-16 reveal">
+                    <p class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-300 mb-4">Who We Serve</p>
+                    <h2 class="text-3xl md:text-[2.75rem] font-extrabold tracking-tight leading-tight">Trusted by Industry Leaders</h2>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 reveal">
+                    <div class="serve-card">
+                        <div class="serve-icon">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Insurance Carriers</h3>
+                        <p class="text-white/50 text-sm leading-relaxed">
+                            Subrogation support, origin & cause determination, and expert reports for property loss claims.
+                        </p>
+                    </div>
+                    <div class="serve-card">
+                        <div class="serve-icon">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Attorneys & Counsel</h3>
+                        <p class="text-white/50 text-sm leading-relaxed">
+                            Plaintiff, defense, and subrogation engagements. Daubert-tested expert witness testimony and clear, defensible reports.
+                        </p>
+                    </div>
+                    <div class="serve-card">
+                        <div class="serve-icon">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Manufacturers</h3>
+                        <p class="text-white/50 text-sm leading-relaxed">
+                            Product failure analysis, root cause investigation, and technical consultation for product liability matters.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- PROCESS                                       -->
+        <!-- ============================================ -->
+        <section id="process" class="py-24 md:py-32">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-16 items-start">
+                    <div class="reveal">
+                        <p class="section-label mb-4">Our Process</p>
+                        <h2 class="text-3xl md:text-[2.75rem] font-extrabold text-gray-900 tracking-tight leading-tight mb-5">Rigorous. Methodical.<br>Defensible.</h2>
+                        <p class="text-gray-500 text-lg leading-relaxed mb-8">
+                            Every investigation follows NFPA 921 methodology — the standard we helped write.
+                        </p>
+                        <a href="#contact" class="btn-brand">
+                            Discuss Your Case
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    </div>
+
+                    <div class="space-y-8 reveal">
+                        <div class="process-step">
+                            <div class="step-number">1</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1.5">Scene Examination</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">
+                                Thorough on-site investigation, evidence collection, photography, and arc mapping per NFPA 921 protocols.
+                            </p>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">2</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1.5">Laboratory Analysis</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">
+                                Detailed examination of electrical components, conductor analysis, and failure mode identification under controlled conditions.
+                            </p>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">3</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1.5">Expert Report</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">
+                                Clear, defensible written opinion with supporting evidence, diagrams, and photography.
+                            </p>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">4</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1.5">Testimony</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">
+                                Deposition and trial testimony. Consistently admitted under Daubert. Over 150 appearances.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- TEAM                                          -->
+        <!-- ============================================ -->
+        <section id="team" class="py-24 md:py-32 bg-gray-50">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="max-w-2xl mb-16 reveal">
+                    <p class="section-label mb-4">Our Team</p>
+                    <h2 class="text-3xl md:text-[2.75rem] font-extrabold text-gray-900 tracking-tight leading-tight mb-5">Principal Investigators</h2>
+                    <p class="text-gray-500 text-lg leading-relaxed">
+                        Combined 50+ years of forensic investigation, expert testimony, and NFPA standards development.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="team-card reveal">
+                        <div class="team-header">
+                            <div class="flex items-start gap-5">
+                                <div class="team-avatar" style="background: linear-gradient(135deg, #115740, #1a7a5c);">JMF</div>
+                                <div class="pt-1">
+                                    <h3 class="text-xl font-bold text-gray-900">James M. Finneran</h3>
+                                    <p class="text-gray-500 text-sm mt-1">Principal &middot; Purdue University</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-body">
+                            <p class="text-gray-500 text-[0.9375rem] leading-relaxed mb-5">
+                                Over forty years of experience in origin and cause investigations, product failure analysis, and electrical evaluations. Founded ElectroTek in 1995. Served on the NFPA 921 Technical Committee (2004&ndash;2018). Over 150 expert testimonies in federal and state courts.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="cred-pill text-xs">CFEI</span>
+                                <span class="cred-pill text-xs">CFI-IAAI</span>
+                                <span class="cred-pill text-xs">CVFI</span>
+                                <span class="cred-pill text-xs">NFPA 921</span>
+                            </div>
+                            <a href="finneran.html" class="text-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-1">
+                                Full profile
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="team-card reveal">
+                        <div class="team-header">
+                            <div class="flex items-start gap-5">
+                                <div class="team-avatar" style="background: linear-gradient(135deg, #1a7a5c, #34d399);">JVM</div>
+                                <div class="pt-1">
+                                    <h3 class="text-xl font-bold text-gray-900">James V. Miller</h3>
+                                    <p class="text-gray-500 text-sm mt-1">Senior Investigator &middot; IPFW</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-body">
+                            <p class="text-gray-500 text-[0.9375rem] leading-relaxed mb-5">
+                                Forensic fire investigator specializing in origin and cause determination and product failure analysis. Current member of the NFPA 921 Technical Committee. Joined ElectroTek in 2000. Former volunteer firefighter and Captain with Northeast Fire and EMS.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="cred-pill text-xs">NFPA 921 Committee</span>
+                                <span class="cred-pill text-xs">CFI-IAAI</span>
+                                <span class="cred-pill text-xs">CFEI</span>
+                                <span class="cred-pill text-xs">CVFI</span>
+                            </div>
+                            <a href="miller.html" class="text-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-1">
+                                Full profile
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- CONTACT                                       -->
+        <!-- ============================================ -->
+        <section id="contact" class="py-24 md:py-32">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-16 items-start">
+                    <div class="reveal">
+                        <p class="section-label mb-4">Contact</p>
+                        <h2 class="text-3xl md:text-[2.75rem] font-extrabold text-gray-900 tracking-tight leading-tight mb-5">Get in Touch</h2>
+                        <p class="text-gray-500 text-lg leading-relaxed mb-10">
+                            For case inquiries, please contact us directly. We accept engagements for both plaintiff/subrogation and defense matters.
+                        </p>
+
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="service-icon shrink-0 w-11 h-11" style="border-radius: 12px;">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Phone</div>
+                                    <a href="tel:+12603418530" class="text-gray-900 font-semibold text-lg hover:text-brand-500 transition-colors">(260) 341-8530</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="service-icon shrink-0 w-11 h-11" style="border-radius: 12px;">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Email</div>
+                                    <a href="mailto:jmf@eletrotekconsultants.com" class="text-gray-900 font-semibold hover:text-brand-500 transition-colors">jmf@eletrotekconsultants.com</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="service-icon shrink-0 w-11 h-11" style="border-radius: 12px;">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Office</div>
+                                    <p class="text-gray-900 font-semibold">18925 N State Road 1</p>
+                                    <p class="text-gray-500 text-sm">Spencerville, IN 46788</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: CTA card -->
+                    <div class="reveal">
+                        <div class="rounded-2xl overflow-hidden">
+                            <div class="bg-brand-900 p-10">
+                                <h3 class="text-2xl font-bold text-white mb-3">Need a forensic investigation?</h3>
+                                <p class="text-white/50 leading-relaxed mb-8">
+                                    We provide independent, unbiased analysis for insurance carriers, attorneys, and manufacturers. Call to discuss your case.
+                                </p>
+                                <a href="tel:+12603418530" class="inline-flex items-center gap-2 bg-white text-brand-900 font-bold rounded-full px-6 py-3.5 hover:bg-brand-50 transition-colors text-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+                                    Call (260) 341-8530
+                                </a>
+                            </div>
+                            <div class="bg-brand-800 px-10 py-5 flex items-center gap-3">
+                                <svg class="w-5 h-5 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 9v.906a2.25 2.25 0 01-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 001.183 1.981l6.478 3.488m8.839 2.51l-4.66-2.51m0 0l-1.023-.55a2.25 2.25 0 00-2.134 0l-1.022.55m0 0l-4.661 2.51m16.5-1.885a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V9a2.25 2.25 0 012.25-2.25h15A2.25 2.25 0 0121.75 9v8.25z"/></svg>
+                                <span class="text-white/60 text-sm">Mail: PO Box 106, Spencerville, IN 46788</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <img src="logo.png" alt="ElectroTek" class="w-8 h-8 rounded-lg brightness-200">
+                    <div>
+                        <div class="font-semibold text-sm">ElectroTek Consultants, Inc.</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Spencerville, Indiana &middot; Est. 1995</div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500">
+                    &copy; 2026 ElectroTek Consultants Inc. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+<script>
+    // Sticky nav shadow
+    window.addEventListener('scroll', () => {
+        document.querySelector('.nav-bar').classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Mobile menu
+    const mobileMenu = document.getElementById('mobile-menu');
+    document.getElementById('mobile-toggle').addEventListener('click', () => mobileMenu.classList.replace('hidden', 'flex'));
+    window.closeMobile = () => mobileMenu.classList.replace('flex', 'hidden');
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

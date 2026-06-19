@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroTek Consultants | Forensic Fire & Electrical Investigation</title>
+    <meta name="description" content="Independent forensic investigations and analysis of electrical fires, product failures, and vehicle fires. Expert witness testimony. Serving insurance carriers, manufacturers, and law firms since 1995.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['DM Serif Display', 'Georgia', 'serif'],
+                        body: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        copper: {
+                            DEFAULT: '#B87333',
+                            light: '#C9854A',
+                        },
+                        navy: {
+                            DEFAULT: '#0C1118',
+                            light: '#1B2432',
+                            mid: '#2A3444',
+                        },
+                        cream: '#FAF8F5',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        html {
+            scroll-behavior: smooth;
+            /* Fluid base: scales from 15px at 320px viewport to 18px at 1440px */
+            font-size: clamp(0.9375rem, 0.85rem + 0.27vw, 1.125rem);
+        }
+        body {
+            font-family: 'IBM Plex Sans', system-ui, sans-serif;
+            color: #1a1a1a;
+            background: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+        }
+
+        /* Fluid typography scale */
+        .fluid-hero   { font-size: clamp(2.25rem, 1.5rem + 4.5vw, 4.5rem); }
+        .fluid-h2     { font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); }
+        .fluid-h3     { font-size: clamp(1.15rem, 1rem + 1vw, 1.65rem); }
+        .fluid-body-lg { font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); }
+        .fluid-stat   { font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); }
+        .fluid-quote  { font-size: clamp(1.35rem, 1rem + 1.8vw, 2.25rem); }
+
+        /* Fluid spacing */
+        .fluid-section { padding-top: clamp(3rem, 2rem + 4vw, 5rem); padding-bottom: clamp(3rem, 2rem + 4vw, 5rem); }
+        .fluid-hero-pad { padding-top: clamp(3rem, 2rem + 5vw, 6rem); padding-bottom: clamp(4rem, 3rem + 5vw, 7rem); }
+
+        /* Hero with generated texture */
+        .hero-section {
+            background: #0C1118;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('hero-fire-v1.png') center/cover no-repeat;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(12,17,24,0.5) 0%, rgba(12,17,24,0.8) 70%, #0C1118 100%);
+            pointer-events: none;
+        }
+
+        /* Credential dividers */
+        .cred-divider {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(180deg, transparent, rgba(184,115,51,0.5), transparent);
+        }
+
+        /* Service row + watermarks */
+        .svc-row {
+            transition: background .2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .svc-row::after {
+            content: '';
+            position: absolute;
+            top: -10%; bottom: -10%;
+            width: 60%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.35;
+            pointer-events: none;
+            filter: grayscale(0.2);
+            transition: opacity .3s ease;
+        }
+        .svc-row:hover { background: rgba(250,248,245,0.5); }
+        .svc-row:hover::after { opacity: 0.5; }
+        .svc-row:hover .svc-num { color: #B87333; }
+
+        /* Alternate: right-heavy vs center-heavy so they don't stack */
+        .svc-01::after { right: 0; width: 55%;
+            -webkit-mask-image: linear-gradient(90deg, transparent, black 40%);
+            mask-image: linear-gradient(90deg, transparent, black 40%);
+            background-position: center; }
+        .svc-02::after { left: 15%; right: 15%; width: 70%;
+            -webkit-mask-image: linear-gradient(90deg, transparent, black 25%, black 75%, transparent);
+            mask-image: linear-gradient(90deg, transparent, black 25%, black 75%, transparent);
+            background-position: center; }
+        .svc-03::after { right: -3%; width: 50%;
+            -webkit-mask-image: linear-gradient(90deg, transparent 5%, black 45%);
+            mask-image: linear-gradient(90deg, transparent 5%, black 45%);
+            background-position: center 70%; }
+        .svc-04::after { left: 10%; right: 10%; width: 80%;
+            -webkit-mask-image: linear-gradient(90deg, transparent 5%, black 20%, black 80%, transparent 95%);
+            mask-image: linear-gradient(90deg, transparent 5%, black 20%, black 80%, transparent 95%);
+            background-position: center 40%; }
+
+        .svc-01::after { background-image: url('svc-origin.png'); }
+        .svc-02::after { background-image: url('svc-product.png'); }
+        .svc-03::after { background-image: url('svc-vehicle.png'); }
+        .svc-04::after { background-image: url('svc-testimony.png'); }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .5s ease, transform .5s ease;
+        }
+        .reveal.vis { opacity: 1; transform: none; }
+
+        /* Rise animation */
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: none; }
+        }
+        .rise { animation: rise .6s ease-out forwards; }
+        .d1 { animation-delay: .08s; opacity: 0; }
+        .d2 { animation-delay: .16s; opacity: 0; }
+        .d3 { animation-delay: .24s; opacity: 0; }
+        .d4 { animation-delay: .32s; opacity: 0; }
+
+        /* Services dropdown */
+        .svc-dropdown { display: none; position: absolute; top: 100%; left: 0; padding-top: 8px; min-width: 220px; z-index: 300; }
+        .svc-trigger:hover .svc-dropdown { display: block; }
+        nav { position: relative; z-index: 300; }
+
+        /* Mobile menu */
+        .mob-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(12,17,24,0.97);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+        }
+        .mob-overlay.open { display: flex; }
+    </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav class="bg-white border-b" style="border-color:#E2DDD5">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="index-v6.html" class="flex items-center gap-3">
+<img src="logo.png" alt="ElectroTek" class="w-10 h-10 rounded">
+            <span class="font-medium text-gray-900 text-[15px] tracking-tight">ElectroTek Consultants</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8 text-sm">
+            <div class="relative svc-trigger">
+                <a href="#services" class="text-gray-500 hover:text-gray-900 transition-colors font-medium inline-flex items-center gap-1">
+                    Services
+                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="mt-0.5"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
+                <div class="svc-dropdown">
+                    <div class="bg-white rounded border shadow-lg py-2" style="border-color:#E2DDD5">
+                        <a href="origin-cause.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Origin &amp; Cause</a>
+                        <a href="product-failure.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Product Failure</a>
+                        <a href="vehicle-fire.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Vehicle Fire</a>
+                        <a href="expert-testimony.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Expert Testimony</a>
+                    </div>
+                </div>
+            </div>
+            <a href="about.html" class="text-gray-500 hover:text-gray-900 transition-colors font-medium">About</a>
+            <a href="contact.html" class="font-semibold px-5 py-2.5 bg-copper text-white rounded hover:bg-copper-light transition-colors">Contact</a>
+        </div>
+        <button class="md:hidden text-gray-900" onclick="document.getElementById('mobMenu').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobMenu" class="mob-overlay">
+    <button onclick="this.parentElement.classList.remove('open')" class="absolute top-6 right-6 text-white">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <a href="#services" onclick="this.parentElement.classList.remove('open')" class="text-white text-xl font-medium font-body">Services</a>
+    <a href="origin-cause.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Origin &amp; Cause</a>
+    <a href="product-failure.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Product Failure</a>
+    <a href="vehicle-fire.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Vehicle Fire</a>
+    <a href="expert-testimony.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Expert Testimony</a>
+    <a href="about.html" class="text-white text-xl font-medium font-body">About</a>
+    <a href="contact.html" class="mt-4 px-8 py-3 bg-copper text-white rounded text-sm font-semibold font-body">Contact</a>
+</div>
+
+<!-- ─── HERO ─── -->
+<section class="hero-section">
+    <div class="max-w-6xl mx-auto px-6 fluid-hero-pad relative z-10">
+        <div class="max-w-3xl lg:max-w-4xl mx-auto text-center">
+            <p class="text-xs font-semibold tracking-[0.25em] uppercase text-copper/80 mb-8 rise">Est. 1995 &middot; Spencerville, Indiana</p>
+            <h1 class="font-display fluid-hero text-white leading-[1.08] mb-8 rise d1">
+                Forensic Fire &amp;<br>Electrical Investigation
+            </h1>
+            <p class="fluid-body-lg text-gray-400 leading-relaxed max-w-xl mx-auto mb-12 rise d2" style="font-weight:300">
+                Independent origin &amp; cause analysis, product failure examination, and expert witness testimony for the insurance and legal industry.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 rise d3">
+                <a href="contact.html" class="inline-flex items-center gap-2 px-7 py-3.5 bg-copper text-white text-sm font-semibold rounded hover:bg-copper-light transition-colors">
+                    Request Consultation
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </a>
+                <a href="#services" class="inline-flex items-center gap-2 px-7 py-3.5 text-white/90 text-sm font-semibold rounded border border-white/15 hover:border-white/30 transition-colors">
+                    Our Expertise
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CREDENTIAL RIBBON ─── -->
+<div class="bg-cream border-t-2 border-copper">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between py-6 md:py-5 gap-5 md:gap-0">
+            <div class="flex items-center gap-3">
+                <span class="font-display fluid-stat text-copper leading-none">14</span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Years on NFPA 921<br>Technical Committee</span>
+            </div>
+            <div class="hidden md:block cred-divider"></div>
+            <div class="flex items-center gap-3">
+                <span class="font-display fluid-stat text-copper leading-none">150<span class="text-2xl">+</span></span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Expert Depositions<br>&amp; Trial Testimonies</span>
+            </div>
+            <div class="hidden md:block cred-divider"></div>
+            <div class="flex items-center gap-3">
+                <span class="font-display fluid-stat text-copper leading-none">60<span class="text-2xl">+</span></span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Years of Combined<br>Investigation Experience</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── SERVICES ─── -->
+<section id="services" class="fluid-section">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="reveal mb-10">
+            <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Areas of Expertise</p>
+            <h2 class="font-display fluid-h2 text-gray-900 leading-tight">What We Investigate</h2>
+        </div>
+
+        <div class="reveal">
+            <div class="svc-row svc-01 md:flex md:gap-10 py-7 border-t" style="border-color:#E2DDD5">
+                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+                    <span class="svc-num font-display text-2xl text-gray-300 transition-colors">01</span>
+                </div>
+                <div class="flex-1">
+                    <a href="origin-cause.html" class="block" style="text-decoration:none;color:inherit">
+                        <h3 class="font-display fluid-h3 text-gray-900 mb-2">Origin &amp; Cause Investigations</h3>
+                        <p class="text-gray-500 leading-relaxed">Systematic examination of fire scenes to determine the area of origin and identify potential ignition sources. We collect and survey physical evidence, conduct control testing, and perform electrical component examination&thinsp;&mdash;&thinsp;all in accordance with NFPA 921 methodology.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="svc-row svc-02 md:flex md:gap-10 py-7 border-t" style="border-color:#E2DDD5">
+                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+                    <span class="svc-num font-display text-2xl text-gray-300 transition-colors">02</span>
+                </div>
+                <div class="flex-1">
+                    <a href="product-failure.html" class="block" style="text-decoration:none;color:inherit">
+                        <h3 class="font-display fluid-h3 text-gray-900 mb-2">Product Failure Analysis</h3>
+                        <p class="text-gray-500 leading-relaxed">In-depth evaluation and testing of electrical products, components, and appliances. We determine potential failure modes such as defects, flaws, and construction errors&thinsp;&mdash;&thinsp;from residential appliances to commercial distribution systems.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="svc-row svc-03 md:flex md:gap-10 py-7 border-t" style="border-color:#E2DDD5">
+                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+                    <span class="svc-num font-display text-2xl text-gray-300 transition-colors">03</span>
+                </div>
+                <div class="flex-1">
+                    <a href="vehicle-fire.html" class="block" style="text-decoration:none;color:inherit">
+                        <h3 class="font-display fluid-h3 text-gray-900 mb-2">Vehicle Fire Investigation</h3>
+                        <p class="text-gray-500 leading-relaxed">CVFI-certified analysis of passenger vehicles, commercial trucks, and agricultural equipment. Investigations include examinations of 12V systems, alternators, batteries, battery conduits, and aftermarket wiring.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="svc-row svc-04 md:flex md:gap-10 py-7 border-t border-b" style="border-color:#E2DDD5">
+                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+                    <span class="svc-num font-display text-2xl text-gray-300 transition-colors">04</span>
+                </div>
+                <div class="flex-1">
+                    <a href="expert-testimony.html" class="block" style="text-decoration:none;color:inherit">
+                        <h3 class="font-display fluid-h3 text-gray-900 mb-2">Expert Witness Testimony</h3>
+                        <p class="text-gray-500 leading-relaxed">Deposition and trial testimony in matters involving electrical fires, product failures, and vehicle fire origins. We accept expert witness assignments for both plaintiff and defense counsel.</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── STATEMENT ─── -->
+<section class="bg-cream fluid-section">
+    <div class="max-w-3xl mx-auto px-6 text-center reveal">
+        <p class="font-display italic fluid-quote text-gray-800 leading-snug">
+            &ldquo;Independent, unbiased forensic analysis for insurance carriers, attorneys, and manufacturers&thinsp;&mdash;&thinsp;serving the industry for over thirty years.&rdquo;
+        </p>
+        <div class="w-12 h-px bg-copper mx-auto mt-10"></div>
+    </div>
+</section>
+
+<!-- ─── TEAM ─── -->
+<section class="fluid-section">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="reveal mb-10">
+            <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Our Team</p>
+            <h2 class="font-display fluid-h2 text-gray-900 leading-tight">Meet Our Investigators</h2>
+        </div>
+
+        <!-- James M. Finneran -->
+        <div class="reveal md:flex md:gap-12 mb-14">
+            <div class="flex-shrink-0 mb-8 md:mb-0">
+                <div class="w-36 h-36 md:w-44 md:h-44 rounded flex items-center justify-center" style="background:linear-gradient(145deg,#1B2432,#2A3444)">
+                    <span class="font-display text-4xl md:text-5xl text-white/75 select-none">JMF</span>
+                </div>
+                <p class="text-xs text-copper font-medium tracking-wide mt-4">IAAI-CFI &middot; CFEI &middot; CVFI</p>
+            </div>
+            <div>
+                <p class="text-xs font-semibold tracking-[0.15em] uppercase text-copper mb-2">Founder &amp; Advisor</p>
+                <h3 class="font-display fluid-h3 text-gray-900 mb-1">James M. Finneran</h3>
+                <p class="text-gray-400 text-sm mb-5">BSEET, Purdue University</p>
+                <div class="space-y-3 text-[15px] text-gray-600 leading-relaxed mb-6">
+                    <p>Over forty years of experience in origin and cause investigations, product failure analysis, and electrical and electronic evaluations. Founded ElectroTek Consultants in 1995.</p>
+                    <p>Served on the NFPA 921 Technical Committee from 2004 through 2018. Lead Electrical Instructor at Fire Findings Laboratory for approximately 28 years. Over 150 depositions and trial testimonies as an expert witness.</p>
+                </div>
+                <a href="about.html" class="text-sm font-semibold text-copper hover:text-copper-light transition-colors inline-flex items-center gap-1.5">
+                    Full biography
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="h-px mb-14" style="background:linear-gradient(90deg, #E2DDD5, transparent)"></div>
+
+        <!-- James V. Miller -->
+        <div class="reveal md:flex md:gap-12">
+            <div class="flex-shrink-0 mb-8 md:mb-0">
+                <div class="w-36 h-36 md:w-44 md:h-44 rounded flex items-center justify-center relative overflow-hidden" style="background:linear-gradient(145deg,#0C1118,#1B2432)">
+                    <span class="font-display text-4xl md:text-5xl text-white/85 select-none">JVM</span>
+                    <div class="absolute bottom-0 inset-x-0 h-0.5 bg-copper"></div>
+                </div>
+                <p class="text-xs text-copper font-medium tracking-wide mt-4">IAAI-CFI &middot; CFEI &middot; CVFI</p>
+            </div>
+            <div>
+                <p class="text-xs font-semibold tracking-[0.15em] uppercase text-copper mb-2">Investigator</p>
+                <h3 class="font-display fluid-h3 text-gray-900 mb-1">James V. Miller</h3>
+                <p class="text-gray-400 text-sm mb-5">BSIET, Purdue University</p>
+                <div class="space-y-3 text-[15px] text-gray-600 leading-relaxed mb-6">
+                    <p>Leads ElectroTek's forensic investigations, specializing in fire origin and cause determination and product failure analysis. Holds degrees in Industrial Engineering Technology, Mechanical Engineering Technology, and an Automotive Technician diploma.</p>
+                    <p>Served as volunteer firefighter and Captain with Northeast Fire and EMS (2000&ndash;2018), bringing firsthand fire suppression experience to forensic analysis.</p>
+                </div>
+                <a href="about.html" class="text-sm font-semibold text-copper hover:text-copper-light transition-colors inline-flex items-center gap-1.5">
+                    Full biography
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- ─── FOOTER ─── -->
+<footer style="background:#0C1118; position:relative; overflow:hidden">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.3;pointer-events:none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="circuit" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+                <!-- IC chip pad -->
+                <rect x="70" y="70" width="60" height="40" rx="2" fill="none" stroke="#B87333" stroke-width="1.2"/>
+                <!-- Pins coming off the chip -->
+                <line x1="70" y1="78" x2="40" y2="78" stroke="#B87333" stroke-width="1"/>
+                <line x1="70" y1="88" x2="30" y2="88" stroke="#B87333" stroke-width="1"/>
+                <line x1="70" y1="98" x2="40" y2="98" stroke="#B87333" stroke-width="1"/>
+                <line x1="130" y1="78" x2="160" y2="78" stroke="#B87333" stroke-width="1"/>
+                <line x1="130" y1="88" x2="170" y2="88" stroke="#B87333" stroke-width="1"/>
+                <line x1="130" y1="98" x2="160" y2="98" stroke="#B87333" stroke-width="1"/>
+                <!-- Traces with right-angle turns -->
+                <path d="M40 78v-50h30" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M30 88v-68h80" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M40 98v52h50" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M160 78v-48h-50" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M170 88v62h-60" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <path d="M160 98v32h-30" fill="none" stroke="#B87333" stroke-width="0.8"/>
+                <!-- Via pads (solder points) -->
+                <circle cx="40" cy="28" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="40" cy="28" r="1" fill="#B87333"/>
+                <circle cx="110" cy="20" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="110" cy="20" r="1" fill="#B87333"/>
+                <circle cx="160" cy="30" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="160" cy="30" r="1" fill="#B87333"/>
+                <circle cx="90" cy="150" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="90" cy="150" r="1" fill="#B87333"/>
+                <circle cx="110" cy="150" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="110" cy="150" r="1" fill="#B87333"/>
+                <circle cx="130" cy="130" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
+                <circle cx="130" cy="130" r="1" fill="#B87333"/>
+                <!-- Small resistor/component symbols -->
+                <rect x="55" y="25" width="12" height="6" rx="1" fill="none" stroke="#B87333" stroke-width="0.7"/>
+                <rect x="145" y="140" width="12" height="6" rx="1" fill="none" stroke="#B87333" stroke-width="0.7"/>
+                <!-- Connecting traces to components -->
+                <line x1="67" y1="28" x2="70" y2="28" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="55" y1="28" x2="40" y2="28" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="157" y1="143" x2="170" y2="143" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="145" y1="143" x2="130" y2="143" stroke="#B87333" stroke-width="0.8"/>
+                <line x1="130" y1="143" x2="130" y2="130" stroke="#B87333" stroke-width="0.8"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#circuit)"/>
+    </svg>
+    <div class="max-w-6xl mx-auto px-6 relative z-10 pt-16 pb-10">
+        <div class="reveal md:flex md:gap-16 mb-12">
+            <div class="md:w-1/2 mb-12 md:mb-0">
+                <div class="w-12 h-px bg-copper mb-6"></div>
+                <h2 class="font-display fluid-h2 text-white leading-tight mb-6">Discuss Your Case</h2>
+                <p class="text-gray-400 leading-relaxed mb-8 max-w-md" style="font-weight:300">
+                    For case inquiries, expert witness requests, or forensic consultation, contact us directly. We accept assignments for both defense and plaintiff.
+                </p>
+                <a href="contact.html" class="inline-flex items-center gap-2 px-7 py-3.5 bg-copper text-white text-sm font-semibold rounded hover:bg-copper-light transition-colors">
+                    Submit Case Inquiry
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </a>
+            </div>
+            <div class="md:w-1/2">
+                <div class="space-y-8">
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Phone</span>
+                        <a href="tel:+12602383074" class="font-display text-2xl text-white hover:text-copper transition-colors">(260) 238-3074</a>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Email</span>
+                        <a href="mailto:info@electrotekconsultants.com" class="text-lg text-white hover:text-copper transition-colors font-medium">info@electrotekconsultants.com</a>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Office</span>
+                        <div class="text-gray-300">
+                            <p class="font-medium">18925 N State Road 1</p>
+                            <p>Spencerville, IN 46788</p>
+                            <p class="text-gray-500 text-sm mt-2">Mail: PO Box 106, Spencerville, IN 46788</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+<img src="logo.png" alt="ElectroTek" class="w-7 h-7 rounded opacity-60">
+                <span class="text-sm text-gray-500 font-medium">ElectroTek Consultants</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-sm text-gray-600">
+                <span>&copy; 2026 ElectroTek Consultants Inc.</span>
+                <a href="https://waltersignal.io" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-gray-400 transition-colors">
+                    <img src="waltersignal-logo.svg" alt="WalterSignal" class="w-5 h-5 rounded opacity-50">
+                    Designed by WalterSignal
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
