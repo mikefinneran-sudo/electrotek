@@ -16,188 +16,119 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        display: ['DM Serif Display', 'Georgia', 'serif'],
-                        body: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
+                        display: ['DM Serif Display', 'DM Serif Fallback', 'Georgia', 'serif'],
+                        body: ['IBM Plex Sans', 'IBM Plex Fallback', 'system-ui', 'sans-serif'],
                     },
                     colors: {
                         copper: {
-                            DEFAULT: '#B87333',
-                            light: '#C9854A',
+                            DEFAULT: 'var(--color-brand)',
+                            light: 'var(--color-brand-light)',
                         },
-                        navy: {
-                            DEFAULT: '#0C1118',
-                            light: '#1B2432',
-                            mid: '#2A3444',
+                        ink: {
+                            DEFAULT: 'var(--color-ink)',
+                            1: 'var(--color-ink-1)',
+                            2: 'var(--color-ink-2)',
                         },
-                        cream: '#FAF8F5',
+                        surface: {
+                            DEFAULT: 'var(--color-background)',
+                            1: 'var(--color-surface-1)',
+                            2: 'var(--color-surface-2)',
+                        },
+                        fg: {
+                            DEFAULT: 'var(--color-foreground)',
+                            muted: 'var(--color-foreground-muted)',
+                            faint: 'var(--color-foreground-faint)',
+                        },
                     }
                 }
             }
         }
     </script>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        html {
-            scroll-behavior: smooth;
-            font-size: clamp(0.9375rem, 0.85rem + 0.27vw, 1.125rem);
-        }
-        body {
-            font-family: 'IBM Plex Sans', system-ui, sans-serif;
-            color: #1a1a1a;
-            background: #fff;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            line-height: 1.6;
-        }
-
-        .fluid-hero   { font-size: clamp(2rem, 1.25rem + 3.5vw, 3.5rem); }
-        .fluid-h2     { font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); }
-        .fluid-h3     { font-size: clamp(1.15rem, 1rem + 1vw, 1.65rem); }
-        .fluid-body-lg { font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); }
-        .fluid-stat   { font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); }
-
-        .fluid-section { padding-top: clamp(3rem, 2rem + 4vw, 5rem); padding-bottom: clamp(3rem, 2rem + 4vw, 5rem); }
-
-        .hero-section {
-            background: #0C1118;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url('svc-vehicle.png') center/cover no-repeat;
-            opacity: 0.2;
-            pointer-events: none;
-        }
-        .hero-section::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(12,17,24,0.4) 0%, rgba(12,17,24,0.85) 70%, #0C1118 100%);
-            pointer-events: none;
-        }
-
-        .cred-divider {
-            width: 1px;
-            height: 40px;
-            background: linear-gradient(180deg, transparent, rgba(184,115,51,0.5), transparent);
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(16px);
-            transition: opacity .5s ease, transform .5s ease;
-        }
-        .reveal.vis { opacity: 1; transform: none; }
-
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: none; }
-        }
-        .rise { animation: rise .6s ease-out forwards; }
-        .d1 { animation-delay: .08s; opacity: 0; }
-        .d2 { animation-delay: .16s; opacity: 0; }
-
-        /* Services dropdown */
-        .svc-dropdown { display: none; position: absolute; top: 100%; left: 0; padding-top: 8px; min-width: 220px; z-index: 300; }
-        .svc-trigger:hover .svc-dropdown { display: block; }
-        nav { position: relative; z-index: 300; }
-
-        .mob-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(12,17,24,0.97);
-            z-index: 200;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 32px;
-        }
-        .mob-overlay.open { display: flex; }
-    </style>
+    <link rel="stylesheet" href="site.css">
 </head>
 <body>
 
+<div class="grain" aria-hidden="true"></div>
+
 <!-- NAV -->
-<nav class="bg-white border-b" style="border-color:#E2DDD5">
+<!-- ─── NAV ─── -->
+<nav class="site-nav">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-3">
-<img src="logo.png" alt="ElectroTek" class="w-10 h-10 rounded">
-            <span class="font-medium text-gray-900 text-[15px] tracking-tight">ElectroTek Consultants</span>
+        <a href="index.html" class="flex items-center gap-3 no-underline">
+            <img src="logo.png" alt="" width="40" height="40" class="w-10 h-10 rounded-[var(--radius-sm)]">
+            <span class="font-medium text-[15px] tracking-tight">ElectroTek Consultants</span>
         </a>
         <div class="hidden md:flex items-center gap-8 text-sm">
             <div class="relative svc-trigger">
-                <a href="index.html#services" class="text-gray-900 font-semibold inline-flex items-center gap-1">
+                <a href="#services" class="nav-link inline-flex items-center gap-1">
                     Services
-                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="mt-0.5"><path d="M6 9l6 6 6-6"/></svg>
+                    <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                 </a>
                 <div class="svc-dropdown">
-                    <div class="bg-white rounded border shadow-lg py-2" style="border-color:#E2DDD5">
-                        <a href="origin-cause.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Origin &amp; Cause</a>
-                        <a href="product-failure.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Product Failure</a>
-                        <a href="vehicle-fire.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Vehicle Fire</a>
-                        <a href="expert-testimony.html" class="block px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-cream transition-colors">Expert Testimony</a>
+                    <div class="svc-dropdown-panel">
+                        <a href="origin-cause.html">Origin &amp; Cause</a>
+                        <a href="product-failure.html">Product Failure</a>
+                        <a href="vehicle-fire.html">Vehicle Fire</a>
+                        <a href="expert-testimony.html">Expert Testimony</a>
                     </div>
                 </div>
             </div>
-            <a href="about.html" class="text-gray-500 hover:text-gray-900 transition-colors font-medium">About</a>
-            <a href="contact.html" class="font-semibold px-5 py-2.5 bg-copper text-white rounded hover:bg-copper-light transition-colors">Contact</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="contact.html" class="btn btn--primary !py-2.5 !px-5">Contact</a>
         </div>
-        <button class="md:hidden text-gray-900" onclick="document.getElementById('mobMenu').classList.toggle('open')">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <button type="button" class="md:hidden" data-menu-open aria-expanded="false" aria-controls="mobMenu" aria-label="Open menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
     </div>
 </nav>
 
-<div id="mobMenu" class="mob-overlay">
-    <button onclick="this.parentElement.classList.remove('open')" class="absolute top-6 right-6 text-white">
-        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+<!-- Mobile Menu -->
+<div id="mobMenu" class="mob-overlay" data-surface="ink" role="dialog" aria-modal="true" aria-label="Site menu">
+    <button type="button" data-menu-close class="absolute top-6 right-6" aria-label="Close menu">
+        <svg width="24" height="24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
-    <a href="index.html#services" onclick="this.parentElement.classList.remove('open')" class="text-white text-xl font-medium font-body">Services</a>
-    <a href="origin-cause.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Origin &amp; Cause</a>
-    <a href="product-failure.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Product Failure</a>
-    <a href="vehicle-fire.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Vehicle Fire</a>
-    <a href="expert-testimony.html" onclick="this.parentElement.classList.remove('open')" class="text-white/60 text-base font-body">Expert Testimony</a>
-    <a href="about.html" class="text-white text-xl font-medium font-body">About</a>
-    <a href="contact.html" class="mt-4 px-8 py-3 bg-copper text-white rounded text-sm font-semibold font-body">Contact</a>
+    <a href="#services" class="text-xl font-medium">Services</a>
+    <a href="origin-cause.html" class="text-base text-[var(--color-foreground-muted)]">Origin &amp; Cause</a>
+    <a href="product-failure.html" class="text-base text-[var(--color-foreground-muted)]">Product Failure</a>
+    <a href="vehicle-fire.html" class="text-base text-[var(--color-foreground-muted)]">Vehicle Fire</a>
+    <a href="expert-testimony.html" class="text-base text-[var(--color-foreground-muted)]">Expert Testimony</a>
+    <a href="about.html" class="text-xl font-medium">About</a>
+    <a href="contact.html" class="btn btn--primary mt-4">Contact</a>
 </div>
 
 <!-- HERO -->
-<section class="hero-section">
+<section class="hero hero--page" data-surface="ink" style="--hero-art:url('svc-vehicle.png')">
     <div class="max-w-6xl mx-auto px-6 relative z-10" style="padding-top:60px;padding-bottom:70px">
-        <a href="index.html#services" class="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] uppercase text-copper/80 mb-6 rise hover:text-copper transition-colors">
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+        <a href="index.html#services" class="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] uppercase text-copper/80 mb-6 hover:text-copper transition-colors" data-animate style="--stagger-step:0">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
             All Services
         </a>
-        <h1 class="font-display fluid-hero text-white leading-[1.1] mb-6 rise d1">
+        <h1 class="font-display fluid-hero text-[var(--color-foreground)] leading-[1.1] mb-6" data-animate style="--stagger-step:1">
             Vehicle Fire<br>Investigation
         </h1>
-        <p class="fluid-body-lg text-gray-400 leading-relaxed max-w-2xl rise d2" style="font-weight:300">
+        <p class="fluid-body-lg text-[var(--color-foreground-faint)] leading-relaxed max-w-2xl" data-animate style="--stagger-step:2;font-weight:300">
             CVFI-certified analysis of passenger vehicles, commercial trucks, and agricultural equipment to determine the origin and cause of vehicle fires.
         </p>
     </div>
 </section>
 
 <!-- CREDENTIAL RIBBON -->
-<div class="bg-cream border-t-2 border-copper">
+<div class="bg-[var(--color-surface-1)] border-t-2 border-copper">
     <div class="max-w-6xl mx-auto px-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between py-6 md:py-5 gap-5 md:gap-0">
             <div class="flex items-center gap-3">
                 <span class="font-display fluid-stat text-copper leading-none">CVFI</span>
-                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Certified Vehicle<br>Fire Investigator</span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-[var(--color-foreground-muted)] leading-tight">Certified Vehicle<br>Fire Investigator</span>
             </div>
             <div class="hidden md:block cred-divider"></div>
             <div class="flex items-center gap-3">
                 <span class="font-display fluid-stat text-copper leading-none">18</span>
-                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Years Volunteer<br>Fire Service</span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-[var(--color-foreground-muted)] leading-tight">Years Volunteer<br>Fire Service</span>
             </div>
             <div class="hidden md:block cred-divider"></div>
             <div class="flex items-center gap-3">
                 <span class="font-display fluid-stat text-copper leading-none">ASE</span>
-                <span class="text-[11px] font-semibold tracking-wider uppercase text-gray-500 leading-tight">Automotive<br>Technician Training</span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-[var(--color-foreground-muted)] leading-tight">Automotive<br>Technician Training</span>
             </div>
         </div>
     </div>
@@ -211,10 +142,10 @@
         <div class="reveal md:flex md:gap-16">
             <div class="md:w-1/3 mb-8 md:mb-0">
                 <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Overview</p>
-                <h2 class="font-display fluid-h2 text-gray-900 leading-tight">Investigating Vehicle Fires From the Ground Up</h2>
+                <h2 class="font-display fluid-h2 text-[var(--color-foreground)] leading-tight">Investigating Vehicle Fires From the Ground Up</h2>
             </div>
             <div class="md:w-2/3">
-                <div class="space-y-4 text-[15px] text-gray-600 leading-relaxed">
+                <div class="space-y-4 text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">
                     <p>Our vehicle fire investigations cover passenger vehicles, commercial trucks, and agricultural equipment. Both investigators hold CVFI certification, and our team brings automotive technician training and firsthand fire suppression experience from 18 years of volunteer fire service.</p>
                     <p>Investigations include detailed examination of 12-volt electrical systems, alternators, batteries, battery conduits, and aftermarket wiring installations. We trace the fire&rsquo;s path through the vehicle to determine the area of origin and identify the ignition source.</p>
                     <p>Our findings are documented to the same standard as our structural fire investigations&thinsp;&mdash;&thinsp;thorough, defensible, and suitable for litigation.</p>
@@ -227,51 +158,51 @@
 
 
 <!-- SYSTEMS WE EXAMINE -->
-<section class="bg-cream fluid-section">
+<section class="bg-[var(--color-surface-1)] fluid-section">
     <div class="max-w-6xl mx-auto px-6">
         <div class="reveal mb-10">
             <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Scope</p>
-            <h2 class="font-display fluid-h2 text-gray-900 leading-tight">Systems We Examine</h2>
+            <h2 class="font-display fluid-h2 text-[var(--color-foreground)] leading-tight">Systems We Examine</h2>
         </div>
 
         <div class="reveal grid md:grid-cols-2 gap-8">
-            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+            <div class="relative rounded overflow-hidden border">
                 <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-12v-systems.png')"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
                 <div class="relative p-8">
                     <span class="font-display text-2xl text-copper/60 block mb-3">01</span>
-                    <h3 class="font-display fluid-h3 text-white mb-3">12V Electrical Systems</h3>
-                    <p class="text-[15px] text-gray-300 leading-relaxed">Complete examination of the vehicle&rsquo;s 12-volt electrical system, including wiring harnesses, fuse boxes, relays, and power distribution. Trace circuits to identify shorts, overloads, or insulation failures.</p>
+                    <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">12V Electrical Systems</h3>
+                    <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">Complete examination of the vehicle&rsquo;s 12-volt electrical system, including wiring harnesses, fuse boxes, relays, and power distribution. Trace circuits to identify shorts, overloads, or insulation failures.</p>
                 </div>
             </div>
 
-            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+            <div class="relative rounded overflow-hidden border">
                 <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-alternator.png')"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
                 <div class="relative p-8">
                     <span class="font-display text-2xl text-copper/60 block mb-3">02</span>
-                    <h3 class="font-display fluid-h3 text-white mb-3">Alternators &amp; Charging Systems</h3>
-                    <p class="text-[15px] text-gray-300 leading-relaxed">Evaluate alternator condition, voltage regulator function, and charging system integrity. Determine whether overcharging, bearing failure, or internal faults contributed to the fire.</p>
+                    <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">Alternators &amp; Charging Systems</h3>
+                    <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">Evaluate alternator condition, voltage regulator function, and charging system integrity. Determine whether overcharging, bearing failure, or internal faults contributed to the fire.</p>
                 </div>
             </div>
 
-            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+            <div class="relative rounded overflow-hidden border">
                 <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-battery.png')"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
                 <div class="relative p-8">
                     <span class="font-display text-2xl text-copper/60 block mb-3">03</span>
-                    <h3 class="font-display fluid-h3 text-white mb-3">Batteries &amp; Battery Conduits</h3>
-                    <p class="text-[15px] text-gray-300 leading-relaxed">Examine battery condition, terminal connections, cable routing, and conduit integrity. Assess whether thermal runaway, improper installation, or damaged cables were involved.</p>
+                    <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">Batteries &amp; Battery Conduits</h3>
+                    <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">Examine battery condition, terminal connections, cable routing, and conduit integrity. Assess whether thermal runaway, improper installation, or damaged cables were involved.</p>
                 </div>
             </div>
 
-            <div class="relative rounded overflow-hidden border" style="border-color:#E2DDD5">
+            <div class="relative rounded overflow-hidden border">
                 <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-aftermarket.png')"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
                 <div class="relative p-8">
                     <span class="font-display text-2xl text-copper/60 block mb-3">04</span>
-                    <h3 class="font-display fluid-h3 text-white mb-3">Aftermarket Wiring</h3>
-                    <p class="text-[15px] text-gray-300 leading-relaxed">Inspect aftermarket installations&thinsp;&mdash;&thinsp;audio systems, lighting, winches, and accessories. Determine whether non-factory wiring was improperly installed, undersized, or lacked appropriate circuit protection.</p>
+                    <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">Aftermarket Wiring</h3>
+                    <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">Inspect aftermarket installations&thinsp;&mdash;&thinsp;audio systems, lighting, winches, and accessories. Determine whether non-factory wiring was improperly installed, undersized, or lacked appropriate circuit protection.</p>
                 </div>
             </div>
         </div>
@@ -286,10 +217,10 @@
         <div class="reveal md:flex md:gap-16">
             <div class="md:w-1/3 mb-8 md:mb-0">
                 <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Experience</p>
-                <h2 class="font-display fluid-h2 text-gray-900 leading-tight">Vehicle Types</h2>
+                <h2 class="font-display fluid-h2 text-[var(--color-foreground)] leading-tight">Vehicle Types</h2>
             </div>
             <div class="md:w-2/3">
-                <div class="grid grid-cols-2 gap-4 text-[15px] text-gray-600">
+                <div class="grid grid-cols-2 gap-4 text-[15px] text-[var(--color-foreground-muted)]">
                     <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Passenger cars &amp; SUVs</div>
                     <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Pickup trucks</div>
                     <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Commercial trucks</div>
@@ -298,9 +229,9 @@
                     <div class="flex gap-2"><span class="text-copper/60 mt-0.5">&mdash;</span>Construction equipment</div>
                 </div>
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <span class="text-[11px] font-semibold px-3 py-1.5 rounded" style="background:rgba(184,115,51,.1);color:#B87333">CVFI</span>
-                    <span class="text-[11px] font-semibold px-3 py-1.5 rounded" style="background:rgba(184,115,51,.1);color:#B87333">IAAI-CFI</span>
-                    <span class="text-[11px] font-semibold px-3 py-1.5 rounded" style="background:rgba(184,115,51,.1);color:#B87333">CFEI</span>
+                    <span class="text-[11px] font-semibold px-3 py-1.5 rounded" style="background:var(--color-brand-faint);color:var(--color-brand)">CVFI</span>
+                    <span class="text-[11px] font-semibold px-3 py-1.5 rounded" style="background:var(--color-brand-faint);color:var(--color-brand)">IAAI-CFI</span>
+                    <span class="text-[11px] font-semibold px-3 py-1.5 rounded" style="background:var(--color-brand-faint);color:var(--color-brand)">CFEI</span>
                 </div>
             </div>
         </div>
@@ -310,42 +241,49 @@
 
 
 <!-- FOOTER -->
-<footer style="background:#0C1118; position:relative; overflow:hidden">
-    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.3;pointer-events:none" xmlns="http://www.w3.org/2000/svg">
+<!-- ─── FOOTER ─── -->
+<footer data-surface="ink" class="relative overflow-hidden bg-[var(--color-ink)]">
+    <svg class="absolute inset-0 w-full h-full opacity-30 pointer-events-none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
             <pattern id="circuit" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
-                <rect x="70" y="70" width="60" height="40" rx="2" fill="none" stroke="#B87333" stroke-width="1.2"/>
-                <line x1="70" y1="78" x2="40" y2="78" stroke="#B87333" stroke-width="1"/>
-                <line x1="70" y1="88" x2="30" y2="88" stroke="#B87333" stroke-width="1"/>
-                <line x1="70" y1="98" x2="40" y2="98" stroke="#B87333" stroke-width="1"/>
-                <line x1="130" y1="78" x2="160" y2="78" stroke="#B87333" stroke-width="1"/>
-                <line x1="130" y1="88" x2="170" y2="88" stroke="#B87333" stroke-width="1"/>
-                <line x1="130" y1="98" x2="160" y2="98" stroke="#B87333" stroke-width="1"/>
-                <path d="M40 78v-50h30" fill="none" stroke="#B87333" stroke-width="0.8"/>
-                <path d="M30 88v-68h80" fill="none" stroke="#B87333" stroke-width="0.8"/>
-                <path d="M40 98v52h50" fill="none" stroke="#B87333" stroke-width="0.8"/>
-                <path d="M160 78v-48h-50" fill="none" stroke="#B87333" stroke-width="0.8"/>
-                <path d="M170 88v62h-60" fill="none" stroke="#B87333" stroke-width="0.8"/>
-                <path d="M160 98v32h-30" fill="none" stroke="#B87333" stroke-width="0.8"/>
-                <circle cx="40" cy="28" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
-                <circle cx="40" cy="28" r="1" fill="#B87333"/>
-                <circle cx="110" cy="20" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
-                <circle cx="110" cy="20" r="1" fill="#B87333"/>
-                <circle cx="160" cy="30" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
-                <circle cx="160" cy="30" r="1" fill="#B87333"/>
-                <circle cx="90" cy="150" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
-                <circle cx="90" cy="150" r="1" fill="#B87333"/>
-                <circle cx="110" cy="150" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
-                <circle cx="110" cy="150" r="1" fill="#B87333"/>
-                <circle cx="130" cy="130" r="3" fill="none" stroke="#B87333" stroke-width="1"/>
-                <circle cx="130" cy="130" r="1" fill="#B87333"/>
-                <rect x="55" y="25" width="12" height="6" rx="1" fill="none" stroke="#B87333" stroke-width="0.7"/>
-                <rect x="145" y="140" width="12" height="6" rx="1" fill="none" stroke="#B87333" stroke-width="0.7"/>
-                <line x1="67" y1="28" x2="70" y2="28" stroke="#B87333" stroke-width="0.8"/>
-                <line x1="55" y1="28" x2="40" y2="28" stroke="#B87333" stroke-width="0.8"/>
-                <line x1="157" y1="143" x2="170" y2="143" stroke="#B87333" stroke-width="0.8"/>
-                <line x1="145" y1="143" x2="130" y2="143" stroke="#B87333" stroke-width="0.8"/>
-                <line x1="130" y1="143" x2="130" y2="130" stroke="#B87333" stroke-width="0.8"/>
+                <!-- IC chip pad -->
+                <rect x="70" y="70" width="60" height="40" rx="2" fill="none" stroke="var(--color-brand)" stroke-width="1.2"/>
+                <!-- Pins coming off the chip -->
+                <line x1="70" y1="78" x2="40" y2="78" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="70" y1="88" x2="30" y2="88" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="70" y1="98" x2="40" y2="98" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="130" y1="78" x2="160" y2="78" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="130" y1="88" x2="170" y2="88" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="130" y1="98" x2="160" y2="98" stroke="var(--color-brand)" stroke-width="1"/>
+                <!-- Traces with right-angle turns -->
+                <path d="M40 78v-50h30" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M30 88v-68h80" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M40 98v52h50" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M160 78v-48h-50" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M170 88v62h-60" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M160 98v32h-30" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <!-- Via pads (solder points) -->
+                <circle cx="40" cy="28" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="40" cy="28" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="110" cy="20" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="110" cy="20" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="160" cy="30" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="160" cy="30" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="90" cy="150" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="90" cy="150" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="110" cy="150" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="110" cy="150" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="130" cy="130" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="130" cy="130" r="1" fill="var(--color-brand)" stroke="none"/>
+                <!-- Small resistor/component symbols -->
+                <rect x="55" y="25" width="12" height="6" rx="1" fill="none" stroke="var(--color-brand)" stroke-width="0.7"/>
+                <rect x="145" y="140" width="12" height="6" rx="1" fill="none" stroke="var(--color-brand)" stroke-width="0.7"/>
+                <!-- Connecting traces to components -->
+                <line x1="67" y1="28" x2="70" y2="28" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="55" y1="28" x2="40" y2="28" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="157" y1="143" x2="170" y2="143" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="145" y1="143" x2="130" y2="143" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="130" y1="143" x2="130" y2="130" stroke="var(--color-brand)" stroke-width="0.8"/>
             </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#circuit)"/>
@@ -353,46 +291,46 @@
     <div class="max-w-6xl mx-auto px-6 relative z-10 pt-16 pb-10">
         <div class="reveal md:flex md:gap-16 mb-12">
             <div class="md:w-1/2 mb-12 md:mb-0">
-                <div class="w-12 h-px bg-copper mb-6"></div>
-                <h2 class="font-display fluid-h2 text-white leading-tight mb-6">Discuss Your Case</h2>
-                <p class="text-gray-400 leading-relaxed mb-8 max-w-md" style="font-weight:300">
+                <div class="rule-brand mb-6"></div>
+                <h2 class="font-display fluid-h2 mb-6">Discuss Your Case</h2>
+                <p class="leading-relaxed mb-8 max-w-md font-light text-[var(--color-foreground-muted)]">
                     For case inquiries, expert witness requests, or forensic consultation, contact us directly. We accept assignments for both defense and plaintiff.
                 </p>
-                <a href="contact.html" class="inline-flex items-center gap-2 px-7 py-3.5 bg-copper text-white text-sm font-semibold rounded hover:bg-copper-light transition-colors">
+                <a href="contact.html" class="btn btn--primary">
                     Submit Case Inquiry
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
                 </a>
             </div>
             <div class="md:w-1/2">
                 <div class="space-y-8">
                     <div>
-                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Phone</span>
-                        <a href="tel:+12602383074" class="font-display text-2xl text-white hover:text-copper transition-colors">(260) 238-3074</a>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--color-foreground-faint)] block mb-2">Phone</span>
+                        <a href="tel:+12602383074" class="font-display text-2xl tabular no-underline hover:text-[var(--color-brand)] transition-colors">(260) 238-3074</a>
                     </div>
                     <div>
-                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Email</span>
-                        <a href="mailto:info@electrotekconsultants.com" class="text-lg text-white hover:text-copper transition-colors font-medium">info@electrotekconsultants.com</a>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--color-foreground-faint)] block mb-2">Email</span>
+                        <a href="mailto:info@electrotekconsultants.com" class="text-lg font-medium no-underline hover:text-[var(--color-brand)] transition-colors">info@electrotekconsultants.com</a>
                     </div>
                     <div>
-                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 block mb-2">Office</span>
-                        <div class="text-gray-300">
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--color-foreground-faint)] block mb-2">Office</span>
+                        <address class="not-italic text-[var(--color-foreground-muted)]">
                             <p class="font-medium">18925 N State Road 1</p>
                             <p>Spencerville, IN 46788</p>
-                            <p class="text-gray-500 text-sm mt-2">Mail: PO Box 106, Spencerville, IN 46788</p>
-                        </div>
+                            <p class="text-[var(--color-foreground-faint)] text-sm mt-2">Mail: PO Box 106, Spencerville, IN 46788</p>
+                        </address>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="pt-6 border-t border-[var(--color-hairline)] flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-3">
-<img src="logo.png" alt="ElectroTek" class="w-7 h-7 rounded opacity-60">
-                <span class="text-sm text-gray-500 font-medium">ElectroTek Consultants</span>
+                <img src="logo.png" alt="" width="28" height="28" class="w-7 h-7 rounded-[var(--radius-sm)] opacity-60">
+                <span class="text-sm text-[var(--color-foreground-muted)] font-medium">ElectroTek Consultants</span>
             </div>
-            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-sm text-gray-600">
+            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-sm text-[var(--color-foreground-faint)]">
                 <span>&copy; 2026 ElectroTek Consultants Inc.</span>
-                <a href="https://waltersignal.io" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-gray-400 transition-colors">
-                    <img src="waltersignal-logo.svg" alt="WalterSignal" class="w-5 h-5 rounded opacity-50">
+                <a href="https://waltersignal.io" target="_blank" rel="noopener" class="inline-flex items-center gap-2 no-underline hover:text-[var(--color-foreground-muted)] transition-colors">
+                    <img src="waltersignal-logo.svg" alt="" width="20" height="20" class="w-5 h-5 rounded-[var(--radius-sm)] opacity-50">
                     Designed by WalterSignal
                 </a>
             </div>
@@ -400,12 +338,7 @@
     </div>
 </footer>
 
-<script>
-    const io = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-</script>
+<script src="site.js"></script>
 
 </body>
 </html>

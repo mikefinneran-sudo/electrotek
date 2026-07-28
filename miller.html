@@ -4,75 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>James V. Miller | ElectroTek Consultants</title>
+    <meta name="description" content="Forensic fire investigator at ElectroTek Consultants. IAAI-CFI, CFEI and CVFI certified, specializing in origin and cause determination and product failure analysis.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // Utilities resolve to the token contract in site.css — no literals here.
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        display: ['DM Serif Display', 'DM Serif Fallback', 'Georgia', 'serif'],
+                        body: ['IBM Plex Sans', 'IBM Plex Fallback', 'system-ui', 'sans-serif'],
                     },
                     colors: {
-                        copper: { DEFAULT: '#b87333', light: '#d4a574' },
-                        ink: { 950: '#0a0f14', 900: '#111827', 800: '#1a2332', 700: '#243044' }
+                        copper: {
+                            DEFAULT: 'var(--color-brand)',
+                            light: 'var(--color-brand-light)',
+                        },
+                        ink: {
+                            DEFAULT: 'var(--color-ink)',
+                            1: 'var(--color-ink-1)',
+                            2: 'var(--color-ink-2)',
+                        },
+                        surface: {
+                            DEFAULT: 'var(--color-background)',
+                            1: 'var(--color-surface-1)',
+                            2: 'var(--color-surface-2)',
+                        },
+                        fg: {
+                            DEFAULT: 'var(--color-foreground)',
+                            muted: 'var(--color-foreground-muted)',
+                            faint: 'var(--color-foreground-faint)',
+                        },
                     }
                 }
             }
         }
     </script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #fff; color: #1a1a1a; -webkit-font-smoothing: antialiased; }
-        .hero-bg { background: linear-gradient(180deg, #0f1318 0%, #111827 60%, #1a2332 100%); }
-        .section-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
-    </style>
+    <link rel="stylesheet" href="site.css">
 </head>
 <body>
 
-<!-- Nav -->
-<nav class="bg-white border-b border-gray-100">
-    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="index-v5.html" class="flex items-center gap-3">
-<img src="logo.png" alt="ElectroTek" class="w-11 h-11 rounded">
-            <span class="font-semibold text-slate-900 text-base tracking-tight">ElectroTek Consultants</span>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ─── NAV ─── -->
+<nav class="site-nav">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3 no-underline">
+            <img src="logo.png" alt="" width="40" height="40" class="w-10 h-10 rounded-[var(--radius-sm)]">
+            <span class="font-medium text-[15px] tracking-tight">ElectroTek Consultants</span>
         </a>
         <div class="hidden md:flex items-center gap-8 text-sm">
-            <a href="index-v5.html#services" class="text-gray-500 hover:text-slate-900 transition-colors">Services</a>
-            <a href="about.html" class="text-gray-500 hover:text-slate-900 transition-colors">About</a>
-            <a href="contact.html" class="font-semibold px-5 py-2.5 rounded text-white hover:brightness-110 transition-all" style="background:#b87333">Contact</a>
+            <div class="relative svc-trigger">
+                <a href="#services" class="nav-link inline-flex items-center gap-1">
+                    Services
+                    <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
+                <div class="svc-dropdown">
+                    <div class="svc-dropdown-panel">
+                        <a href="origin-cause.html">Origin &amp; Cause</a>
+                        <a href="product-failure.html">Product Failure</a>
+                        <a href="vehicle-fire.html">Vehicle Fire</a>
+                        <a href="expert-testimony.html">Expert Testimony</a>
+                    </div>
+                </div>
+            </div>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="contact.html" class="btn btn--primary !py-2.5 !px-5">Contact</a>
         </div>
+        <button type="button" class="md:hidden" data-menu-open aria-expanded="false" aria-controls="mobMenu" aria-label="Open menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
     </div>
 </nav>
 
-<!-- Hero -->
-<section class="hero-bg text-white">
-    <div class="max-w-5xl mx-auto px-6 py-16 md:py-20">
+<!-- Mobile Menu -->
+<div id="mobMenu" class="mob-overlay" data-surface="ink" role="dialog" aria-modal="true" aria-label="Site menu">
+    <button type="button" data-menu-close class="absolute top-6 right-6" aria-label="Close menu">
+        <svg width="24" height="24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <a href="#services" class="text-xl font-medium">Services</a>
+    <a href="origin-cause.html" class="text-base text-[var(--color-foreground-muted)]">Origin &amp; Cause</a>
+    <a href="product-failure.html" class="text-base text-[var(--color-foreground-muted)]">Product Failure</a>
+    <a href="vehicle-fire.html" class="text-base text-[var(--color-foreground-muted)]">Vehicle Fire</a>
+    <a href="expert-testimony.html" class="text-base text-[var(--color-foreground-muted)]">Expert Testimony</a>
+    <a href="about.html" class="text-xl font-medium">About</a>
+    <a href="contact.html" class="btn btn--primary mt-4">Contact</a>
+</div>
+
+<!-- ─── HERO ─── -->
+<section class="hero hero--page" data-surface="ink">
+    <div class="max-w-5xl mx-auto px-6 fluid-hero-pad relative z-10">
         <div class="md:flex md:items-center md:gap-12">
             <div class="mb-8 md:mb-0 flex-shrink-0">
-                <div class="w-40 h-40 rounded-lg flex items-center justify-center relative overflow-hidden" style="background:rgba(255,255,255,0.06)">
-                    <span class="font-serif text-5xl font-bold text-white/90 select-none">JVM</span>
-                    <div class="absolute bottom-0 inset-x-0 h-1 bg-copper"></div>
+                <!-- PORTRAIT SLOT — replace the monogram below with:
+                       <img src="miller-headshot.webp" alt="James V. Miller"
+                            width="320" height="320" fetchpriority="high"> -->
+                <div class="portrait portrait--mono w-40 h-40 text-5xl">
+                    JVM
                 </div>
             </div>
             <div>
-                <p class="text-xs font-bold tracking-[0.15em] uppercase text-copper mb-3">Investigator</p>
-                <h1 class="font-serif text-4xl md:text-5xl font-bold leading-tight mb-4">James V. Miller</h1>
-                <p class="text-xl text-gray-300 leading-relaxed mb-6">
+                <p class="kicker mb-3" data-animate style="--stagger-step:0">Investigator</p>
+                <h1 class="font-display fluid-hero mb-4" data-animate style="--stagger-step:1">James V. Miller</h1>
+                <p class="fluid-body-lg text-[var(--color-foreground-muted)] leading-relaxed mb-6" data-animate style="--stagger-step:2">
                     BSIET (Purdue) &middot; IAAI-CFI &middot; CFEI &middot; CVFI
                 </p>
-                <div class="flex flex-wrap gap-3 mb-6">
-                    <span class="text-xs font-semibold px-4 py-2 rounded" style="background:rgba(184,115,51,.15);border:1px solid rgba(184,115,51,.3);color:#d4a574">IAAI-CFI</span>
-                    <span class="text-xs font-semibold px-4 py-2 rounded" style="background:rgba(184,115,51,.15);border:1px solid rgba(184,115,51,.3);color:#d4a574">CFEI</span>
-                    <span class="text-xs font-semibold px-4 py-2 rounded" style="background:rgba(184,115,51,.15);border:1px solid rgba(184,115,51,.3);color:#d4a574">CVFI</span>
-                    <span class="text-xs font-semibold px-4 py-2 rounded" style="background:rgba(184,115,51,.15);border:1px solid rgba(184,115,51,.3);color:#d4a574">CFI Trainer</span>
+                <div class="flex flex-wrap gap-3 mb-6" data-animate style="--stagger-step:3">
+                    <span class="chip">IAAI-CFI</span>
+                    <span class="chip">CFEI</span>
+                    <span class="chip">CVFI</span>
+                    <span class="chip">CFI Trainer</span>
                 </div>
-                <a href="miller-cv.docx" download class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                <a href="miller-cv.docx" download class="btn btn--ghost" data-animate style="--stagger-step:4">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                     Download CV
                 </a>
             </div>
@@ -80,111 +129,111 @@
     </div>
 </section>
 
-<!-- Bio -->
-<section class="py-16">
+<!-- ─── BIO ─── -->
+<section class="fluid-section">
     <div class="max-w-3xl mx-auto px-6">
 
-        <div class="space-y-4 mb-12">
-            <p class="text-lg text-gray-700 leading-relaxed">
+        <div class="space-y-4 mb-12 reveal">
+            <p class="fluid-body-lg text-[var(--color-foreground-muted)] leading-relaxed">
                 James V. Miller is a forensic fire investigator specializing in origin and cause determination and product failure analysis of components involved in fires. He joined ElectroTek Consultants in 2000 and holds degrees in Industrial Engineering Technology, Mechanical Engineering Technology, and an Automotive Technician diploma.
             </p>
-            <p class="text-gray-600 leading-relaxed">
+            <p class="text-[var(--color-foreground-muted)] leading-relaxed">
                 James also served as a volunteer firefighter and Captain with Northeast Fire and EMS (2000&ndash;2018), giving him firsthand fire suppression experience that enhances his forensic analysis.
             </p>
         </div>
 
         <!-- Education -->
-        <div class="section-card p-8 mb-6">
-            <h2 class="font-serif text-2xl font-bold text-slate-900 mb-6">Education</h2>
+        <div class="card p-8 mb-6 reveal">
+            <h2 class="font-display text-2xl mb-6">Education</h2>
             <div class="space-y-4 text-sm">
-                <div class="flex justify-between items-start border-b border-gray-100 pb-4">
+                <div class="entry-row">
                     <div>
-                        <h3 class="font-medium text-slate-900">B.S. Industrial Engineering Technology</h3>
-                        <p class="text-gray-500">Indiana University Purdue University, Fort Wayne</p>
+                        <h3 class="font-medium">B.S. Industrial Engineering Technology</h3>
+                        <p class="text-[var(--color-foreground-muted)]">Indiana University Purdue University, Fort Wayne</p>
                     </div>
-                    <span class="text-gray-400 flex-shrink-0 ml-4">2003</span>
+                    <span class="year">2003</span>
                 </div>
-                <div class="flex justify-between items-start border-b border-gray-100 pb-4">
+                <div class="entry-row">
                     <div>
-                        <h3 class="font-medium text-slate-900">A.A.S. Industrial Engineering Technology</h3>
-                        <p class="text-gray-500">Indiana University Purdue University, Fort Wayne</p>
+                        <h3 class="font-medium">A.A.S. Industrial Engineering Technology</h3>
+                        <p class="text-[var(--color-foreground-muted)]">Indiana University Purdue University, Fort Wayne</p>
                     </div>
-                    <span class="text-gray-400 flex-shrink-0 ml-4">2003</span>
+                    <span class="year">2003</span>
                 </div>
-                <div class="flex justify-between items-start border-b border-gray-100 pb-4">
+                <div class="entry-row">
                     <div>
-                        <h3 class="font-medium text-slate-900">A.A.S. Mechanical Engineering Technology</h3>
-                        <p class="text-gray-500">Indiana University Purdue University, Fort Wayne</p>
+                        <h3 class="font-medium">A.A.S. Mechanical Engineering Technology</h3>
+                        <p class="text-[var(--color-foreground-muted)]">Indiana University Purdue University, Fort Wayne</p>
                     </div>
-                    <span class="text-gray-400 flex-shrink-0 ml-4">2003</span>
+                    <span class="year">2003</span>
                 </div>
-                <div class="flex justify-between items-start">
+                <div class="entry-row">
                     <div>
-                        <h3 class="font-medium text-slate-900">Diploma, Automotive Technician</h3>
-                        <p class="text-gray-500">Northwestern College, Lima, Ohio</p>
+                        <h3 class="font-medium">Diploma, Automotive Technician</h3>
+                        <p class="text-[var(--color-foreground-muted)]">Northwestern College, Lima, Ohio</p>
                     </div>
-                    <span class="text-gray-400 flex-shrink-0 ml-4">1998</span>
+                    <span class="year">1998</span>
                 </div>
             </div>
         </div>
 
         <!-- Certifications -->
-        <div class="section-card p-8 mb-6">
-            <h2 class="font-serif text-2xl font-bold text-slate-900 mb-6">Professional Certifications</h2>
+        <div class="card p-8 mb-6 reveal">
+            <h2 class="font-display text-2xl mb-6">Professional Certifications</h2>
             <div class="space-y-6 text-sm">
                 <div>
-                    <h3 class="font-medium text-slate-900 mb-2">IAAI-CFI &ndash; Certified Fire Investigator</h3>
-                    <p class="text-gray-500 leading-relaxed">Issued by the International Association of Arson Investigators (IAAI). Certified Fire Investigator and CFI Trainer, contributing to the education and certification of fire investigators.</p>
+                    <h3 class="font-medium mb-2">IAAI-CFI &ndash; Certified Fire Investigator</h3>
+                    <p class="text-[var(--color-foreground-muted)] leading-relaxed">Issued by the International Association of Arson Investigators (IAAI). Certified Fire Investigator and CFI Trainer, contributing to the education and certification of fire investigators.</p>
                 </div>
                 <div>
-                    <h3 class="font-medium text-slate-900 mb-2">CFEI &ndash; Certified Fire and Explosion Investigator</h3>
-                    <p class="text-gray-500 leading-relaxed">Issued by the National Association of Fire Investigators (NAFI). This credential requires passing a rigorous examination based on NFPA 921 and asserts competency in the scientific method as applied to fire analysis.</p>
+                    <h3 class="font-medium mb-2">CFEI &ndash; Certified Fire and Explosion Investigator</h3>
+                    <p class="text-[var(--color-foreground-muted)] leading-relaxed">Issued by the National Association of Fire Investigators (NAFI). This credential requires passing a rigorous examination based on NFPA 921 and asserts competency in the scientific method as applied to fire analysis.</p>
                 </div>
                 <div>
-                    <h3 class="font-medium text-slate-900 mb-2">CVFI &ndash; Certified Vehicle Fire Investigator</h3>
-                    <p class="text-gray-500 leading-relaxed">Certified Vehicle Fire Investigator with extensive automotive background including ASE certifications. Specialized training in hybrid and electric vehicle fires, lithium-ion battery hazards.</p>
+                    <h3 class="font-medium mb-2">CVFI &ndash; Certified Vehicle Fire Investigator</h3>
+                    <p class="text-[var(--color-foreground-muted)] leading-relaxed">Certified Vehicle Fire Investigator with extensive automotive background including ASE certifications. Specialized training in hybrid and electric vehicle fires, lithium-ion battery hazards.</p>
                 </div>
             </div>
         </div>
 
         <!-- Affiliations -->
-        <div class="section-card p-8 mb-6">
-            <h2 class="font-serif text-2xl font-bold text-slate-900 mb-6">Affiliations</h2>
+        <div class="card p-8 mb-6 reveal">
+            <h2 class="font-display text-2xl mb-6">Affiliations</h2>
             <div class="space-y-5 text-sm">
                 <div>
-                    <h3 class="font-medium text-slate-900 mb-1">International Association of Arson Investigators (IAAI)</h3>
-                    <p class="text-gray-500 leading-relaxed">Certified Fire Investigator (CFI) and CFI Trainer, contributing to the education and certification of fire investigators.</p>
+                    <h3 class="font-medium mb-1">International Association of Arson Investigators (IAAI)</h3>
+                    <p class="text-[var(--color-foreground-muted)] leading-relaxed">Certified Fire Investigator (CFI) and CFI Trainer, contributing to the education and certification of fire investigators.</p>
                 </div>
                 <div>
-                    <h3 class="font-medium text-slate-900 mb-1">National Association of Fire Investigators (NAFI)</h3>
-                    <p class="text-gray-500 leading-relaxed">Certified Fire and Explosion Investigator (CFEI) and Certified Vehicle Fire Investigator (CVFI).</p>
+                    <h3 class="font-medium mb-1">National Association of Fire Investigators (NAFI)</h3>
+                    <p class="text-[var(--color-foreground-muted)] leading-relaxed">Certified Fire and Explosion Investigator (CFEI) and Certified Vehicle Fire Investigator (CVFI).</p>
                 </div>
                 <div>
-                    <h3 class="font-medium text-slate-900 mb-1">Indiana Chapter IAAI &amp; Tennessee Chapter IAAI</h3>
-                    <p class="text-gray-500 leading-relaxed">Active member contributing to regional fire investigation training and professional development.</p>
+                    <h3 class="font-medium mb-1">Indiana Chapter IAAI &amp; Tennessee Chapter IAAI</h3>
+                    <p class="text-[var(--color-foreground-muted)] leading-relaxed">Active member contributing to regional fire investigation training and professional development.</p>
                 </div>
             </div>
         </div>
 
         <!-- Practice Areas -->
-        <div class="section-card p-8">
-            <h2 class="font-serif text-2xl font-bold text-slate-900 mb-6">Practice Areas</h2>
+        <div class="card p-8 reveal">
+            <h2 class="font-display text-2xl mb-6">Practice Areas</h2>
             <div class="grid md:grid-cols-2 gap-4 text-sm">
-                <div class="bg-gray-50 rounded p-4">
-                    <h3 class="font-medium text-slate-900 mb-1">Origin &amp; Cause Investigations</h3>
-                    <p class="text-gray-500 text-xs">Fire scene analysis, electrical components</p>
+                <div class="bg-[var(--color-surface-1)] rounded-[var(--radius-sm)] p-4">
+                    <h3 class="font-medium mb-1">Origin &amp; Cause Investigations</h3>
+                    <p class="text-[var(--color-foreground-muted)] text-xs">Fire scene analysis, electrical components</p>
                 </div>
-                <div class="bg-gray-50 rounded p-4">
-                    <h3 class="font-medium text-slate-900 mb-1">Product Failure Analysis</h3>
-                    <p class="text-gray-500 text-xs">Appliances, components, distribution panels</p>
+                <div class="bg-[var(--color-surface-1)] rounded-[var(--radius-sm)] p-4">
+                    <h3 class="font-medium mb-1">Product Failure Analysis</h3>
+                    <p class="text-[var(--color-foreground-muted)] text-xs">Appliances, components, distribution panels</p>
                 </div>
-                <div class="bg-gray-50 rounded p-4">
-                    <h3 class="font-medium text-slate-900 mb-1">Vehicle Fire Investigation</h3>
-                    <p class="text-gray-500 text-xs">Passenger, commercial, agricultural, EV/hybrid</p>
+                <div class="bg-[var(--color-surface-1)] rounded-[var(--radius-sm)] p-4">
+                    <h3 class="font-medium mb-1">Vehicle Fire Investigation</h3>
+                    <p class="text-[var(--color-foreground-muted)] text-xs">Passenger, commercial, agricultural, EV/hybrid</p>
                 </div>
-                <div class="bg-gray-50 rounded p-4">
-                    <h3 class="font-medium text-slate-900 mb-1">Expert Testimony</h3>
-                    <p class="text-gray-500 text-xs">Plaintiff, defense, subrogation</p>
+                <div class="bg-[var(--color-surface-1)] rounded-[var(--radius-sm)] p-4">
+                    <h3 class="font-medium mb-1">Expert Testimony</h3>
+                    <p class="text-[var(--color-foreground-muted)] text-xs">Plaintiff, defense, subrogation</p>
                 </div>
             </div>
         </div>
@@ -192,57 +241,114 @@
     </div>
 </section>
 
-<!-- Back -->
+<!-- ─── BACK ─── -->
 <section class="pb-16">
     <div class="max-w-3xl mx-auto px-6">
-        <a href="about.html" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-copper transition-colors">
-            <span>&larr;</span> Back to Our Team
+        <a href="about.html" class="link-arrow">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7 7l-7-7 7-7"/></svg>
+            Back to Our Team
         </a>
     </div>
 </section>
 
-
-
-<!-- Footer -->
-<footer class="pt-16 pb-10" style="background:linear-gradient(180deg, #0f1318 0%, #111827 60%, #1a2332 100%)">
-    <div class="max-w-5xl mx-auto px-6">
-        <div class="grid md:grid-cols-3 gap-10 mb-10 pb-10">
-            <div>
-                <div class="flex items-center gap-3 mb-4">
-<img src="logo.png" alt="ElectroTek" class="w-8 h-8 rounded opacity-80">
-                    <div class="font-semibold text-white text-sm">ElectroTek Consultants</div>
-                </div>
-                <p class="text-sm text-gray-300 leading-relaxed">Independent forensic investigation of electrical fires, product failures, and vehicle fires since 1995.</p>
+<!-- ─── FOOTER ─── -->
+<footer data-surface="ink" class="relative overflow-hidden bg-[var(--color-ink)]">
+    <svg class="absolute inset-0 w-full h-full opacity-30 pointer-events-none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+            <pattern id="circuit" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+                <!-- IC chip pad -->
+                <rect x="70" y="70" width="60" height="40" rx="2" fill="none" stroke="var(--color-brand)" stroke-width="1.2"/>
+                <!-- Pins coming off the chip -->
+                <line x1="70" y1="78" x2="40" y2="78" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="70" y1="88" x2="30" y2="88" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="70" y1="98" x2="40" y2="98" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="130" y1="78" x2="160" y2="78" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="130" y1="88" x2="170" y2="88" stroke="var(--color-brand)" stroke-width="1"/>
+                <line x1="130" y1="98" x2="160" y2="98" stroke="var(--color-brand)" stroke-width="1"/>
+                <!-- Traces with right-angle turns -->
+                <path d="M40 78v-50h30" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M30 88v-68h80" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M40 98v52h50" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M160 78v-48h-50" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M170 88v62h-60" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <path d="M160 98v32h-30" fill="none" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <!-- Via pads (solder points) -->
+                <circle cx="40" cy="28" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="40" cy="28" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="110" cy="20" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="110" cy="20" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="160" cy="30" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="160" cy="30" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="90" cy="150" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="90" cy="150" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="110" cy="150" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="110" cy="150" r="1" fill="var(--color-brand)" stroke="none"/>
+                <circle cx="130" cy="130" r="3" fill="none" stroke="var(--color-brand)" stroke-width="1"/>
+                <circle cx="130" cy="130" r="1" fill="var(--color-brand)" stroke="none"/>
+                <!-- Small resistor/component symbols -->
+                <rect x="55" y="25" width="12" height="6" rx="1" fill="none" stroke="var(--color-brand)" stroke-width="0.7"/>
+                <rect x="145" y="140" width="12" height="6" rx="1" fill="none" stroke="var(--color-brand)" stroke-width="0.7"/>
+                <!-- Connecting traces to components -->
+                <line x1="67" y1="28" x2="70" y2="28" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="55" y1="28" x2="40" y2="28" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="157" y1="143" x2="170" y2="143" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="145" y1="143" x2="130" y2="143" stroke="var(--color-brand)" stroke-width="0.8"/>
+                <line x1="130" y1="143" x2="130" y2="130" stroke="var(--color-brand)" stroke-width="0.8"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#circuit)"/>
+    </svg>
+    <div class="max-w-6xl mx-auto px-6 relative z-10 pt-16 pb-10">
+        <div class="reveal md:flex md:gap-16 mb-12">
+            <div class="md:w-1/2 mb-12 md:mb-0">
+                <div class="rule-brand mb-6"></div>
+                <h2 class="font-display fluid-h2 mb-6">Discuss Your Case</h2>
+                <p class="leading-relaxed mb-8 max-w-md font-light text-[var(--color-foreground-muted)]">
+                    For case inquiries, expert witness requests, or forensic consultation, contact us directly. We accept assignments for both defense and plaintiff.
+                </p>
+                <a href="contact.html" class="btn btn--primary">
+                    Submit Case Inquiry
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                </a>
             </div>
-            <div>
-                <h4 class="text-[11px] font-bold tracking-wider uppercase text-gray-400 mb-4">Navigation</h4>
-                <div class="space-y-2.5">
-                    <a href="index-v5.html#services" class="block text-sm text-gray-300 hover:text-white transition-colors">Services</a>
-                    <a href="about.html" class="block text-sm text-gray-300 hover:text-white transition-colors">Our Team</a>
-                    <a href="contact.html" class="block text-sm text-gray-300 hover:text-white transition-colors">Case Inquiry</a>
-                </div>
-            </div>
-            <div>
-                <h4 class="text-[11px] font-bold tracking-wider uppercase text-gray-400 mb-4">Contact</h4>
-                <div class="space-y-2.5 text-sm">
-                    <a href="tel:+12602383074" class="block text-gray-300 hover:text-white transition-colors">(260) 238-3074</a>
-                    <a href="mailto:info@electrotekconsultants.com" class="block text-gray-300 hover:text-white transition-colors">info@electrotekconsultants.com</a>
-                    <p class="text-gray-300">18925 N State Road 1<br>Spencerville, IN 46788</p>
+            <div class="md:w-1/2">
+                <div class="space-y-8">
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--color-foreground-faint)] block mb-2">Phone</span>
+                        <a href="tel:+12602383074" class="font-display text-2xl tabular no-underline hover:text-[var(--color-brand)] transition-colors">(260) 238-3074</a>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--color-foreground-faint)] block mb-2">Email</span>
+                        <a href="mailto:info@electrotekconsultants.com" class="text-lg font-medium no-underline hover:text-[var(--color-brand)] transition-colors">info@electrotekconsultants.com</a>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--color-foreground-faint)] block mb-2">Office</span>
+                        <address class="not-italic text-[var(--color-foreground-muted)]">
+                            <p class="font-medium">18925 N State Road 1</p>
+                            <p>Spencerville, IN 46788</p>
+                            <p class="text-[var(--color-foreground-faint)] text-sm mt-2">Mail: PO Box 106, Spencerville, IN 46788</p>
+                        </address>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="mt-6 pt-8 border-t border-copper/40 flex flex-col items-center gap-4">
-            <a href="https://waltersignal.io" target="_blank" rel="noopener" class="inline-flex items-center gap-3 px-6 py-3 rounded-lg hover:bg-white/5 transition-all group">
-                <img src="waltersignal-logo.svg" alt="WalterSignal" class="w-8 h-8 rounded-lg">
-                <div>
-                    <div class="text-sm font-semibold text-gray-200 group-hover:text-white transition-colors">Designed by WalterSignal</div>
-                    <div class="text-xs text-gray-400">waltersignal.io</div>
-                </div>
-            </a>
-            <div class="text-xs text-gray-400">&copy; 2026 ElectroTek Consultants Inc. All rights reserved.</div>
+        <div class="pt-6 border-t border-[var(--color-hairline)] flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="" width="28" height="28" class="w-7 h-7 rounded-[var(--radius-sm)] opacity-60">
+                <span class="text-sm text-[var(--color-foreground-muted)] font-medium">ElectroTek Consultants</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-sm text-[var(--color-foreground-faint)]">
+                <span>&copy; 2026 ElectroTek Consultants Inc.</span>
+                <a href="https://waltersignal.io" target="_blank" rel="noopener" class="inline-flex items-center gap-2 no-underline hover:text-[var(--color-foreground-muted)] transition-colors">
+                    <img src="waltersignal-logo.svg" alt="" width="20" height="20" class="w-5 h-5 rounded-[var(--radius-sm)] opacity-50">
+                    Designed by WalterSignal
+                </a>
+            </div>
         </div>
     </div>
 </footer>
+
+<script src="site.js"></script>
 
 </body>
 </html>
