@@ -217,6 +217,9 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
 .fluid-h3      { font-size: clamp(1.15rem, 1rem + 1vw, 1.65rem); letter-spacing: -0.01em; }
 .fluid-body-lg { font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); }
 .fluid-stat    { font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); }
+/* The ranked credential. Roughly 1.6x the secondary stats — enough that the
+   hierarchy is legible from across the room rather than on inspection. */
+.fluid-stat-lead { font-size: clamp(2.75rem, 1.6rem + 4.4vw, 4.5rem); }
 .fluid-quote   { font-size: clamp(1.35rem, 1rem + 1.8vw, 2.25rem); }
 
 .font-display { font-family: var(--font-display); font-weight: 400; }
@@ -230,6 +233,31 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   text-transform: uppercase;
   color: var(--color-brand);
 }
+
+/* Rail variant. A copper hairline leading into the kicker gives the left-aligned
+   hero a hard vertical edge to start from — the same drafting-sheet cue the
+   service hairlines use, rather than type floating in space. */
+.kicker--rail {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+.kicker--rail::before {
+  content: '';
+  width: clamp(1.75rem, 4vw, 3.25rem);
+  height: 1px;
+  flex: none;
+  background: linear-gradient(90deg, var(--color-brand), var(--color-brand-muted));
+}
+
+/* Tinted brand text. These replace `text-copper/60` and `text-copper/80`:
+   a Tailwind opacity modifier only works on a theme color carrying the
+   <alpha-value> placeholder, and a bare var() cannot. The modifier therefore
+   emitted a declaration the browser discarded, and the text fell back to the
+   inherited colour instead of copper. color-mix does the job in the token
+   layer, where the rest of the contract already lives. */
+.text-brand-60 { color: color-mix(in oklch, var(--color-brand) 60%, transparent); }
+.text-brand-80 { color: color-mix(in oklch, var(--color-brand) 80%, transparent); }
 
 .prose { max-width: var(--measure); }
 
@@ -423,41 +451,89 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
    <style> blocks were doing before. */
 .hero {
   --hero-art: url('hero-fire-v1.png');
-  --hero-art-opacity: 0.25;
+  --hero-art-opacity: 0.44;
   position: relative;
   overflow: hidden;
   background: var(--color-ink);
 }
+
+/* The fire plate is pushed right and masked off the left half so it acts as a
+   compositional counterweight to the headline instead of a flat wash behind it.
+   Nearly doubling the opacity is only safe because the horizontal scrim below
+   darkens the copy side specifically — the plate gets brighter exactly where no
+   type sits over it. */
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--hero-art) center / cover no-repeat;
+  background: var(--hero-art) right center / cover no-repeat;
   opacity: var(--hero-art-opacity);
   pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 4%, black 48%);
+  mask-image: linear-gradient(90deg, transparent 4%, black 48%);
 }
 
 /* Interior pages: the headline steps down so the homepage keeps the top of
    the type scale, and the art sits back further behind the copy. */
-.hero--page { --hero-art-opacity: 0.2; }
+.hero--page { --hero-art-opacity: 0.3; }
 .hero--page .fluid-hero { font-size: clamp(2rem, 1.25rem + 3.5vw, 3.5rem); }
+
+/* Two scrims doing separate jobs: the horizontal one buys type contrast over
+   the plate, the vertical one seats the section into the credential ribbon. */
 .hero::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklch, var(--color-ink) 50%, transparent) 0%,
-    color-mix(in oklch, var(--color-ink) 80%, transparent) 70%,
-    var(--color-ink) 100%
-  );
+  background:
+    linear-gradient(90deg,
+      var(--color-ink) 0%,
+      color-mix(in oklch, var(--color-ink) 84%, transparent) 40%,
+      color-mix(in oklch, var(--color-ink) 34%, transparent) 76%,
+      color-mix(in oklch, var(--color-ink) 58%, transparent) 100%),
+    linear-gradient(180deg,
+      color-mix(in oklch, var(--color-ink) 42%, transparent) 0%,
+      transparent 34%,
+      color-mix(in oklch, var(--color-ink) 68%, transparent) 84%,
+      var(--color-ink) 100%);
+}
+
+/* Below the breakpoint the headline spans the full column, so a horizontal mask
+   would drop type straight onto the brightest part of the plate. Revert to a
+   centred, dimmer wash and let the vertical scrim carry it alone. */
+@media (max-width: 767px) {
+  .hero { --hero-art-opacity: 0.24; }
+  .hero::before {
+    background-position: center;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .hero::after {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--color-ink) 52%, transparent) 0%,
+      color-mix(in oklch, var(--color-ink) 78%, transparent) 68%,
+      var(--color-ink) 100%
+    );
+  }
 }
 
 .cred-divider {
   width: 1px;
   height: 2.5rem;
   background: linear-gradient(180deg, transparent, var(--color-brand-muted), transparent);
+}
+
+/* Credential captions. Tighter tracking than .kicker because these sit beside a
+   large numeral and have to read as its label, not as a section opener. */
+.cred-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--color-foreground-muted);
+  text-wrap: balance;
 }
 
 /* Service rows. Hairlines define the regions; the watermark is masked so it
