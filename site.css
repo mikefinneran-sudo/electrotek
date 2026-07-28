@@ -212,7 +212,11 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
    Typography scale
    ========================================================================== */
 
-.fluid-hero    { font-size: clamp(2.5rem, 1.4rem + 5.2vw, 5rem); letter-spacing: -0.025em; line-height: 1.04; }
+/* Scale contrast is a decision, and it has to be large enough to read as one.
+   The kicker sits at 11px against a 100px display face — a ratio of ~9:1.
+   The conservative ~1.2x modular scale this replaced is the safe choice, and
+   safe is exactly what registers as templated. */
+.fluid-hero    { font-size: clamp(2.25rem, 1.1rem + 5.6vw, 6rem); letter-spacing: -0.038em; line-height: 0.94; }
 .fluid-h2      { font-size: clamp(1.875rem, 1.25rem + 2.8vw, 3rem); letter-spacing: -0.02em; line-height: 1.1; }
 .fluid-h3      { font-size: clamp(1.15rem, 1rem + 1vw, 1.65rem); letter-spacing: -0.01em; }
 .fluid-body-lg { font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); }
@@ -418,12 +422,19 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
 }
 .mob-overlay.is-open { display: flex; }
 
-/* One hero. Pages vary it through two custom properties rather than each
-   carrying its own copy of the rule — which is what the eight duplicated
-   <style> blocks were doing before. */
+/* One hero. Pages vary it through custom properties rather than each carrying
+   its own copy of the rule — which is what the eight duplicated <style> blocks
+   were doing before.
+
+   The material is a drafting grid, not photography. This practice produces
+   measured drawings; the page should be made of the same substance as the
+   deliverable. It is also built entirely from the hairline token, so it
+   re-derives per surface and costs zero bytes and zero requests — where the
+   fire render it replaced cost 1.9MB and could have sat on any competitor's
+   site, which is precisely what disqualified it. */
 .hero {
-  --hero-art: url('hero-fire-v1.png');
-  --hero-art-opacity: 0.25;
+  --hero-grid: 96px;
+  --hero-grid-fade: 62%;
   position: relative;
   overflow: hidden;
   background: var(--color-ink);
@@ -432,15 +443,27 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--hero-art) center / cover no-repeat;
-  opacity: var(--hero-art-opacity);
   pointer-events: none;
+  /* Minor divisions sit well under the weight of major ones, as on a real
+     drawing sheet. A single uniform grid reads as a CSS demo. */
+  --grid-major: var(--color-hairline);
+  --grid-minor: color-mix(in oklch, var(--color-hairline) 40%, transparent);
+  background-image:
+    repeating-linear-gradient(90deg, var(--grid-major) 0 1px, transparent 1px var(--hero-grid)),
+    repeating-linear-gradient(0deg,  var(--grid-major) 0 1px, transparent 1px var(--hero-grid)),
+    repeating-linear-gradient(90deg, var(--grid-minor) 0 1px, transparent 1px calc(var(--hero-grid) / 6)),
+    repeating-linear-gradient(0deg,  var(--grid-minor) 0 1px, transparent 1px calc(var(--hero-grid) / 6));
+  opacity: 0.55;
+  -webkit-mask-image: radial-gradient(120% 100% at 78% 18%, black 0%, transparent var(--hero-grid-fade));
+  mask-image: radial-gradient(120% 100% at 78% 18%, black 0%, transparent var(--hero-grid-fade));
 }
 
 /* Interior pages: the headline steps down so the homepage keeps the top of
-   the type scale, and the art sits back further behind the copy. */
-.hero--page { --hero-art-opacity: 0.2; }
+   the type scale, and the grid pulls further back behind the copy. */
+.hero--page { --hero-grid: 72px; --hero-grid-fade: 52%; }
 .hero--page .fluid-hero { font-size: clamp(2rem, 1.25rem + 3.5vw, 3.5rem); }
+
+/* Seats the section into the page below without flattening the grid. */
 .hero::after {
   content: '';
   position: absolute;
@@ -448,10 +471,78 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    color-mix(in oklch, var(--color-ink) 50%, transparent) 0%,
-    color-mix(in oklch, var(--color-ink) 80%, transparent) 70%,
+    transparent 55%,
+    color-mix(in oklch, var(--color-ink) 55%, transparent) 82%,
     var(--color-ink) 100%
   );
+}
+
+/* ---- Hero composition ---------------------------------------------------
+   A centred stack of kicker / headline / paragraph / two buttons is the
+   default output of every page generator. Breaking the axis is the single
+   cheapest move off that template.
+
+   The headline takes the full measure so the display face can run at 96px —
+   boxed into a half-width column it could not clear ~50px, which is how
+   heroes end up with a timid type scale. Everything below it splits 7/5
+   against the figure, divided by a drafting rule. */
+.hero-grid {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+  align-items: center;
+  padding-top: clamp(2rem, 3vw, 3rem);
+  border-top: 1px solid var(--color-hairline);
+}
+@media (min-width: 1024px) {
+  .hero-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+}
+
+/* DM Serif ships a drawn italic; the ampersand is the one glyph in the family
+   worth showing off, and setting it apart is a typographic decision a
+   generator does not make. */
+.amp {
+  font-style: italic;
+  color: var(--color-brand-light);
+  padding-inline: 0.04em;
+}
+
+/* ---- The figure ---------------------------------------------------------
+   An arc-site survey drawing: the actual artefact this practice produces.
+   Inline rather than a raster so every stroke resolves from the token
+   contract, and specific enough that it could not be dropped onto a
+   competitor's site without editing — which is the test that the 1.9MB
+   stock fire render failed. */
+.hero-figure { display: block; width: 100%; height: auto; }
+.hero-figure .fig-hair   { fill: none; stroke: var(--color-hairline-strong); stroke-width: 1; }
+.hero-figure .fig-cond   { fill: none; stroke: var(--color-foreground-muted); stroke-width: 1.5; stroke-linecap: square; }
+.hero-figure .fig-brand  { fill: none; stroke: var(--color-brand); stroke-width: 1.5; }
+.hero-figure .fig-fill   { fill: var(--color-brand); stroke: none; }
+.hero-figure .fig-label {
+  font-family: var(--font-body);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  fill: var(--color-foreground-faint);
+  text-transform: uppercase;
+}
+.hero-figure .fig-label--brand { fill: var(--color-brand-light); }
+.hero-figure .fig-dim {
+  font-family: var(--font-body);
+  font-size: 8.5px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--color-foreground-faint);
+}
+
+/* The one animated element above the fold. It marks the point of the drawing
+   — motion explaining where to look, not motion proving it is possible. */
+@keyframes arc-scan {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%      { opacity: 0.7;  transform: scale(1.13); }
+}
+.hero-figure .fig-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: arc-scan 3.6s var(--ease-spring) infinite;
 }
 
 .cred-divider {
@@ -460,65 +551,92 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   background: linear-gradient(180deg, transparent, var(--color-brand-muted), transparent);
 }
 
-/* Service rows. Hairlines define the regions; the watermark is masked so it
-   dissolves rather than sitting in a box. */
+/* ---- Credential ribbon --------------------------------------------------
+   Three equal stat blocks is the feature-triad anti-pattern wearing numerals:
+   it declares all three equally important, which ranks none of them. The
+   NFPA 921 committee seat is the credential that actually differentiates
+   this practice, so it leads at full scale and the other two subordinate. */
+.cred-band { background: var(--color-surface-1); border-top: 2px solid var(--color-brand); }
+.cred-grid { display: grid; gap: 0; }
+@media (min-width: 860px) {
+  .cred-grid { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) minmax(0, 1fr); }
+}
+.cred-item { padding-block: 1.6rem; }
+@media (min-width: 860px) {
+  .cred-item + .cred-item { border-left: 1px solid var(--color-hairline); padding-left: 2.25rem; }
+}
+@media (max-width: 859px) {
+  .cred-item + .cred-item { border-top: 1px solid var(--color-hairline); }
+}
+.cred-value {
+  font-family: var(--font-display);
+  color: var(--color-brand);
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 3rem);
+}
+.cred-item--lead .cred-value { font-size: clamp(3.25rem, 2rem + 5.4vw, 5.5rem); }
+.cred-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-foreground-muted);
+  line-height: 1.45;
+}
+.cred-item--lead .cred-label { color: var(--color-foreground); }
+/* Superior, not a full-size glyph shouting alongside the numeral. */
+.cred-plus { font-size: 0.4em; vertical-align: 0.85em; letter-spacing: 0; }
+
+/* Service rows. Hairlines define the regions and the index numeral carries the
+   weight. The four AI-rendered watermarks that used to sit behind these rows
+   were 2.9MB of imagery whose only job was to stop the list looking plain —
+   the fix for a plain list is typographic rank, not wallpaper. */
 .svc-row {
   position: relative;
-  overflow: hidden;
   border-top: 1px solid var(--color-hairline);
   transition: background-color var(--duration-ui) var(--ease-spring);
 }
-.svc-row::after {
+
+/* A copper rule draws across the row's top hairline on hover: motion that
+   reports which region is live, rather than decoration. */
+.svc-row::before {
   content: '';
   position: absolute;
-  top: -10%;
-  bottom: -10%;
-  width: 60%;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.35;
-  pointer-events: none;
-  filter: grayscale(0.2);
-  transition: opacity var(--duration-ui) var(--ease-spring);
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-ui) var(--ease-spring);
 }
+.svc-row:hover::before,
+.svc-row:focus-within::before { transform: scaleX(1); }
 .svc-row:hover { background: var(--color-surface-1); }
-.svc-row:hover::after { opacity: 0.5; }
 .svc-row:hover .svc-num { color: var(--color-brand); }
 .svc-row:active { transform: scale(0.997); }
 
+/* Non-interactive variant, for the process lists on the service pages. Same
+   geometry and same rank, without the hover affordances — those would promise
+   a link that is not there. */
+.svc-row--static:hover { background: none; }
+.svc-row--static:hover::before,
+.svc-row--static:focus-within::before { transform: scaleX(0); }
+.svc-row--static:hover .svc-num { color: var(--color-foreground-faint); }
+.svc-row--static:active { transform: none; }
+
+/* Sized against the row heading rather than the body copy, so the index reads
+   as a drawing callout instead of a list bullet. */
 .svc-num {
+  display: block;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: clamp(2rem, 1.4rem + 1.8vw, 2.75rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
   color: var(--color-foreground-faint);
   transition: color var(--duration-ui) var(--ease-spring);
-}
-
-/* Alternating placement so the four watermarks do not stack into a column. */
-.svc-01::after {
-  right: 0; width: 55%;
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 40%);
-  mask-image: linear-gradient(90deg, transparent, black 40%);
-  background-image: url('svc-origin.png');
-}
-.svc-02::after {
-  left: 15%; right: 15%; width: 70%;
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 25%, black 75%, transparent);
-  mask-image: linear-gradient(90deg, transparent, black 25%, black 75%, transparent);
-  background-image: url('svc-product.png');
-}
-.svc-03::after {
-  right: -3%; width: 50%;
-  background-position: center 70%;
-  -webkit-mask-image: linear-gradient(90deg, transparent 5%, black 45%);
-  mask-image: linear-gradient(90deg, transparent 5%, black 45%);
-  background-image: url('svc-vehicle.png');
-}
-.svc-04::after {
-  left: 10%; right: 10%; width: 80%;
-  background-position: center 40%;
-  -webkit-mask-image: linear-gradient(90deg, transparent 5%, black 20%, black 80%, transparent 95%);
-  mask-image: linear-gradient(90deg, transparent 5%, black 20%, black 80%, transparent 95%);
-  background-image: url('svc-testimony.png');
 }
 
 /* ============================================================================

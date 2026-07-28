@@ -99,44 +99,82 @@
 <!-- ─── HERO ─── -->
 <section class="hero" data-surface="ink">
     <div class="max-w-6xl mx-auto px-6 fluid-hero-pad relative z-10">
-        <div class="max-w-3xl lg:max-w-4xl mx-auto text-center">
-            <p class="kicker mb-8" data-animate style="--stagger-step:0">Est. 1995 &middot; Spencerville, Indiana</p>
-            <h1 class="font-display fluid-hero mb-8" data-animate style="--stagger-step:1">
-                Forensic Fire &amp;<br>Electrical Investigation
-            </h1>
-            <p class="fluid-body-lg leading-relaxed max-w-xl mx-auto mb-12 font-light text-[var(--color-foreground-muted)]" data-animate style="--stagger-step:2">
-                Independent origin &amp; cause analysis, product failure examination, and expert witness testimony for the insurance and legal industry.
-            </p>
-            <div class="flex flex-wrap justify-center gap-4" data-animate style="--stagger-step:3">
-                <a href="contact.html" class="btn btn--primary">
-                    Request Consultation
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
-                </a>
-                <a href="#services" class="btn btn--ghost">
-                    Our Expertise
-                </a>
+        <p class="kicker mb-7" data-animate style="--stagger-step:0">Est. 1995 &middot; Spencerville, Indiana</p>
+        <h1 class="font-display fluid-hero mb-12" data-animate style="--stagger-step:1">
+            Forensic Fire <span class="amp">&amp;</span><br>Electrical Investigation
+        </h1>
+
+        <div class="hero-grid">
+            <div data-animate style="--stagger-step:2">
+                <p class="fluid-body-lg leading-relaxed max-w-lg mb-10 font-light text-[var(--color-foreground-muted)]">
+                    Independent origin &amp; cause analysis, product failure examination, and expert witness testimony for the insurance and legal industry.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="contact.html" class="btn btn--primary">
+                        Request Consultation
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                    </a>
+                    <a href="#services" class="btn btn--ghost">
+                        Our Expertise
+                    </a>
+                </div>
+            </div>
+
+            <!-- Arc-site survey figure. Drawn to the token contract rather than
+                 rendered, so it themes with the page and weighs nothing. -->
+            <div class="hidden lg:block" data-animate style="--stagger-step:3">
+                <svg class="hero-figure" viewBox="0 0 340 412" role="img" aria-label="Diagram: arc survey of a branch circuit, with the arc site marked 1.42 metres from the service end.">
+                    <!-- sheet registration marks -->
+                    <path class="fig-hair" d="M24 40V24h16M300 24h16v16M24 360v16h16M300 376h16v-16"/>
+
+                    <!-- branch circuit under examination -->
+                    <path class="fig-cond" d="M110 64v240"/>
+                    <path class="fig-cond" d="M110 132h128"/>
+                    <path class="fig-cond" d="M110 228h88v90"/>
+                    <!-- conductor terminations -->
+                    <path class="fig-hair" d="M102 64h16M102 304h16M190 318h16"/>
+
+                    <!-- junctions -->
+                    <circle class="fig-hair" cx="110" cy="132" r="3.5"/>
+                    <circle class="fig-hair" cx="110" cy="228" r="3.5"/>
+                    <circle class="fig-hair" cx="198" cy="228" r="3.5"/>
+
+                    <!-- dimension to the arc site -->
+                    <path class="fig-hair" d="M66 64v68M60 64h12M60 132h12"/>
+                    <text class="fig-dim" x="54" y="98" text-anchor="middle" transform="rotate(-90 54 98)">1.42 m</text>
+
+                    <!-- the finding -->
+                    <circle class="fig-brand fig-pulse" cx="238" cy="132" r="13"/>
+                    <circle class="fig-brand" cx="238" cy="132" r="7"/>
+                    <circle class="fig-fill" cx="238" cy="132" r="2.5"/>
+                    <path class="fig-brand" d="M221 132h34M238 115v34"/>
+
+                    <!-- callout -->
+                    <path class="fig-hair" d="M249 121l17-17h34"/>
+                    <text class="fig-label fig-label--brand" x="300" y="99" text-anchor="end">ARC SITE</text>
+
+                    <text class="fig-label" x="24" y="400">FIG. 01 &mdash; ARC SURVEY, BRANCH CIRCUIT</text>
+                </svg>
             </div>
         </div>
     </div>
 </section>
 
 <!-- ─── CREDENTIAL RIBBON ─── -->
-<div class="bg-[var(--color-surface-1)] border-t-2 border-[var(--color-brand)]">
+<div class="cred-band">
     <div class="max-w-6xl mx-auto px-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between py-6 md:py-5 gap-5 md:gap-0">
-            <div class="flex items-center gap-3">
-                <span class="font-display fluid-stat stat-value text-[var(--color-brand)] leading-none">14</span>
-                <span class="text-[11px] font-semibold tracking-wider uppercase text-[var(--color-foreground-muted)] leading-tight">Years on NFPA 921<br>Technical Committee</span>
+        <div class="cred-grid">
+            <div class="cred-item cred-item--lead">
+                <span class="cred-value">14</span>
+                <p class="cred-label mt-4 max-w-[16rem]">Years on NFPA 921 Technical Committee</p>
             </div>
-            <div class="hidden md:block cred-divider"></div>
-            <div class="flex items-center gap-3">
-                <span class="font-display fluid-stat stat-value text-[var(--color-brand)] leading-none">150<span class="text-2xl">+</span></span>
-                <span class="text-[11px] font-semibold tracking-wider uppercase text-[var(--color-foreground-muted)] leading-tight">Expert Depositions<br>&amp; Trial Testimonies</span>
+            <div class="cred-item">
+                <span class="cred-value">150<span class="cred-plus">+</span></span>
+                <p class="cred-label mt-3 max-w-[12rem]">Expert Depositions &amp; Trial Testimonies</p>
             </div>
-            <div class="hidden md:block cred-divider"></div>
-            <div class="flex items-center gap-3">
-                <span class="font-display fluid-stat stat-value text-[var(--color-brand)] leading-none">60<span class="text-2xl">+</span></span>
-                <span class="text-[11px] font-semibold tracking-wider uppercase text-[var(--color-foreground-muted)] leading-tight">Years of Combined<br>Investigation Experience</span>
+            <div class="cred-item">
+                <span class="cred-value">60<span class="cred-plus">+</span></span>
+                <p class="cred-label mt-3 max-w-[12rem]">Years of Combined Investigation Experience</p>
             </div>
         </div>
     </div>
@@ -151,8 +189,8 @@
         </div>
 
         <div class="reveal">
-            <div class="svc-row svc-01 md:flex md:gap-10 py-7">
-                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+            <div class="svc-row md:flex md:gap-10 py-8">
+                <div class="md:w-24 flex-shrink-0 mb-3 md:mb-0">
                     <span class="svc-num">01</span>
                 </div>
                 <div class="flex-1">
@@ -163,8 +201,8 @@
                 </div>
             </div>
 
-            <div class="svc-row svc-02 md:flex md:gap-10 py-7">
-                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+            <div class="svc-row md:flex md:gap-10 py-8">
+                <div class="md:w-24 flex-shrink-0 mb-3 md:mb-0">
                     <span class="svc-num">02</span>
                 </div>
                 <div class="flex-1">
@@ -175,8 +213,8 @@
                 </div>
             </div>
 
-            <div class="svc-row svc-03 md:flex md:gap-10 py-7">
-                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+            <div class="svc-row md:flex md:gap-10 py-8">
+                <div class="md:w-24 flex-shrink-0 mb-3 md:mb-0">
                     <span class="svc-num">03</span>
                 </div>
                 <div class="flex-1">
@@ -187,8 +225,8 @@
                 </div>
             </div>
 
-            <div class="svc-row svc-04 md:flex md:gap-10 py-7 border-b border-[var(--color-hairline)]">
-                <div class="md:w-16 flex-shrink-0 mb-2 md:mb-0">
+            <div class="svc-row md:flex md:gap-10 py-8 border-b border-[var(--color-hairline)]">
+                <div class="md:w-24 flex-shrink-0 mb-3 md:mb-0">
                     <span class="svc-num">04</span>
                 </div>
                 <div class="flex-1">
