@@ -261,8 +261,18 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
 
 .prose { max-width: var(--measure); }
 
-.fluid-section  { padding-block: clamp(3.5rem, 2rem + 5vw, 6rem); }
+/* Vertical rhythm. Was 6rem top and bottom, so consecutive sections put 12rem
+   of dead air between two short blocks of copy. Interior pages are mostly short
+   blocks, so that read as emptiness rather than generosity. */
+.fluid-section  { padding-block: clamp(2.75rem, 1.9rem + 2.8vw, 4.5rem); }
 .fluid-hero-pad { padding-top: clamp(3.5rem, 2rem + 5vw, 6.5rem); padding-bottom: clamp(4rem, 3rem + 5vw, 7.5rem); }
+
+/* Interior heroes are a title and one line, not a landing statement. The
+   homepage keeps the full measure; these sit tighter. */
+.hero--page .fluid-hero-pad {
+  padding-top: clamp(2.5rem, 1.75rem + 2.4vw, 3.75rem);
+  padding-bottom: clamp(2.75rem, 2rem + 2.6vw, 4.25rem);
+}
 
 /* ============================================================================
    Controls
@@ -605,6 +615,64 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   background: var(--color-background);
   border: 1px solid var(--color-hairline);
   border-radius: var(--radius-md);
+}
+
+/* ---- Method tiles --------------------------------------------------------
+   These carried `from-gray-900/90` behind text set in --color-foreground, which
+   on a light page is near-black — near-black type on a near-black scrim. The
+   tile now declares data-surface="ink" so the whole token family inverts for
+   the region, which is what the contract exists to do, and the scrim derives
+   from --color-ink so it shares material with the hero instead of Tailwind's
+   stock gray. The min-height gives the plate behind it room to read as a
+   photograph rather than a smear behind two lines of copy. */
+.tile {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-height: clamp(15rem, 12rem + 9vw, 19rem);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  background: var(--color-ink);
+}
+.tile__art {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.02);
+  transition: transform var(--duration-enter) var(--ease-spring);
+}
+.tile:hover .tile__art { transform: scale(1.06); }
+.tile__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--color-ink) 30%, transparent) 0%,
+    color-mix(in oklch, var(--color-ink) 68%, transparent) 52%,
+    color-mix(in oklch, var(--color-ink) 93%, transparent) 100%
+  );
+}
+.tile__body {
+  position: relative;
+  margin-top: auto;
+  padding: clamp(1.375rem, 1rem + 1.4vw, 2rem);
+}
+
+/* ---- Label / content split -----------------------------------------------
+   Was md:w-1/3 + md:w-2/3 with a 4rem gap, which left a tall empty column
+   beside a two-line heading. The hairline turns that space into a drafting
+   rule rather than a hole, the rail is narrower, and it sticks so the label
+   tracks the copy it belongs to instead of stranding at the top. */
+.split {
+  display: grid;
+  gap: clamp(1.25rem, 0.75rem + 1.8vw, 2.5rem);
+  border-top: 1px solid var(--color-hairline);
+  padding-top: clamp(1.25rem, 0.9rem + 1.4vw, 2.25rem);
+}
+@media (min-width: 768px) {
+  .split { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); align-items: start; }
+  .split__label { position: sticky; top: 5.5rem; }
 }
 
 /* Portrait frame. The copper baseline is a deliberate reference to the

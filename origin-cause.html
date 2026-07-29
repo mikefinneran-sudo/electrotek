@@ -98,7 +98,7 @@
 
 <!-- HERO -->
 <section class="hero hero--page" data-surface="ink" style="--hero-art:url('svc-origin.png')">
-    <div class="max-w-6xl mx-auto px-6 relative z-10" style="padding-top:60px;padding-bottom:70px">
+    <div class="max-w-6xl mx-auto px-6 relative z-10 fluid-hero-pad">
         <a href="index.html#services" class="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] uppercase text-brand-80 mb-6 hover:text-copper transition-colors" data-animate style="--stagger-step:0">
             <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
             All Services
@@ -139,12 +139,12 @@
 <!-- OVERVIEW -->
 <section class="fluid-section">
     <div class="max-w-6xl mx-auto px-6">
-        <div class="reveal md:flex md:gap-16">
-            <div class="md:w-1/3 mb-8 md:mb-0">
+        <div class="reveal split">
+            <div class="split__label">
                 <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Overview</p>
                 <h2 class="font-display fluid-h2 text-[var(--color-foreground)] leading-tight">Determining Where and How a Fire Started</h2>
             </div>
-            <div class="md:w-2/3">
+            <div>
                 <div class="space-y-4 text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">
                     <p>Our origin and cause investigations begin with a systematic examination of fire scenes to determine the area of origin and identify potential ignition sources. Every investigation follows NFPA 921 methodology&thinsp;&mdash;&thinsp;the nationally recognized standard for fire and explosion investigations.</p>
                     <p>We collect and survey physical evidence, conduct control testing, and perform detailed electrical component examination to establish the sequence of events leading to the fire. Our analysis includes arc mapping, conductor examination, and failure mode identification to build a complete picture of the fire&rsquo;s origin and cause.</p>
@@ -166,40 +166,40 @@
         </div>
 
         <div class="reveal grid md:grid-cols-2 gap-8">
-            <div class="relative rounded overflow-hidden border">
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-scene-exam.png')"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
-                <div class="relative p-8">
+            <div class="tile" data-surface="ink">
+                <div class="tile__art" style="background-image:url('svc-scene-exam.png')"></div>
+                <div class="tile__scrim"></div>
+                <div class="tile__body">
                     <span class="font-display text-2xl text-brand-60 block mb-3">01</span>
                     <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">Scene Examination &amp; Survey</h3>
                     <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">Systematic collection and survey of the fire scene. Document physical evidence, fire patterns, and structural damage to establish the area of origin.</p>
                 </div>
             </div>
 
-            <div class="relative rounded overflow-hidden border">
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-arc-mapping.png')"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
-                <div class="relative p-8">
+            <div class="tile" data-surface="ink">
+                <div class="tile__art" style="background-image:url('svc-arc-mapping.png')"></div>
+                <div class="tile__scrim"></div>
+                <div class="tile__body">
                     <span class="font-display text-2xl text-brand-60 block mb-3">02</span>
                     <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">Arc Mapping &amp; Conductor Analysis</h3>
                     <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">Detailed examination of electrical conductors and arc evidence throughout the fire scene. Map arc locations to trace the fire&rsquo;s path and identify electrical involvement.</p>
                 </div>
             </div>
 
-            <div class="relative rounded overflow-hidden border">
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-component-eval.png')"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
-                <div class="relative p-8">
+            <div class="tile" data-surface="ink">
+                <div class="tile__art" style="background-image:url('svc-component-eval.png')"></div>
+                <div class="tile__scrim"></div>
+                <div class="tile__body">
                     <span class="font-display text-2xl text-brand-60 block mb-3">03</span>
                     <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">Electrical Component Evaluation</h3>
                     <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">In-depth examination of electrical components, circuit breakers, panels, and wiring systems. Identify specific failure modes through control testing and laboratory analysis.</p>
                 </div>
             </div>
 
-            <div class="relative rounded overflow-hidden border">
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('svc-documentation.png')"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-gray-900/50"></div>
-                <div class="relative p-8">
+            <div class="tile" data-surface="ink">
+                <div class="tile__art" style="background-image:url('svc-documentation.png')"></div>
+                <div class="tile__scrim"></div>
+                <div class="tile__body">
                     <span class="font-display text-2xl text-brand-60 block mb-3">04</span>
                     <h3 class="font-display fluid-h3 text-[var(--color-foreground)] mb-3">Documentation &amp; Reporting</h3>
                     <p class="text-[15px] text-[var(--color-foreground-muted)] leading-relaxed">Comprehensive documentation of findings, including photographic evidence, diagrams, and detailed written reports. All conclusions supported by physical evidence per NFPA 921.</p>
@@ -214,12 +214,12 @@
 <!-- STANDARDS -->
 <section class="fluid-section">
     <div class="max-w-6xl mx-auto px-6">
-        <div class="reveal md:flex md:gap-16">
-            <div class="md:w-1/3 mb-8 md:mb-0">
+        <div class="reveal split">
+            <div class="split__label">
                 <p class="text-xs font-semibold tracking-[0.2em] uppercase text-copper mb-4">Standards</p>
                 <h2 class="font-display fluid-h2 text-[var(--color-foreground)] leading-tight">NFPA 921 Compliant</h2>
             </div>
-            <div class="md:w-2/3">
+            <div>
                 <div class="space-y-4 text-[15px] text-[var(--color-foreground-muted)] leading-relaxed mb-8">
                     <p>All origin and cause investigations are conducted in accordance with NFPA 921: Guide for Fire and Explosion Investigations. Our founder served on the NFPA 921 Technical Committee from 2004 through 2018, contributing directly to the development of the standard that governs fire investigation methodology nationwide.</p>
                 </div>
