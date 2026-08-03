@@ -204,7 +204,12 @@
     <div class="max-w-6xl mx-auto px-6">
         <div class="reveal md:flex md:gap-12 items-start">
             <div class="flex-shrink-0 mb-8 md:mb-0">
-                <div class="portrait portrait--mono w-40 h-40 md:w-48 md:h-48 text-5xl md:text-6xl">JVM</div>
+                <div class="portrait w-40 h-40 md:w-48 md:h-48">
+                    <picture>
+                        <source type="image/webp" srcset="miller-headshot-400.webp 400w, miller-headshot-800.webp 800w" sizes="(min-width: 768px) 192px, 160px">
+                        <img src="miller-headshot-400.jpg" srcset="miller-headshot-400.jpg 400w, miller-headshot-800.jpg 800w" sizes="(min-width: 768px) 192px, 160px" alt="James V. Miller" width="400" height="400" loading="lazy" decoding="async">
+                    </picture>
+                </div>
                 <div class="mt-4 flex flex-wrap gap-2">
                     <span class="text-[10px] font-semibold px-2.5 py-1 rounded" style="background:var(--color-brand-faint);color:var(--color-brand)">IAAI-CFI</span>
                     <span class="text-[10px] font-semibold px-2.5 py-1 rounded" style="background:var(--color-brand-faint);color:var(--color-brand)">CFEI</span>
