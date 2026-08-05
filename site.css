@@ -353,9 +353,10 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   background-color: oklch(100% 0 0);
   border-width: 2px;
   border-style: solid;
-  border-color: color-mix(in oklch, var(--color-ink) 42%, var(--color-surface-1));
+  /* ~L50 against white — reads as a box at a glance, not a hairline. */
+  border-color: color-mix(in oklch, var(--color-ink) 58%, var(--color-surface-1));
   border-radius: var(--radius-sm);
-  box-shadow: inset 0 1px 2px color-mix(in oklch, var(--color-ink) 6%, transparent);
+  box-shadow: inset 0 1px 2px color-mix(in oklch, var(--color-ink) 8%, transparent);
   transition:
     border-color var(--duration-ui) var(--ease-spring),
     box-shadow   var(--duration-ui) var(--ease-spring),
@@ -367,7 +368,7 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
 }
 
 .form-input:hover {
-  border-color: color-mix(in oklch, var(--color-ink) 55%, var(--color-surface-1));
+  border-color: color-mix(in oklch, var(--color-ink) 72%, var(--color-surface-1));
 }
 
 .form-input:focus,
@@ -406,7 +407,7 @@ select.form-input {
   padding: 0.875rem 1rem;
   border-width: 2px;
   border-style: dashed;
-  border-color: color-mix(in oklch, var(--color-ink) 38%, var(--color-surface-1));
+  border-color: color-mix(in oklch, var(--color-ink) 50%, var(--color-surface-1));
   border-radius: var(--radius-sm);
   background-color: oklch(100% 0 0);
   font-size: 0.875rem;
