@@ -317,6 +317,123 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   color: var(--color-brand);
 }
 
+/* Form fields. Restored after the craft pass collapsed page <style> blocks
+   into site.css and left .form-input / .form-label as orphan class names —
+   inputs rendered as bare UA controls with no boxes. */
+.form-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-foreground);
+  margin-bottom: 0.4rem;
+}
+
+.form-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--color-foreground);
+  /* Solid warm edge — transparent hairlines disappear on the cream page and
+     the fields stop reading as boxes. Matches the pre-craft-pass #E2DDD5 weight. */
+  background: oklch(100% 0 0);
+  border: 1.5px solid color-mix(in oklch, var(--color-ink) 28%, var(--color-surface-1));
+  border-radius: var(--radius-sm);
+  transition:
+    border-color var(--duration-ui) var(--ease-spring),
+    box-shadow   var(--duration-ui) var(--ease-spring),
+    background-color var(--duration-ui) var(--ease-spring);
+}
+
+.form-input::placeholder {
+  color: var(--color-foreground-faint);
+}
+
+.form-input:hover {
+  border-color: color-mix(in oklch, var(--color-ink) 40%, var(--color-surface-1));
+}
+
+.form-input:focus,
+.form-input:focus-visible {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--color-brand-faint);
+}
+
+textarea.form-input {
+  min-height: 8.5rem;
+  resize: vertical;
+}
+
+select.form-input {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25rem;
+  cursor: pointer;
+}
+
+.form-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.875rem 1rem;
+  border: 1.5px dashed color-mix(in oklch, var(--color-ink) 28%, var(--color-surface-1));
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-1);
+  font-size: 0.875rem;
+  color: var(--color-foreground-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-ui) var(--ease-spring),
+    background-color var(--duration-ui) var(--ease-spring);
+}
+
+.form-file:hover {
+  border-color: var(--color-brand);
+  background: color-mix(in oklch, var(--color-surface-1), var(--color-brand) 4%);
+}
+
+.form-file::file-selector-button,
+.form-file::-webkit-file-upload-button {
+  margin-right: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+  background: oklch(100% 0 0);
+  border: 1px solid color-mix(in oklch, var(--color-ink) 16%, var(--color-surface-1));
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* Give the inquiry form a quiet surface so white fields read as boxes
+   against the page, not as floating labels in empty space. */
+#contactForm {
+  padding: 1.5rem 1.5rem 1.75rem;
+  background: var(--color-surface-1);
+  border: 1px solid color-mix(in oklch, var(--color-ink) 10%, var(--color-surface-1));
+  border-radius: var(--radius-md);
+}
+
+@media (min-width: 768px) {
+  #contactForm {
+    padding: 1.75rem 1.75rem 2rem;
+  }
+}
+
 /* The inline "Full biography ->" affordance. The arrow advances on hover,
    which is motion explaining a destination rather than decoration. */
 .link-arrow {
@@ -467,6 +584,14 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   background: var(--color-ink);
 }
 
+/* Keep in-flow copy above ::before/::after scrims. Without this, a missing
+   z-index on the content wrapper (about.html had it) paints the ink
+   gradient over the headline and the banner reads as a blank navy block. */
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* The fire plate is pushed right and masked off the left half so it acts as a
    compositional counterweight to the headline instead of a flat wash behind it.
    Nearly doubling the opacity is only safe because the horizontal scrim below
@@ -544,6 +669,77 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   text-transform: uppercase;
   color: var(--color-foreground-muted);
   text-wrap: balance;
+}
+
+/* Interior credential ribbons. The old md:flex-row + justify-between layout
+   forced four large fluid-stat cells into one row from 768px — mid widths
+   crushed labels into the numerals and dividers. Grid steps instead:
+   stack → 2×2 → single row only when there is room. */
+.cred-ribbon {
+  display: grid;
+  gap: 1.25rem 1.75rem;
+  padding-block: 1.5rem;
+  align-items: center;
+}
+
+.cred-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.cred-item .fluid-stat {
+  flex: none;
+  /* Ribbon-local scale — the page-wide fluid-stat maxes at 2.75rem, which is
+     too wide once four of them share a row. */
+  font-size: clamp(1.5rem, 1.2rem + 1.35vw, 2.25rem);
+}
+
+.cred-item .fluid-stat .cred-plus {
+  font-size: 0.55em;
+  font-weight: inherit;
+}
+
+.cred-ribbon--4 {
+  grid-template-columns: 1fr;
+}
+
+.cred-ribbon--3 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .cred-ribbon--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .cred-ribbon--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem 1.5rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .cred-ribbon--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    padding-block: 1.35rem;
+  }
+
+  .cred-ribbon--3 {
+    gap: 0;
+    padding-block: 1.35rem;
+  }
+
+  .cred-ribbon--4 .cred-item:not(:first-child),
+  .cred-ribbon--3 .cred-item:not(:first-child) {
+    padding-left: 1.5rem;
+    margin-left: 0.25rem;
+    border-left: 1px solid color-mix(in oklch, var(--color-brand) 28%, transparent);
+  }
 }
 
 /* Service rows. Hairlines define the regions; the watermark is masked so it
