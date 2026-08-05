@@ -83,8 +83,10 @@
   --color-surface-1:        var(--color-ink-1);
   --color-surface-2:        var(--color-ink-2);
   --color-foreground:       oklch(97% 0.004 78);
-  --color-foreground-muted: oklch(74% 0.010 258);
-  --color-foreground-faint: oklch(58% 0.012 258);
+  /* Muted copy on ink must clear WCAG against the navy plate — 74% was
+     vanishing into the fire wash on About/Contact heroes. */
+  --color-foreground-muted: oklch(84% 0.010 258);
+  --color-foreground-faint: oklch(68% 0.012 258);
   color: var(--color-foreground);
 }
 
@@ -258,6 +260,13 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
    layer, where the rest of the contract already lives. */
 .text-brand-60 { color: color-mix(in oklch, var(--color-brand) 60%, transparent); }
 .text-brand-80 { color: color-mix(in oklch, var(--color-brand) 80%, transparent); }
+/* On ink heroes, translucent copper washes into the plate — use near-solid. */
+[data-surface='ink'] .text-brand-80 {
+  color: color-mix(in oklch, var(--color-brand-light) 92%, white);
+}
+[data-surface='ink'] .text-brand-60 {
+  color: color-mix(in oklch, var(--color-brand-light) 78%, white);
+}
 
 .prose { max-width: var(--measure); }
 
@@ -319,14 +328,16 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
 
 /* Form fields. Restored after the craft pass collapsed page <style> blocks
    into site.css and left .form-input / .form-label as orphan class names —
-   inputs rendered as bare UA controls with no boxes. */
+   inputs rendered as bare UA controls with no boxes. Border width/color are
+   set as longhands so Tailwind Preflight's `border-width: 0` cannot leave a
+   colour with no edge — that was the "labels with no boxes" look. */
 .form-label {
   display: block;
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--color-foreground);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.45rem;
 }
 
 .form-input {
@@ -334,16 +345,17 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
   width: 100%;
   box-sizing: border-box;
   margin: 0;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   font-family: var(--font-body);
   font-size: 0.9375rem;
   line-height: 1.4;
   color: var(--color-foreground);
-  /* Solid warm edge — transparent hairlines disappear on the cream page and
-     the fields stop reading as boxes. Matches the pre-craft-pass #E2DDD5 weight. */
-  background: oklch(100% 0 0);
-  border: 1.5px solid color-mix(in oklch, var(--color-ink) 28%, var(--color-surface-1));
+  background-color: oklch(100% 0 0);
+  border-width: 2px;
+  border-style: solid;
+  border-color: color-mix(in oklch, var(--color-ink) 42%, var(--color-surface-1));
   border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 2px color-mix(in oklch, var(--color-ink) 6%, transparent);
   transition:
     border-color var(--duration-ui) var(--ease-spring),
     box-shadow   var(--duration-ui) var(--ease-spring),
@@ -355,14 +367,16 @@ svg[stroke]:not([stroke='none']) :is(path, line, polyline, circle, rect, polygon
 }
 
 .form-input:hover {
-  border-color: color-mix(in oklch, var(--color-ink) 40%, var(--color-surface-1));
+  border-color: color-mix(in oklch, var(--color-ink) 55%, var(--color-surface-1));
 }
 
 .form-input:focus,
 .form-input:focus-visible {
   outline: none;
   border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px var(--color-brand-faint);
+  box-shadow:
+    inset 0 1px 2px color-mix(in oklch, var(--color-ink) 4%, transparent),
+    0 0 0 3px var(--color-brand-faint);
 }
 
 textarea.form-input {
@@ -374,10 +388,11 @@ select.form-input {
   -webkit-appearance: none;
   appearance: none;
   padding-right: 2.5rem;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.75' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
   background-size: 1.25rem;
+  background-color: oklch(100% 0 0);
   cursor: pointer;
 }
 
@@ -389,9 +404,11 @@ select.form-input {
   width: 100%;
   box-sizing: border-box;
   padding: 0.875rem 1rem;
-  border: 1.5px dashed color-mix(in oklch, var(--color-ink) 28%, var(--color-surface-1));
+  border-width: 2px;
+  border-style: dashed;
+  border-color: color-mix(in oklch, var(--color-ink) 38%, var(--color-surface-1));
   border-radius: var(--radius-sm);
-  background: var(--color-surface-1);
+  background-color: oklch(100% 0 0);
   font-size: 0.875rem;
   color: var(--color-foreground-muted);
   cursor: pointer;
@@ -402,7 +419,7 @@ select.form-input {
 
 .form-file:hover {
   border-color: var(--color-brand);
-  background: color-mix(in oklch, var(--color-surface-1), var(--color-brand) 4%);
+  background-color: color-mix(in oklch, oklch(100% 0 0), var(--color-brand) 4%);
 }
 
 .form-file::file-selector-button,
@@ -413,24 +430,29 @@ select.form-input {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-foreground);
-  background: oklch(100% 0 0);
-  border: 1px solid color-mix(in oklch, var(--color-ink) 16%, var(--color-surface-1));
+  background: var(--color-surface-1);
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: color-mix(in oklch, var(--color-ink) 28%, var(--color-surface-1));
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
-/* Give the inquiry form a quiet surface so white fields read as boxes
-   against the page, not as floating labels in empty space. */
+/* Panel behind the fields so white inputs read as discrete boxes, not
+   floating labels on the page. */
 #contactForm {
   padding: 1.5rem 1.5rem 1.75rem;
-  background: var(--color-surface-1);
-  border: 1px solid color-mix(in oklch, var(--color-ink) 10%, var(--color-surface-1));
+  background: color-mix(in oklch, var(--color-surface-1) 72%, var(--color-surface-2));
+  border-width: 2px;
+  border-style: solid;
+  border-color: color-mix(in oklch, var(--color-ink) 22%, var(--color-surface-1));
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elevation);
 }
 
 @media (min-width: 768px) {
   #contactForm {
-    padding: 1.75rem 1.75rem 2rem;
+    padding: 1.85rem 1.85rem 2.1rem;
   }
 }
 
