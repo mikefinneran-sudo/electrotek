@@ -45,6 +45,9 @@
         }
     </script>
     <link rel="stylesheet" href="site.css">
+
+<!-- Cloudflare Turnstile: bot protection for the inquiry form. -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -213,6 +216,11 @@
                         <input id="contactFiles" type="file" name="files" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="form-file">
                     </div>
 
+                    <div>
+                        <!-- Turnstile injects a hidden `cf-turnstile-response` input into this form. -->
+                        <div id="turnstile" class="cf-turnstile" data-sitekey="TURNSTILE_SITE_KEY_PLACEHOLDER" data-theme="light" data-action="electrotek-inquiry"></div>
+                    </div>
+
                     <div class="pt-4">
                         <button type="submit" id="submitBtn" class="btn btn--primary w-full md:w-auto">
                             <span id="btnLabel">Submit Inquiry</span>
@@ -241,6 +249,17 @@
                         var label = document.getElementById('btnLabel');
                         var arrow = document.getElementById('btnArrow');
                         var btn = document.getElementById('submitBtn');
+                        var errBox = document.getElementById('formErr');
+                        errBox.classList.add('hidden');
+
+                        // Turnstile must have issued a token before we spend a round trip.
+                        var token = form.querySelector('[name="cf-turnstile-response"]');
+                        if (!token || !token.value) {
+                            errBox.textContent = 'Please complete the verification check before submitting.';
+                            errBox.classList.remove('hidden');
+                            return;
+                        }
+
                         label.textContent = 'Submitting...';
                         arrow.style.display = 'none';
                         btn.disabled = true;
@@ -254,7 +273,10 @@
                                 document.getElementById('formOk').classList.remove('hidden');
                             } else { throw new Error(); }
                         } catch (err) {
-                            document.getElementById('formErr').classList.remove('hidden');
+                            // A token is single-use, so a retry needs a fresh challenge.
+                            if (window.turnstile) { window.turnstile.reset('#turnstile'); }
+                            errBox.textContent = 'There was an error submitting your inquiry. Please call (260) 238-3074 or email directly.';
+                            errBox.classList.remove('hidden');
                             label.textContent = 'Submit Inquiry';
                             arrow.style.display = '';
                             btn.disabled = false;
