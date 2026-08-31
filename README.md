@@ -45,9 +45,10 @@ origins, so the failure looks like a silently broken form rather than an error.
 
 ## Known gaps
 
-- `miller.html` renders a `JVM` monogram. It needs a real photograph of James V. Miller
-  saved as `miller-headshot.webp`; the slot is marked with a `PORTRAIT SLOT` comment.
-- No `canonical` or `og:url` tags on any page.
+- The Cloudflare Turnstile site key is unset. `contact.html` holds
+  `TURNSTILE_SITE_KEY_PLACEHOLDER`, and the contact API route fails closed until a real
+  key is set.
+- No `sitemap.xml`, `robots.txt`, JSON-LD structured data, or favicon exists.
 
 ## Local dev
 
