@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact | ElectroTek Consultants</title>
     <meta name="description" content="Submit a case inquiry for forensic consultation, expert witness requests, or fire investigation services. ElectroTek Consultants, Spencerville, Indiana.">
+    <link rel="canonical" href="https://electrotekconsultants.com/contact">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://electrotekconsultants.com/contact">
+    <meta property="og:title" content="Contact | ElectroTek Consultants">
+    <meta property="og:description" content="Submit a case inquiry for forensic consultation, expert witness requests, or fire investigation services. ElectroTek Consultants, Spencerville, Indiana.">
+    <meta property="og:image" content="https://electrotekconsultants.com/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contact | ElectroTek Consultants">
+    <meta name="twitter:description" content="Submit a case inquiry for forensic consultation, expert witness requests, or fire investigation services. ElectroTek Consultants, Spencerville, Indiana.">
+    <meta name="twitter:image" content="https://electrotekconsultants.com/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -125,29 +135,29 @@
                 <form id="contactForm" class="space-y-5">
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="form-label">Name *</label>
-                            <input type="text" name="name" required class="form-input">
+                            <label class="form-label" for="contactName">Name *</label>
+                            <input id="contactName" type="text" name="name" required class="form-input">
                         </div>
                         <div>
-                            <label class="form-label">Company / Firm *</label>
-                            <input type="text" name="company" required class="form-input">
+                            <label class="form-label" for="contactCompany">Company / Firm *</label>
+                            <input id="contactCompany" type="text" name="company" required class="form-input">
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="form-label">Email *</label>
-                            <input type="email" name="email" required class="form-input">
+                            <label class="form-label" for="contactEmail">Email *</label>
+                            <input id="contactEmail" type="email" name="email" required class="form-input">
                         </div>
                         <div>
-                            <label class="form-label">Phone *</label>
-                            <input type="tel" name="phone" required class="form-input">
+                            <label class="form-label" for="contactPhone">Phone *</label>
+                            <input id="contactPhone" type="tel" name="phone" required class="form-input">
                         </div>
                     </div>
 
                     <div>
-                        <label class="form-label">Have you worked with ElectroTek before? *</label>
-                        <select name="new_client" required class="form-input" onchange="toggleRef(this)">
+                        <label class="form-label" for="contactNewClient">Have you worked with ElectroTek before? *</label>
+                        <select id="contactNewClient" name="new_client" required class="form-input" onchange="toggleRef(this)">
                             <option value="">Select one...</option>
                             <option value="Yes - Returning Client">Yes - Returning Client</option>
                             <option value="No - New Client">No - New Client</option>
@@ -155,8 +165,8 @@
                     </div>
 
                     <div id="refSource" style="display:none">
-                        <label class="form-label">How did you hear about us?</label>
-                        <select name="referral_source" class="form-input">
+                        <label class="form-label" for="contactReferral">How did you hear about us?</label>
+                        <select id="contactReferral" name="referral_source" class="form-input">
                             <option value="">Select one...</option>
                             <option value="Referral from colleague">Referral from colleague</option>
                             <option value="Fire Findings training">Fire Findings training</option>
@@ -168,8 +178,8 @@
                     </div>
 
                     <div>
-                        <label class="form-label">Inquiry Type *</label>
-                        <select name="inquiry_type" required class="form-input">
+                        <label class="form-label" for="contactInquiryType">Inquiry Type *</label>
+                        <select id="contactInquiryType" name="inquiry_type" required class="form-input">
                             <option value="">Select one...</option>
                             <option value="Expert Witness / Litigation Support">Expert Witness / Litigation Support</option>
                             <option value="Origin & Cause Investigation">Origin &amp; Cause Investigation</option>
@@ -182,8 +192,8 @@
                     </div>
 
                     <div>
-                        <label class="form-label">Your Role *</label>
-                        <select name="role" required class="form-input">
+                        <label class="form-label" for="contactRole">Your Role *</label>
+                        <select id="contactRole" name="role" required class="form-input">
                             <option value="">Select one...</option>
                             <option value="Attorney - Plaintiff">Attorney - Plaintiff</option>
                             <option value="Attorney - Defense">Attorney - Defense</option>
@@ -195,13 +205,13 @@
                     </div>
 
                     <div>
-                        <label class="form-label">Case / Incident Summary *</label>
-                        <textarea name="message" required rows="5" placeholder="Please provide a brief description of the incident, location, date, and type of assistance needed." class="form-input"></textarea>
+                        <label class="form-label" for="contactMessage">Case / Incident Summary *</label>
+                        <textarea id="contactMessage" name="message" required rows="5" placeholder="Please provide a brief description of the incident, location, date, and type of assistance needed." class="form-input"></textarea>
                     </div>
 
                     <div>
-                        <label class="form-label">Timeline</label>
-                        <select name="timeline" class="form-input">
+                        <label class="form-label" for="contactTimeline">Timeline</label>
+                        <select id="contactTimeline" name="timeline" class="form-input">
                             <option value="">Select urgency...</option>
                             <option value="Urgent - Evidence preservation needed">Urgent - Evidence preservation needed</option>
                             <option value="Within 2 weeks">Within 2 weeks</option>
