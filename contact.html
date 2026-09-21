@@ -228,7 +228,7 @@
 
                     <div>
                         <!-- Turnstile injects a hidden `cf-turnstile-response` input into this form. -->
-                        <div id="turnstile" class="cf-turnstile" data-sitekey="0x4AAAAAAEjIJkEUvHaTEeJ0" data-theme="light" data-action="electrotek-inquiry"></div>
+                        <div id="etc-turnstile" class="cf-turnstile" data-sitekey="0x4AAAAAAEjIJkEUvHaTEeJ0" data-theme="light" data-action="electrotek-inquiry"></div>
                     </div>
 
                     <div class="pt-4">
@@ -284,7 +284,7 @@
                             } else { throw new Error(); }
                         } catch (err) {
                             // A token is single-use, so a retry needs a fresh challenge.
-                            if (window.turnstile) { window.turnstile.reset('#turnstile'); }
+                            if (window.turnstile) { window.turnstile.reset('#etc-turnstile'); }
                             errBox.textContent = 'There was an error submitting your inquiry. Please call (260) 238-3074 or email directly.';
                             errBox.classList.remove('hidden');
                             label.textContent = 'Submit Inquiry';
