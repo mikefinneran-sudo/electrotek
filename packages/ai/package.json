@@ -1,0 +1,26 @@
+{
+  "name": "@waltersignal/bananaforce-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx src/config.test.ts && tsx src/receipt.test.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@waltersignal/bananaforce-core": "workspace:*",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3",
+    "eslint": "^9.39.5",
+    "@waltersignal/bananaforce-eslint-config": "workspace:*"
+  }
+}

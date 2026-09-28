@@ -1,0 +1,38 @@
+{
+  "name": "@waltersignal/bananaforce-data-supabase",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./client": "./src/client.ts",
+    "./audit": "./src/audit.ts",
+    "./pagination": "./src/pagination.ts",
+    "./server": "./src/server.ts",
+    "./server-helpers": "./src/server-helpers.ts",
+    "./staff": "./src/staff.ts",
+    "./service": "./src/service.ts",
+    "./session": "./src/session.ts"
+  },
+  "scripts": {
+    "test": "node --import tsx/esm src/pagination.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.108.1",
+    "@waltersignal/bananaforce-core": "workspace:*",
+    "server-only": "^0.0.1"
+  },
+  "peerDependencies": {
+    "next": ">=16"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "next": "16.3.3",
+    "typescript": "^5.8.3",
+    "eslint": "^9.39.5",
+    "tsx": "^4.22.4",
+    "@waltersignal/bananaforce-eslint-config": "workspace:*"
+  }
+}

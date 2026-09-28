@@ -1,0 +1,22 @@
+-- Pin search_path on this module's trigger functions.
+--
+-- This module's share of the aggregate 0036_pin_function_search_path.sql.
+-- Split out so a per-module client deploy receives the hardening; the
+-- aggregate previously carried it for the demo only.
+--
+-- Supabase advisor finding: function_search_path_mutable (WARN).
+--
+-- A function with no explicit search_path resolves unqualified names using the
+-- caller's search_path, which lets a caller shadow objects the function body
+-- intended. Pinning search_path removes that ambiguity.
+--
+-- This is a trigger function and was inspected before this change: no
+-- FROM / JOIN / INSERT INTO / UPDATE / DELETE FROM, so nothing resolves a table
+-- name at runtime. The body uses only now(), round() and RAISE, which live in
+-- pg_catalog and resolve regardless of search_path. The empty string is
+-- therefore safe and is the value Supabase recommends.
+--
+-- Not SECURITY DEFINER, so it already ran with caller privileges; this closes
+-- the name-resolution ambiguity rather than a privilege hole.
+
+alter function public.crm_set_updated_at() set search_path = '';

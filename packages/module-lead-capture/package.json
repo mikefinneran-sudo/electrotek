@@ -1,0 +1,38 @@
+{
+  "name": "@waltersignal/bananaforce-module-lead-capture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./page": "./src/page.tsx",
+    "./ui": "./src/ui.tsx",
+    "./server": "./src/server.ts",
+    "./routes": "./src/routes.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --conditions=react-server --import tsx src/validation.test.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@waltersignal/bananaforce-core": "workspace:*",
+    "@waltersignal/bananaforce-data-supabase": "workspace:*",
+    "resend": "^6.12.4",
+    "server-only": "^0.0.1"
+  },
+  "peerDependencies": {
+    "next": ">=16",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@waltersignal/bananaforce-eslint-config": "workspace:*",
+    "eslint": "^9.39.5",
+    "next": "16.3.3",
+    "react": "19.2.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3"
+  }
+}

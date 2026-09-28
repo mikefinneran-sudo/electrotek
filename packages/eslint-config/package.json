@@ -1,0 +1,18 @@
+{
+  "name": "@waltersignal/bananaforce-eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.28.0",
+    "eslint": "^9.28.0",
+    "eslint-config-next": "16.2.9",
+    "typescript-eslint": "^8.33.1"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@waltersignal/bananaforce-module-accounting",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx src/sync.test.ts && tsx src/tiller-export.test.ts && tsx src/export-schedule.test.ts && tsx src/outbox-reaper.test.ts && tsx src/wave-oauth-state.test.ts",
+    "lint": "eslint ."
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./page": "./src/page.tsx",
+    "./ui": "./src/ui.tsx",
+    "./server": "./src/server.ts",
+    "./events": "./src/events.ts",
+    "./connectors": "./src/connectors.ts",
+    "./routes": "./src/routes.ts",
+    "./sync": "./src/sync.ts"
+  },
+  "dependencies": {
+    "@waltersignal/bananaforce-core": "workspace:*",
+    "@waltersignal/bananaforce-data-supabase": "workspace:*",
+    "server-only": "^0.0.1"
+  },
+  "peerDependencies": {
+    "next": ">=16",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "next": "16.3.3",
+    "react": "19.2.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3",
+    "eslint": "^9.39.5",
+    "@waltersignal/bananaforce-eslint-config": "workspace:*"
+  }
+}

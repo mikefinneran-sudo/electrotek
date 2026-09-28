@@ -1,0 +1,68 @@
+{
+  "_comment": "Every field the practice's records carry must be either shown on the case file or dropped with a reason and a named approver. 'shown' is checked against ui.tsx, so it cannot claim coverage the screen does not deliver. Drops are not valid until approved_by names a person.",
+  "evidence": {
+    "shown": [
+      "description",
+      "piece_count",
+      "received_on",
+      "report_on",
+      "action",
+      "action_on",
+      "disposition_on",
+      "disposition_method",
+      "custodian_initials",
+      "storage_location",
+      "other_location",
+      "response",
+      "results",
+      "returned_to",
+      "xray_status",
+      "xray_on",
+      "work_order_reference"
+    ],
+    "dropped": []
+  },
+  "claimants": {
+    "shown": [
+      "display_name",
+      "first_name",
+      "last_name",
+      "status",
+      "address_line_1",
+      "address_line_2",
+      "city",
+      "state",
+      "postal_code",
+      "loss_date",
+      "email",
+      "cell_phone",
+      "home_phone",
+      "work_phone",
+      "work_extension",
+      "instructions"
+    ],
+    "dropped": []
+  },
+  "participants": {
+    "shown": ["participant_type", "role", "notes", "legacy_contact_ref", "legacy_account_ref"],
+    "dropped": []
+  },
+  "depositions": {
+    "shown": ["deponent", "scheduled_on", "description", "display_text", "location"],
+    "dropped": []
+  },
+  "time_entries": {
+    "shown": [
+      "entry_date",
+      "category",
+      "description",
+      "hours",
+      "hourly_rate",
+      "multiplier",
+      "location",
+      "billed_amount",
+      "invoice_number"
+    ],
+    "dropped": []
+  }
+}

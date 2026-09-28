@@ -1,0 +1,235 @@
+import type { ClientModule, ModuleMount } from "@waltersignal/bananaforce-core";
+
+export const ADMIN_MODULE_ID = "admin";
+
+export const adminModule = {
+  id: ADMIN_MODULE_ID,
+  name: "Admin",
+  description:
+    "Staff back office: catalog, inventory, orders, customers, inquiries, content, reporting, and staff provisioning.",
+  routes: [
+    "/admin",
+    "/admin/login",
+    "/admin/reports",
+    "/admin/audit",
+    "/admin/events",
+    "/admin/wholesale",
+    "/admin/orders",
+    "/admin/customers",
+    "/admin/inventory",
+    "/admin/inventory/new",
+    "/admin/inventory/export",
+    "/admin/catalog",
+    "/admin/locations",
+    "/admin/content",
+    "/admin/staff",
+    "/events",
+    "/wholesale",
+    "/api/admin",
+    "/api/events",
+    "/api/wholesale",
+  ],
+  dataAdapters: ["supabase"],
+  audience: "staff",
+  requires: ["catalog","ordering"],
+} satisfies ClientModule;
+
+export const ADMIN_REQUIRES = ["catalog", "ordering", "reporting"] as const;
+
+
+export const adminMounts = [
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "layout",
+    route: "/admin",
+    appFile: "app/admin/layout.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/layout",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin",
+    appFile: "app/admin/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/login",
+    appFile: "app/admin/login/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/reports",
+    appFile: "app/admin/reports/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-reporting/commerce-page",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/audit",
+    appFile: "app/admin/audit/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/events",
+    appFile: "app/admin/events/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/wholesale",
+    appFile: "app/admin/wholesale/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/orders",
+    appFile: "app/admin/orders/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/orders/[id]",
+    appFile: "app/admin/orders/[id]/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/customers",
+    appFile: "app/admin/customers/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/inventory",
+    appFile: "app/admin/inventory/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/inventory/new",
+    appFile: "app/admin/inventory/new/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/inventory/[productId]",
+    appFile: "app/admin/inventory/[productId]/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "route",
+    route: "/admin/inventory/export",
+    appFile: "app/admin/inventory/export/route.ts",
+    entrypoint: "@waltersignal/bananaforce-module-admin/inventory-export-route",
+    methods: ["GET"],
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/catalog",
+    appFile: "app/admin/catalog/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/locations",
+    appFile: "app/admin/locations/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/content",
+    appFile: "app/admin/content/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/admin/staff",
+    appFile: "app/admin/staff/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/admin-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/events",
+    appFile: "app/events/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/inquiry-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "page",
+    route: "/wholesale",
+    appFile: "app/wholesale/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-admin/inquiry-pages",
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "route",
+    route: "/api/admin",
+    appFile: "app/api/admin/route.ts",
+    entrypoint: "@waltersignal/bananaforce-module-admin/routes",
+    methods: ["GET", "POST"],
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "route",
+    route: "/api/events",
+    appFile: "app/api/events/route.ts",
+    entrypoint: "@waltersignal/bananaforce-module-admin/inquiry-routes",
+    methods: ["POST"],
+  },
+  {
+    moduleId: ADMIN_MODULE_ID,
+    kind: "route",
+    route: "/api/wholesale",
+    appFile: "app/api/wholesale/route.ts",
+    entrypoint: "@waltersignal/bananaforce-module-admin/inquiry-routes",
+    methods: ["POST"],
+  },
+] as const satisfies readonly ModuleMount[];
+
+export const moduleMounts = adminMounts;
+
+export type {
+  AdminActionResult,
+  AdminOrder,
+  AdminOrderItem,
+  AdminProduct,
+  Category,
+  Customer,
+  CustomerTier,
+  CustomerUpdateInput,
+  InventoryRow,
+  Location,
+  Order,
+  OrderItem,
+  OrderStatus,
+  Product,
+  ProductInventory,
+  ProductUpdateInput,
+  Vendor,
+} from "./types";
+export {
+  ADMIN_ORDER_TRANSITIONS,
+  ADMIN_TARGET_STATUSES,
+  canTransition,
+} from "./types";
+export { getStaffUser, requireStaff, staffAuthorize, getSignedInEmail } from "./auth";
+export type { StaffUser } from "./auth";

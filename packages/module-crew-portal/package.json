@@ -1,0 +1,43 @@
+{
+  "name": "@waltersignal/bananaforce-module-crew-portal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./page": "./src/page.tsx",
+    "./ui": "./src/ui.tsx",
+    "./server": "./src/server.ts",
+    "./routes": "./src/routes.ts",
+    "./auth": "./src/auth.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx src/metrics.test.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@waltersignal/bananaforce-core": "workspace:*",
+    "@waltersignal/bananaforce-data-supabase": "workspace:*",
+    "@waltersignal/bananaforce-module-quote-engine": "workspace:*",
+    "@waltersignal/bananaforce-module-contract-esign": "workspace:*",
+    "@waltersignal/bananaforce-module-visit-checkflow": "workspace:*",
+    "@waltersignal/bananaforce-module-lead-capture": "workspace:*",
+    "@waltersignal/bananaforce-module-admin": "workspace:*",
+    "server-only": "^0.0.1"
+  },
+  "peerDependencies": {
+    "next": ">=16",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "next": "16.3.3",
+    "react": "19.2.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3",
+    "eslint": "^9.39.5",
+    "@waltersignal/bananaforce-eslint-config": "workspace:*"
+  }
+}

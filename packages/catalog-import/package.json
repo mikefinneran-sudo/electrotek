@@ -1,0 +1,29 @@
+{
+  "name": "@waltersignal/bananaforce-catalog-import",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/importer.ts",
+    "./types": "./src/types.ts",
+    "./io": "./src/io.ts"
+  },
+  "bin": {
+    "bananaforce-catalog-import": "./src/cli.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx src/importer.test.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3",
+    "eslint": "^9.39.5",
+    "@waltersignal/bananaforce-eslint-config": "workspace:*"
+  }
+}
