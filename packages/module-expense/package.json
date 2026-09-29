@@ -10,7 +10,8 @@
     "./server": "./src/server.ts",
     "./actions": "./src/actions.ts",
     "./routes": "./src/routes.ts",
-    "./lifecycle": "./src/lifecycle.ts"
+    "./lifecycle": "./src/lifecycle.ts",
+    "./views": "./src/views.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",

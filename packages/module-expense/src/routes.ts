@@ -13,8 +13,8 @@
 // not allowed to see this."
 
 import "server-only";
-import { confirmExpense, getExpense, listExpenses, voidExpense } from "./server";
-import type { ExpenseSubjectType } from "./types";
+import { confirmExpense, getExpense, getViewer, listMyExpenses, voidExpense } from "./server";
+import type { ExpenseSubjectType, PaymentMethod } from "./types";
 
 export interface ExpensesRouteOptions {
   /**
@@ -43,7 +43,8 @@ export function createExpensesRouteHandlers(options: ExpensesRouteOptions = {}) 
           ? Response.json(expense)
           : Response.json({ error: "Not found" }, { status: 404 });
       }
-      return Response.json({ expenses: await listExpenses() });
+      const viewer = await getViewer();
+      return Response.json({ expenses: viewer ? await listMyExpenses(viewer.id) : [] });
     },
 
     async PATCH(request: Request): Promise<Response> {
@@ -73,6 +74,8 @@ export function createExpensesRouteHandlers(options: ExpensesRouteOptions = {}) 
           subject_type: String(body.subject_type ?? "unattributed") as ExpenseSubjectType,
           subject_id: body.subject_id ? String(body.subject_id) : null,
           note: body.note ? String(body.note) : null,
+          payment_method: String(body.payment_method ?? "personal") as PaymentMethod,
+          city: body.city ? String(body.city) : null,
         });
         return result.ok
           ? Response.json({ ok: true, id: result.id })

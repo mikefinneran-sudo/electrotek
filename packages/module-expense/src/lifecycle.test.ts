@@ -5,6 +5,8 @@ import {
   confirmationErrors,
   draftFromReceiptFields,
   lowConfidenceFields,
+  newExpenseErrors,
+  reportTotals,
 } from "./lifecycle";
 import type { ConfirmExpenseInput, Expense } from "./types";
 
@@ -31,6 +33,13 @@ function makeExpense(overrides: Partial<Expense> = {}): Expense {
     confirmed_at: null,
     confirmed_by: null,
     created_at: "2026-08-02T10:00:00.000Z",
+    updated_at: "2026-08-02T10:00:00.000Z",
+    submitted_by: "u1",
+    report_id: null,
+    payment_method: "personal",
+    city: null,
+    miles: null,
+    mileage_rate: null,
     legacy_id: null,
     source_system: null,
     ...overrides,
@@ -108,6 +117,8 @@ check(
     subject_type: "unattributed",
     subject_id: null,
     note: null,
+    payment_method: "personal",
+    city: null,
   }).includes("vendor is required"),
   "blank vendor is rejected",
 );
@@ -124,6 +135,8 @@ check(
     subject_type: "unattributed",
     subject_id: null,
     note: null,
+    payment_method: "personal",
+    city: null,
   }).includes("purchased_on must be ISO yyyy-mm-dd"),
   "non-ISO date is rejected",
 );
@@ -140,6 +153,8 @@ check(
     subject_type: "unattributed",
     subject_id: null,
     note: null,
+    payment_method: "personal",
+    city: null,
   }).includes("total must be zero or greater"),
   "negative total is rejected",
 );
@@ -156,6 +171,8 @@ check(
     subject_type: "customer",
     subject_id: null,
     note: null,
+    payment_method: "personal",
+    city: null,
   }).includes("subject_id is required when subject_type is not unattributed"),
   "attributed expense needs a subject id",
 );
@@ -172,6 +189,8 @@ check(
     subject_type: "unattributed",
     subject_id: null,
     note: null,
+    payment_method: "personal",
+    city: null,
   }).length === 0,
   "a valid confirmation has no errors",
 );
@@ -190,8 +209,58 @@ check(
     subject_type: "vendor" as ConfirmExpenseInput["subject_type"],
     subject_id: null,
     note: null,
+    payment_method: "personal",
+    city: null,
   }).includes("subject_type must be customer, opportunity, case, or unattributed"),
   "invalid subject_type is rejected before it reaches the DB check constraint",
 );
+
+// --- hand entry and mileage ---------------------------------------------------
+
+const manual = {
+  vendor: "Hampton Inn",
+  purchased_on: "2026-08-03",
+  total: 142.5,
+  tax: null,
+  currency: "usd",
+  category_id: null,
+  subject_type: "unattributed" as const,
+  subject_id: null,
+  note: null,
+  payment_method: "personal" as const,
+  city: "Gray, IN",
+  miles: null,
+};
+check(newExpenseErrors(manual).length === 0, "a complete hand-entered expense is valid");
+check(
+  newExpenseErrors({ ...manual, vendor: "", miles: 42 }).includes("route is required"),
+  "mileage names its missing field as the route, not the vendor",
+);
+check(
+  newExpenseErrors({ ...manual, miles: 0 }).includes("miles must be greater than zero"),
+  "zero miles is rejected",
+);
+check(
+  newExpenseErrors({ ...manual, total: Number.NaN, miles: 42 }).length === 0,
+  "mileage does not require a typed total; the database prices it",
+);
+check(
+  newExpenseErrors({ ...manual, payment_method: "cash" as never }).includes(
+    "payment_method must be personal or company_card",
+  ),
+  "unknown payment method is rejected",
+);
+
+// --- report totals ------------------------------------------------------------
+
+const totals = reportTotals([
+  { status: "confirmed", total: 0.1, payment_method: "personal" },
+  { status: "confirmed", total: 0.2, payment_method: "personal" },
+  { status: "confirmed", total: 300, payment_method: "company_card" },
+  { status: "void", total: 999, payment_method: "personal" },
+]);
+check(totals.count === 3, "void expenses are not counted");
+check(totals.total === 300.3, "report total sums in cents");
+check(totals.reimbursable === 0.3, "only personal spending is reimbursable");
 
 console.log(`lifecycle.test.ts: ${passed} assertions passed`);

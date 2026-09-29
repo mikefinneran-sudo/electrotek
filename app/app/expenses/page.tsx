@@ -6,7 +6,11 @@ export const dynamic = "force-dynamic";
 
 const ExpensesPage = createExpensesPage(clientConfig);
 
-export default async function GuardedExpensesPage() {
+export default async function GuardedExpensesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   await ensureStaffOrDemo();
-  return <ExpensesPage />;
+  return <ExpensesPage searchParams={searchParams} />;
 }

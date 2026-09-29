@@ -16,7 +16,12 @@
  * from vercel.json) is intersected with this one, and its script-src 'self'
  * would re-block the very scripts this nonce allows.
  */
-export function buildCsp(nonce: string): string {
+export function buildCsp(nonce: string, supabaseOrigin: string | null = null): string {
+  // The project's own origin, for a Supabase not on *.supabase.co (a custom
+  // domain, or the local stack at 127.0.0.1). Without it, signed receipt images
+  // from Storage render as broken images there.
+  const supabase =
+    supabaseOrigin && !supabaseOrigin.endsWith(".supabase.co") ? ` ${supabaseOrigin}` : "";
   return [
     "default-src 'self'",
     "base-uri 'self'",
@@ -29,9 +34,9 @@ export function buildCsp(nonce: string): string {
     // Next and styled-jsx emit inline styles with no nonce; there is no nonce
     // path for them, and inline CSS is not a script-execution vector.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://*.supabase.co",
+    `img-src 'self' data: blob: https://*.supabase.co${supabase}`,
     "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://js.stripe.com https://checkout.stripe.com",
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co${supabase} https://api.stripe.com https://js.stripe.com https://checkout.stripe.com`,
     "frame-src https://js.stripe.com https://checkout.stripe.com",
     "worker-src 'self' blob:",
     "form-action 'self'",
@@ -45,6 +50,11 @@ export const STATIC_SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> =
   ["Referrer-Policy", "strict-origin-when-cross-origin"],
   ["Permissions-Policy", "camera=(), microphone=(), geolocation=()"],
 ];
+
+// Scheme + host[:port]. A regex, not URL: this package has no DOM or node lib.
+function originOf(url: string | undefined): string | null {
+  return url?.match(/^https?:\/\/[^/\s;'"]+/)?.[0] ?? null;
+}
 
 /**
  * Apply CSP + static headers to a middleware response.
@@ -60,12 +70,14 @@ export function applySecurityHeaders<Res extends HeaderBag>(
 ): Res {
   // No DOM or node lib in this package's tsconfig, so reach the runtime globals
   // through unknown. Both exist in the edge runtime and in Node 19+.
-  const { crypto: runtimeCrypto, btoa: runtimeBtoa } = globalThis as unknown as {
-    crypto: { randomUUID(): string };
-    btoa(data: string): string;
-  };
+  const { crypto: runtimeCrypto, btoa: runtimeBtoa, process: runtimeProcess } =
+    globalThis as unknown as {
+      crypto: { randomUUID(): string };
+      btoa(data: string): string;
+      process?: { env: Record<string, string | undefined> };
+    };
   const nonce = runtimeBtoa(runtimeCrypto.randomUUID()).replace(/=+$/, "");
-  const csp = buildCsp(nonce);
+  const csp = buildCsp(nonce, originOf(runtimeProcess?.env.NEXT_PUBLIC_SUPABASE_URL));
 
   request.headers.set("x-nonce", nonce);
   request.headers.set("content-security-policy", csp);
