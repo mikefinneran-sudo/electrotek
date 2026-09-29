@@ -69,6 +69,8 @@ const forge = await inv.db.from("expense_reports").insert({ title: "x", status: 
 ok(forge.error, "cannot create a report already approved");
 const selfApprove = await inv.db.from("expense_reports").update({ status: "approved" }).eq("id", rep.data!.id);
 ok(selfApprove.error, "cannot set report status with a plain update");
+const forgeNote = await inv.db.from("expense_reports").update({ decision_note: "ok", decided_by: approver.id }).eq("id", rep.data!.id);
+ok(forgeNote.error, "cannot write decision fields on my own report");
 
 const emptySubmit = await inv.db.rpc("expense_report_submit", { p_report: rep.data!.id });
 ok(emptySubmit.error?.message.includes("at least one"), "empty report cannot be submitted");

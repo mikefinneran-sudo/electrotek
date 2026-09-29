@@ -66,11 +66,12 @@ Apply the central migrations in this exact order against your client's Supabase 
 - [ ] `supabase/migrations/0065_ordering_atomic_cart_items.sql`
 - [ ] `supabase/migrations/0066_inventory_sale_allocation.sql`
 - [ ] `supabase/migrations/0067_expense_reports.sql`
+- [ ] `supabase/migrations/0068_expense_grants_exact.sql`
 
 ## Module migration sources (reference)
 
 Each enabled module owns the following migration file(s). Whether the central tree above still reflects them is enforced by `pnpm check-migrations`, not asserted here — it hashes both trees on every push and fails the build on any divergence. See `supabase/README.md` for notes on specific migrations (backfilled files, enum-pair splits, function-search-path pins).
 
 - **crm**: 0001_crm.sql, 0002_staff_session_grants.sql, 0003_crm_platform_grade.sql, 0004_staff_session_grants_v2.sql, 0005_crm_rpc.sql, 0006_pin_function_search_path.sql, 0007_cases.sql, 0008_cases_platform_grade.sql, 0009_cases_closed_on_optional.sql, 0010_cases_title_optional.sql
-- **expense**: 0001_expense.sql, 0002_expense_case_subject.sql, 0003_expense_reports.sql
+- **expense**: 0001_expense.sql, 0002_expense_case_subject.sql, 0003_expense_reports.sql, 0004_expense_grants_exact.sql
 - **forensic-case**: 0001_forensic_case.sql
