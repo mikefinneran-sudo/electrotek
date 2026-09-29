@@ -210,14 +210,15 @@ export function ReceiptUpload({
 
   return (
     <div className="expense-upload">
-      {/* The input covers the button so the whole control is the file picker,
-          and `capture` opens the camera on a phone at the scene. */}
+      {/* The input covers the button so the whole control is the file picker.
+          No `capture` attribute: on iPhone it forces the camera and hides the
+          Photos library, where most receipts already are. Without it iOS
+          offers Take Photo, Photo Library, and Choose File. */}
       <label className={`btn ${busy ? "is-busy" : ""}`}>
         {busy ? "Reading receipt…" : "Scan a receipt"}
         <input
           type="file"
           accept={ACCEPT}
-          capture="environment"
           onChange={handleChange}
           disabled={busy}
           className="expense-upload-input"
