@@ -65,10 +65,17 @@ export async function uploadReceiptAndDraft(
     return { ok: false, errors: ["Supabase is not configured."] };
   }
 
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const storagePath = `${new Date().toISOString().slice(0, 7)}/${crypto.randomUUID()}`;
-
   const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, errors: ["Not authenticated."] };
+
+  // First path segment is the owner: storage policies (0067) let only the
+  // owner and approvers read it.
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const storagePath = `${user.id}/${new Date().toISOString().slice(0, 7)}/${crypto.randomUUID()}`;
+
   const { error: uploadError } = await supabase.storage
     .from("expense-receipts")
     .upload(storagePath, bytes, { contentType: mediaType, upsert: false });

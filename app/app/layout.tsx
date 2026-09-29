@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import clientConfig from "../client.config";
 import { staffLoginLink } from "@waltersignal/bananaforce-core";
+import { getSignedInEmail } from "@waltersignal/bananaforce-module-admin/auth";
 import { brandThemeVars } from "../lib/brand-theme";
 
 // Self-hosted (WAL-679): next/font/google fetches this file from Google Fonts
@@ -18,6 +19,19 @@ const bodyFont = localFont({
   variable: "--font-sans",
 });
 
+// Same reason, for the mono face that money and case numbers are set in. It was
+// an @import of Google Fonts in globals.css, which the app's own CSP blocks
+// (style-src 'self'), so it never loaded and figures fell back to the system
+// monospace.
+const monoFont = localFont({
+  src: [
+    { path: "./fonts/ibm-plex-mono-latin-400.woff2", weight: "400" },
+    { path: "./fonts/ibm-plex-mono-latin-500.woff2", weight: "500" },
+  ],
+  display: "swap",
+  variable: "--font-mono-face",
+});
+
 export const metadata: Metadata = {
   // The client's own name, not the platform's. This app is ElectroTek's; the
   // vendor's product name and marketing copy do not belong in their tab or in
@@ -29,9 +43,12 @@ export const metadata: Metadata = {
 const loginLink = staffLoginLink(clientConfig);
 
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // A signed-in staff member already has the back-office shell and its sign
+  // out; a "Staff Login" button above it reads as being signed out.
+  const signedIn = loginLink ? Boolean(await getSignedInEmail()) : false;
   return (
-    <html lang="en" className={bodyFont.variable}>
+    <html lang="en" className={`${bodyFont.variable} ${monoFont.variable}`}>
       <body style={brandThemeVars(clientConfig.brand)}>
         <div className="app-frame">
           <header className="topbar">
@@ -55,7 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Link>
 
               <div className="topbar-actions">
-                {loginLink ? (
+                {loginLink && !signedIn ? (
                   <Link href={loginLink.href} className="btn btn-sm">
                     {loginLink.label}
                   </Link>

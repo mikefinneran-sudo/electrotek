@@ -1,0 +1,36 @@
+{
+  "expense": {
+    "shown": [
+      "status",
+      "vendor",
+      "purchased_on",
+      "total",
+      "tax",
+      "currency",
+      "category_id",
+      "subject_type",
+      "subject_id",
+      "note",
+      "field_confidence",
+      "payment_method",
+      "city",
+      "miles",
+      "mileage_rate"
+    ],
+    "dropped": []
+  },
+  "report": {
+    "shown": [
+      "title",
+      "submitted_by",
+      "status",
+      "submitted_at",
+      "decided_at",
+      "decided_by",
+      "decision_note",
+      "reimbursed_at",
+      "reimbursed_by"
+    ],
+    "dropped": []
+  }
+}
