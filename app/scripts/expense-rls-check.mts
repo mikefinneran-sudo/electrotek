@@ -17,7 +17,7 @@ const PASSWORD = "local-only-password-1";
 let passed = 0;
 const ok = (cond: unknown, msg: string) => { assert(cond, msg); passed += 1; console.log("  ok -", msg); };
 
-async function user(email: string, role: "staff" | "admin", name: string): Promise<{ id: string; db: SupabaseClient }> {
+async function user(email: string, role: "staff" | "approver", name: string): Promise<{ id: string; db: SupabaseClient }> {
   const existing = (await admin.auth.admin.listUsers()).data.users.find((u) => u.email === email);
   const id = existing?.id ?? (await admin.auth.admin.createUser({ email, password: PASSWORD, email_confirm: true })).data.user!.id;
   await admin.from("staff").upsert({ id, email, name, role });
@@ -29,7 +29,7 @@ async function user(email: string, role: "staff" | "admin", name: string): Promi
 
 const inv = await user("inv1@example.test", "staff", "Investigator One");
 const other = await user("inv2@example.test", "staff", "Investigator Two");
-const approver = await user("approver@example.test", "admin", "Approver");
+const approver = await user("approver@example.test", "approver", "Approver");
 
 const { data: cats } = await inv.db.from("expense_categories").select("id,name,per_mile").order("sort_order");
 ok((cats ?? []).length >= 14 && cats![0].name === "Mileage" && cats![0].per_mile, "seeded categories visible to staff, Mileage first and per-mile");
@@ -130,5 +130,9 @@ const signOther = await other.db.storage.from("expense-receipts").createSignedUr
 ok(signOther.error, "another investigator cannot read my receipt");
 const signAdmin = await approver.db.storage.from("expense-receipts").createSignedUrl(up.data!.path, 60);
 ok(!signAdmin.error, "approver can read my receipt");
+
+// 'approver' decides reports; it must not inherit admin's staff management.
+const promote = await approver.db.from("staff").update({ role: "admin" }).eq("id", other.id).select("id");
+ok((promote.data ?? []).length === 0, "an approver cannot change staff roles");
 
 console.log(`\n${passed} checks passed`);

@@ -8,7 +8,7 @@
 --   1. Ownership. Every expense belongs to the person who incurred it. Staff
 --      see and edit their own; admins see everyone's so they can approve.
 --   2. Reports. Expenses are grouped into a report, submitted, approved or
---      rejected by an admin who is not the submitter, then marked reimbursed.
+--      rejected by an approver who is not the submitter, then marked reimbursed.
 --      A submitted or approved report locks its expenses.
 --   3. Mileage. Priced per mile at the IRS rate in force on the trip date. The
 --      2026 rate changed mid-year, so the rate is date-effective, not a constant.
@@ -125,6 +125,24 @@ create index if not exists expenses_report_idx on public.expenses (report_id);
 -- ---------------------------------------------------------------------------
 -- Helpers
 -- ---------------------------------------------------------------------------
+
+-- Who may approve and reimburse. 'approver' is narrower than 'admin': it
+-- decides expense reports and nothing else, so granting it does not also hand
+-- over staff management (0020's is_admin policies).
+create or replace function public.expense_is_approver()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.staff s
+    where s.id = auth.uid() and s.role in ('admin', 'approver')
+  );
+$$;
+
+comment on column public.staff.role is 'staff | approver | admin. approver decides expense reports only.';
 
 -- True when the caller may still change expenses in this report: no report, or
 -- their own report that is open or was sent back.
@@ -243,7 +261,7 @@ as $$
 declare
   v_report public.expense_reports;
 begin
-  if not public.is_admin() then
+  if not public.expense_is_approver() then
     raise exception 'Only an approver can decide expense reports.';
   end if;
 
@@ -281,7 +299,7 @@ as $$
 declare
   v_report public.expense_reports;
 begin
-  if not public.is_admin() then
+  if not public.expense_is_approver() then
     raise exception 'Only an approver can mark a report reimbursed.';
   end if;
 
@@ -343,12 +361,14 @@ end;
 $$;
 
 revoke all on function public.expense_price_mileage() from public, anon, authenticated;
+revoke all on function public.expense_is_approver() from public, anon;
 revoke all on function public.expense_report_is_editable(uuid) from public, anon;
 revoke all on function public.expense_mileage_rate_on(date) from public, anon;
 revoke all on function public.expense_report_submit(uuid) from public, anon;
 revoke all on function public.expense_report_decide(uuid, boolean, text) from public, anon;
 revoke all on function public.expense_report_mark_reimbursed(uuid) from public, anon;
 revoke all on function public.expense_create_draft(jsonb, jsonb) from public, anon;
+grant execute on function public.expense_is_approver() to authenticated;
 grant execute on function public.expense_report_is_editable(uuid) to authenticated;
 grant execute on function public.expense_mileage_rate_on(date) to authenticated;
 grant execute on function public.expense_report_submit(uuid) to authenticated;
@@ -384,7 +404,7 @@ drop policy if exists "expense_reports_select" on public.expense_reports;
 create policy "expense_reports_select"
   on public.expense_reports for select
   to authenticated
-  using (public.is_staff() and (submitted_by = auth.uid() or public.is_admin()));
+  using (public.is_staff() and (submitted_by = auth.uid() or public.expense_is_approver()));
 
 drop policy if exists "expense_reports_insert" on public.expense_reports;
 create policy "expense_reports_insert"
@@ -412,7 +432,7 @@ drop policy if exists "expenses_select" on public.expenses;
 create policy "expenses_select"
   on public.expenses for select
   to authenticated
-  using (public.is_staff() and (submitted_by = auth.uid() or public.is_admin()));
+  using (public.is_staff() and (submitted_by = auth.uid() or public.expense_is_approver()));
 
 drop policy if exists "expenses_insert" on public.expenses;
 create policy "expenses_insert"
@@ -473,7 +493,7 @@ create policy "expense_staff_selects_expense_receipts_objects"
   to authenticated
   using (
     bucket_id = 'expense-receipts' and public.is_staff()
-    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+    and ((storage.foldername(name))[1] = auth.uid()::text or public.expense_is_approver())
   );
 
 drop policy if exists "expense_staff_inserts_expense_receipts_objects" on storage.objects;

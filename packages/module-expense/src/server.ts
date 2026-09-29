@@ -28,7 +28,7 @@ export interface Viewer {
   id: string;
   email: string;
   name: string | null;
-  /** Admins approve reports and mark them reimbursed. */
+  /** Approvers (role approver or admin) decide reports and mark them reimbursed. */
   isApprover: boolean;
 }
 
@@ -65,7 +65,7 @@ export async function getViewer(): Promise<Viewer | null> {
     id: String(data.id),
     email: String(data.email),
     name: data.name == null ? null : String(data.name),
-    isApprover: data.role === "admin",
+    isApprover: data.role === "admin" || data.role === "approver",
   };
 }
 
