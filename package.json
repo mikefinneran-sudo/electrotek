@@ -1,0 +1,19 @@
+{
+  "name": "electrotek",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ElectroTek Consultants — static marketing site (repo root) plus the staff app (app/), vendored from BananaFORCE. See README for the snapshot source.",
+  "scripts": {
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r --if-present run test && vitest run",
+    "build": "pnpm --filter @waltersignal/bananaforce-electrotek run build"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
+  },
+  "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=20"
+  }
+}

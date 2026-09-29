@@ -1,0 +1,55 @@
+{
+  "name": "@waltersignal/bananaforce-module-admin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./page": "./src/page.tsx",
+    "./ui": "./src/ui.tsx",
+    "./server": "./src/server.ts",
+    "./routes": "./src/routes.ts",
+    "./auth": "./src/auth.ts",
+    "./layout": "./src/layout.tsx",
+    "./admin-pages": "./src/admin-pages.tsx",
+    "./inventory-export-route": "./src/inventory-export-route.ts",
+    "./inquiry-pages": "./src/inquiry-pages.tsx",
+    "./inquiry-routes": "./src/inquiry-routes.ts",
+    "./oauth-callback-route": "./src/oauth-callback-route.ts",
+    "./staff-chrome": "./src/staff-chrome.tsx",
+    "./master-sheet-formats": "./src/master-sheet-formats.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx src/transitions.test.ts && tsx src/master-sheet.test.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
+    "@waltersignal/bananaforce-catalog-import": "workspace:*",
+    "@waltersignal/bananaforce-core": "workspace:*",
+    "@waltersignal/bananaforce-data-supabase": "workspace:*",
+    "@waltersignal/bananaforce-module-catalog": "workspace:*",
+    "@waltersignal/bananaforce-module-lead-capture": "workspace:*",
+    "@waltersignal/bananaforce-module-ordering": "workspace:*",
+    "exceljs": "^4.4.0",
+    "pdfkit": "^0.15.1",
+    "resend": "^6.12.4",
+    "server-only": "^0.0.1"
+  },
+  "peerDependencies": {
+    "next": ">=16",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/pdfkit": "^0.13.9",
+    "@types/react": "^19",
+    "@waltersignal/bananaforce-eslint-config": "workspace:*",
+    "eslint": "^9.39.5",
+    "next": "16.3.3",
+    "react": "19.2.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3"
+  }
+}

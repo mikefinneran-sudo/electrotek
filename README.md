@@ -63,3 +63,19 @@ Note that clean URLs are a Vercel behaviour, so `python3 -m http.server` still n
 ## Deploy
 
 Pushing `main` deploys production automatically (Vercel project `waltersignal/electrotek`, GitHub-connected).
+
+## Staff app (`app/`)
+
+The staff app (cases, CRM, expenses) lives at `app/` in this repo — a vendored snapshot of
+`apps/electrotek` from the `mikefinneran-sudo/bananaforce` monorepo, moved out under WAL-706
+because a client's code belongs in the client's own repo. `packages/` holds the workspace
+packages `app/` imports (transitively); `supabase/migrations/` holds this client's full
+migration set. It is a snapshot, not a subtree/submodule — shared BananaFORCE fixes must be
+ported here by hand.
+
+**Snapshot source:** `mikefinneran-sudo/bananaforce` @ `9610833` (origin/main, 2026-09-28).
+
+Deploys separately from the static site above, as its own Vercel project
+(`app.electrotekconsultants.com`, root directory `app`). The root `vercel.json` disables
+install/build for the static project so adding this workspace here does not change what it
+serves. See `app/SETUP.md` and `app/MIGRATIONS.md` for the original setup checklist.

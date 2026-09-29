@@ -1,0 +1,31 @@
+-- Quote lifecycle, part 1 of 2: enum values only.
+--
+-- Split from 0005 deliberately, as a standing safety margin.
+--
+-- Postgres (12+) allows `alter type ... add value` inside a transaction block,
+-- but the new label cannot be USED by an executed statement until that
+-- transaction commits. As written, merging these two files does in fact apply
+-- cleanly — 0005 only names 'viewed' and 'expired' inside plpgsql function
+-- bodies, which are parsed lazily on first call, long after commit.
+--
+-- The split exists so that stays true. The moment anyone adds a statement to
+-- 0005 that references the new labels directly — a check constraint, a partial
+-- index predicate, a backfill `update ... set status = 'expired'` — a merged
+-- migration would fail on deploy, against a real database, at the worst moment.
+-- Keeping the enum change in its own committed migration makes that class of
+-- mistake unreachable. Do not merge these two files.
+--
+-- Lifecycle after this pair:
+--
+--   drafting -> ready_to_send -> sent -> viewed -> accepted
+--                                  \       \
+--                                   \       +--> declined
+--                                    \      +--> expired
+--                                     +--> declined / expired
+--
+-- 'viewed' is stamped by the customer-facing preview route the first time the
+-- recipient opens the quote link. It is informational only: 'sent' and 'viewed'
+-- have identical accept/decline rights.
+
+alter type public.inspection_status add value if not exists 'viewed' after 'sent';
+alter type public.inspection_status add value if not exists 'expired' after 'declined';
