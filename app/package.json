@@ -20,7 +20,7 @@
     "@waltersignal/bananaforce-module-expense": "workspace:*",
     "@waltersignal/bananaforce-module-forensic-case": "workspace:*",
     "@waltersignal/bananaforce-modules": "workspace:*",
-    "next": "16.3.3",
+    "next": "16.3.8",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
