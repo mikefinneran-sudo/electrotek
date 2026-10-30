@@ -1746,6 +1746,35 @@ export async function removeDealContact(
   return before;
 }
 
+// --- lead attachments (e.g. dossier PDFs) ------------------------------------
+// opportunity -> contact -> contacts.lead_id -> lead_attachments, served as short-lived signed URLs.
+
+export type OpportunityAttachment = { id: string; file_name: string; size_bytes: number; created_at: string; url: string | null };
+
+export async function listOpportunityAttachments(opportunityId: string): Promise<OpportunityAttachment[]> {
+  const supabase = getServiceClient("listOpportunityAttachments");
+  if (!supabase || !isUuid(opportunityId)) return [];
+  const { data: opp } = await supabase.from("crm_opportunities").select("contact_id").eq("id", opportunityId).maybeSingle();
+  if (!opp?.contact_id) return [];
+  const { data: contact } = await supabase.from("contacts").select("lead_id").eq("id", opp.contact_id).maybeSingle();
+  if (!contact?.lead_id) return [];
+  const { data, error } = await supabase
+    .from("lead_attachments")
+    .select("id,file_name,size_bytes,created_at,storage_path")
+    .eq("lead_id", contact.lead_id)
+    .order("created_at", { ascending: false });
+  if (error) {
+    warn("listOpportunityAttachments", error);
+    return [];
+  }
+  return Promise.all(
+    (data ?? []).map(async (row) => {
+      const signed = await supabase.storage.from("lead-attachments").createSignedUrl(row.storage_path, 3600);
+      return { id: row.id, file_name: row.file_name, size_bytes: row.size_bytes, created_at: row.created_at, url: signed.data?.signedUrl ?? null };
+    }),
+  );
+}
+
 // --- activities -------------------------------------------------------------
 
 export async function listActivities(filter: {

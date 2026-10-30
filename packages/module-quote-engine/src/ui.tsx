@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, MouseEvent, useMemo, useState } from "react";
 import {
   MANUAL_SORT_BASE,
   buildGeneratedLines,
@@ -373,9 +373,38 @@ export function IntakeView({
     });
   }
 
+  // All steps stay mounted (hidden when inactive) so FormData sees every
+  // field on submit. Native validation can't focus a control inside a hidden
+  // step, so the form is noValidate and validity is checked here per step.
+  function firstInvalid(scope: ParentNode): HTMLInputElement | null {
+    return scope.querySelector<HTMLInputElement>(":invalid");
+  }
+
+  function reveal(el: HTMLInputElement) {
+    const target = Number(el.closest<HTMLElement>("[data-step]")?.dataset.step ?? step);
+    setStep(target);
+    // The step is un-hidden on the next render; report once it can take focus.
+    requestAnimationFrame(() => el.reportValidity());
+  }
+
+  function goNext(event: MouseEvent<HTMLButtonElement>) {
+    const panel = event.currentTarget.form?.querySelector<HTMLElement>(`[data-step="${step}"]`);
+    const bad = panel ? firstInvalid(panel) : null;
+    if (bad) {
+      bad.reportValidity();
+      return;
+    }
+    setStep((s) => Math.min(TOTAL, s + 1));
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
+    const bad = firstInvalid(form);
+    if (bad) {
+      reveal(bad);
+      return;
+    }
     if ((form.elements.namedItem("website") as HTMLInputElement)?.value) return;
 
     setState({ status: "submitting", message: "Saving…" });
@@ -484,7 +513,7 @@ export function IntakeView({
         </header>
 
         <div className="catalog-layout">
-          <form onSubmit={onSubmit} className="form">
+          <form onSubmit={onSubmit} className="form" noValidate>
             <input aria-hidden="true" autoComplete="off" name="website" tabIndex={-1} className="honeypot" />
 
             <div className="tabs" role="status" style={{ justifyContent: "space-between" }}>
@@ -497,200 +526,194 @@ export function IntakeView({
               {stepHints[step]}
             </p>
 
-            {step === 1 ? (
-              <div className="panel pad form">
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Contact name *</span>
-                    <input className="input" name="prospect_name" autoComplete="name" required />
-                  </label>
-                  <label className="field">
-                    <span className="label">Company *</span>
-                    <input className="input" name="prospect_company" autoComplete="organization" required />
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Email</span>
-                    <input className="input" name="prospect_email" type="email" autoComplete="email" />
-                  </label>
-                  <label className="field">
-                    <span className="label">Phone</span>
-                    <input className="input" name="prospect_phone" autoComplete="tel" />
-                  </label>
-                </div>
+            <div className="panel pad form" data-step="1" hidden={step !== 1} style={step !== 1 ? { display: "none" } : undefined}>
+              <div className="form-row">
                 <label className="field">
-                  <span className="label">Office address</span>
-                  <input className="input" name="office_address" autoComplete="street-address" />
+                  <span className="label">Contact name *</span>
+                  <input className="input" name="prospect_name" autoComplete="name" required />
                 </label>
                 <label className="field">
-                  <span className="label">Walkthrough date</span>
-                  <input className="input" name="walkthrough_date" type="date" />
+                  <span className="label">Company *</span>
+                  <input className="input" name="prospect_company" autoComplete="organization" required />
                 </label>
               </div>
-            ) : null}
-
-            {step === 2 ? (
-              <div className="panel pad form">
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Cleanable sqft</span>
-                    <input
-                      className="input"
-                      name="cleanable_sqft"
-                      type="number"
-                      min="0"
-                      onChange={(e) => syncPreview({ cleanableSqft: e.currentTarget.value })}
-                    />
-                  </label>
-                  <label className="field">
-                    <span className="label">Visits per week</span>
-                    <select
-                      className="input"
-                      name="visits_per_week"
-                      defaultValue=""
-                      onChange={(e) => syncPreview({ visitsPerWeek: e.currentTarget.value })}
-                    >
-                      <option value="">Select…</option>
-                      {VISIT_OPTIONS.map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Number of offices</span>
-                    <input className="input" name="number_of_offices" type="number" min="0" />
-                  </label>
-                  <label className="field">
-                    <span className="label">Number of board rooms</span>
-                    <input className="input" name="number_of_board_rooms" type="number" min="0" />
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Rate ($/sqft per visit)</span>
-                    <input
-                      className="input"
-                      name="quote_rate_per_sqft"
-                      type="number"
-                      step="0.0001"
-                      placeholder="0.01"
-                      onChange={(e) => syncPreview({ quoteRatePerSqft: e.currentTarget.value })}
-                    />
-                  </label>
-                  <label className="field">
-                    <span className="label">Base monthly override</span>
-                    <input
-                      className="input"
-                      name="quote_base_monthly"
-                      type="number"
-                      step="0.01"
-                      onChange={(e) => syncPreview({ quoteBaseMonthly: e.currentTarget.value })}
-                    />
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Dumpster access</span>
-                    <input className="input" name="dumpster_access" />
-                  </label>
-                  <label className="field">
-                    <span className="label">Parking access</span>
-                    <input className="input" name="parking_access" />
-                  </label>
-                  <label className="field">
-                    <span className="label">Water access</span>
-                    <input className="input" name="water_access" />
-                  </label>
-                </div>
+              <div className="form-row">
+                <label className="field">
+                  <span className="label">Email</span>
+                  <input className="input" name="prospect_email" type="email" autoComplete="email" />
+                </label>
+                <label className="field">
+                  <span className="label">Phone</span>
+                  <input className="input" name="prospect_phone" autoComplete="tel" />
+                </label>
               </div>
-            ) : null}
+              <label className="field">
+                <span className="label">Office address</span>
+                <input className="input" name="office_address" autoComplete="street-address" />
+              </label>
+              <label className="field">
+                <span className="label">Walkthrough date</span>
+                <input className="input" name="walkthrough_date" type="date" />
+              </label>
+            </div>
 
-            {step === 3 ? (
-              <div className="panel pad form">
-                <StandardServicesNote />
-
-                <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
-                  <span className="label">Optional add-ons</span>
-                  <div className="order-list">
-                    {ADDON_CATALOG.map((item) => (
-                      <AddonRow
-                        key={item.id}
-                        item={item}
-                        checked={selectedAddonIds.has(item.id)}
-                        onToggle={toggleAddon}
-                      />
+            <div className="panel pad form" data-step="2" hidden={step !== 2} style={step !== 2 ? { display: "none" } : undefined}>
+              <div className="form-row">
+                <label className="field">
+                  <span className="label">Cleanable sqft</span>
+                  <input
+                    className="input"
+                    name="cleanable_sqft"
+                    type="number"
+                    min="0"
+                    onChange={(e) => syncPreview({ cleanableSqft: e.currentTarget.value })}
+                  />
+                </label>
+                <label className="field">
+                  <span className="label">Visits per week</span>
+                  <select
+                    className="input"
+                    name="visits_per_week"
+                    defaultValue=""
+                    onChange={(e) => syncPreview({ visitsPerWeek: e.currentTarget.value })}
+                  >
+                    <option value="">Select…</option>
+                    {VISIT_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
                     ))}
-                  </div>
-                </fieldset>
-
-                <LineEditor
-                  drafts={manualLines}
-                  onChange={(next) => {
-                    setManualLines(next);
-                    syncPreview({ manualLines: next });
-                  }}
-                />
-
-                <label className="field">
-                  <span className="label">Scope inclusions (one per line)</span>
-                  <textarea className="input" name="scope_inclusions" rows={4} />
-                </label>
-                <label className="field">
-                  <span className="label">Scope exclusions (one per line)</span>
-                  <textarea className="input" name="scope_exclusions" rows={3} />
-                </label>
-
-                <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
-                  <span className="label">Cleaning days</span>
-                  <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-                    {CLEANING_DAY_OPTIONS.map((day) => (
-                      <label key={day} style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
-                        <input type="checkbox" name="cleaning_days" value={day} />
-                        {day}
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Clean window</span>
-                    <input className="input" name="clean_window" placeholder="After 6pm" />
-                  </label>
-                  <label className="field">
-                    <span className="label">Target start</span>
-                    <input className="input" name="target_start" />
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label className="field">
-                    <span className="label">Consumables provided by</span>
-                    <input className="input" name="consumables_provided_by" placeholder="Provider / Client / Split" />
-                  </label>
-                  <label className="field">
-                    <span className="label">Current cleaner</span>
-                    <input className="input" name="current_cleaner" />
-                  </label>
-                </div>
-                <label className="field">
-                  <span className="label">Current cleaner issues</span>
-                  <textarea className="input" name="current_cleaner_issues" rows={2} />
-                </label>
-                <label className="field">
-                  <span className="label">Decision process</span>
-                  <textarea className="input" name="decision_process" rows={2} />
-                </label>
-                <label className="field">
-                  <span className="label">Internal notes</span>
-                  <textarea className="input" name="internal_notes" rows={2} />
+                  </select>
                 </label>
               </div>
-            ) : null}
+              <div className="form-row">
+                <label className="field">
+                  <span className="label">Number of offices</span>
+                  <input className="input" name="number_of_offices" type="number" min="0" />
+                </label>
+                <label className="field">
+                  <span className="label">Number of board rooms</span>
+                  <input className="input" name="number_of_board_rooms" type="number" min="0" />
+                </label>
+              </div>
+              <div className="form-row">
+                <label className="field">
+                  <span className="label">Rate ($/sqft per visit)</span>
+                  <input
+                    className="input"
+                    name="quote_rate_per_sqft"
+                    type="number"
+                    step="0.0001"
+                    placeholder="0.01"
+                    onChange={(e) => syncPreview({ quoteRatePerSqft: e.currentTarget.value })}
+                  />
+                </label>
+                <label className="field">
+                  <span className="label">Base monthly override</span>
+                  <input
+                    className="input"
+                    name="quote_base_monthly"
+                    type="number"
+                    step="0.01"
+                    onChange={(e) => syncPreview({ quoteBaseMonthly: e.currentTarget.value })}
+                  />
+                </label>
+              </div>
+              <div className="form-row">
+                <label className="field">
+                  <span className="label">Dumpster access</span>
+                  <input className="input" name="dumpster_access" />
+                </label>
+                <label className="field">
+                  <span className="label">Parking access</span>
+                  <input className="input" name="parking_access" />
+                </label>
+                <label className="field">
+                  <span className="label">Water access</span>
+                  <input className="input" name="water_access" />
+                </label>
+              </div>
+            </div>
+
+            <div className="panel pad form" data-step="3" hidden={step !== 3} style={step !== 3 ? { display: "none" } : undefined}>
+              <StandardServicesNote />
+
+              <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
+                <span className="label">Optional add-ons</span>
+                <div className="order-list">
+                  {ADDON_CATALOG.map((item) => (
+                    <AddonRow
+                      key={item.id}
+                      item={item}
+                      checked={selectedAddonIds.has(item.id)}
+                      onToggle={toggleAddon}
+                    />
+                  ))}
+                </div>
+              </fieldset>
+
+              <LineEditor
+                drafts={manualLines}
+                onChange={(next) => {
+                  setManualLines(next);
+                  syncPreview({ manualLines: next });
+                }}
+              />
+
+              <label className="field">
+                <span className="label">Scope inclusions (one per line)</span>
+                <textarea className="input" name="scope_inclusions" rows={4} />
+              </label>
+              <label className="field">
+                <span className="label">Scope exclusions (one per line)</span>
+                <textarea className="input" name="scope_exclusions" rows={3} />
+              </label>
+
+              <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
+                <span className="label">Cleaning days</span>
+                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                  {CLEANING_DAY_OPTIONS.map((day) => (
+                    <label key={day} style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
+                      <input type="checkbox" name="cleaning_days" value={day} />
+                      {day}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <div className="form-row">
+                <label className="field">
+                  <span className="label">Clean window</span>
+                  <input className="input" name="clean_window" placeholder="After 6pm" />
+                </label>
+                <label className="field">
+                  <span className="label">Target start</span>
+                  <input className="input" name="target_start" />
+                </label>
+              </div>
+              <div className="form-row">
+                <label className="field">
+                  <span className="label">Consumables provided by</span>
+                  <input className="input" name="consumables_provided_by" placeholder="Provider / Client / Split" />
+                </label>
+                <label className="field">
+                  <span className="label">Current cleaner</span>
+                  <input className="input" name="current_cleaner" />
+                </label>
+              </div>
+              <label className="field">
+                <span className="label">Current cleaner issues</span>
+                <textarea className="input" name="current_cleaner_issues" rows={2} />
+              </label>
+              <label className="field">
+                <span className="label">Decision process</span>
+                <textarea className="input" name="decision_process" rows={2} />
+              </label>
+              <label className="field">
+                <span className="label">Internal notes</span>
+                <textarea className="input" name="internal_notes" rows={2} />
+              </label>
+            </div>
 
             <div
               style={{
@@ -706,6 +729,7 @@ export function IntakeView({
                   type="button"
                   className="btn ghost"
                   hidden={step <= 1}
+                  style={step <= 1 ? { display: "none" } : undefined}
                   onClick={() => setStep((s) => Math.max(1, s - 1))}
                 >
                   Back
@@ -714,7 +738,8 @@ export function IntakeView({
                   type="button"
                   className="btn"
                   hidden={step >= TOTAL}
-                  onClick={() => setStep((s) => Math.min(TOTAL, s + 1))}
+                  style={step >= TOTAL ? { display: "none" } : undefined}
+                  onClick={goNext}
                 >
                   Next
                 </button>
@@ -722,6 +747,7 @@ export function IntakeView({
                   type="submit"
                   className="btn"
                   hidden={step !== TOTAL}
+                  style={step !== TOTAL ? { display: "none" } : undefined}
                   disabled={state.status === "submitting"}
                 >
                   {state.status === "submitting" ? "Saving…" : "Save & build quote"}

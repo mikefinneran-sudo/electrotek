@@ -4,7 +4,7 @@
 // client-facing sign route reaches these same helpers AFTER verifying a signed
 // token (see src/tokens.ts + src/routes.ts) — the token is the gate, not RLS.
 //
-// Signature PNGs and contract PDFs live in the PRIVATE `contracts` Storage
+// Source PDFs, signature PNGs, and executed PDFs live in the PRIVATE `contracts` Storage
 // bucket. Every Storage call degrades gracefully (warns, returns null) when the
 // bucket is absent, so the module works before the ops bucket-creation step.
 
@@ -24,7 +24,7 @@ import { CONTRACT_STATUSES } from "./types";
 
 type Row = Record<string, unknown>;
 
-/** Private Storage bucket holding signature PNGs + signed agreement PDFs. */
+/** Private Storage bucket holding source PDFs, signatures, and executed PDFs. */
 export const CONTRACTS_BUCKET = "contracts";
 const INSPECTION_REF_COLUMNS = [
   "id",
@@ -126,7 +126,22 @@ const getServiceClient = (operation: string) =>
 function contractFromRow(row: Row): Contract {
   return {
     id: stringOrNull(row.id) ?? "",
-    inspection_id: stringOrNull(row.inspection_id) ?? "",
+    inspection_id: stringOrNull(row.inspection_id),
+    title: stringOrNull(row.title),
+    source_pdf_path: stringOrNull(row.source_pdf_path),
+    signer_email: stringOrNull(row.signer_email),
+    signer_address: stringOrNull(row.signer_address),
+    deposit_amount_due: numberOrNull(row.deposit_amount_due),
+    final_amount_due: numberOrNull(row.final_amount_due),
+    card_fee_passthrough: row.card_fee_passthrough === true,
+    deposit_invoice_id: stringOrNull(row.deposit_invoice_id),
+    final_invoice_id: stringOrNull(row.final_invoice_id),
+    sign_invite_sent_at: stringOrNull(row.sign_invite_sent_at),
+    followup_texts: row.followup_texts === true,
+    deposit_invoice_sent_at: stringOrNull(row.deposit_invoice_sent_at),
+    crm_account_id: stringOrNull(row.crm_account_id),
+    crm_opportunity_id: stringOrNull(row.crm_opportunity_id),
+    crm_contact_id: stringOrNull(row.crm_contact_id),
     status: statusOrPending(row.status),
     signer_name: stringOrNull(row.signer_name),
     signer_title: stringOrNull(row.signer_title),
@@ -214,6 +229,27 @@ export async function getContract(id: string): Promise<Contract | null> {
   return data ? contractFromRow(data as Row) : null;
 }
 
+/** Find the contract linked to a deposit invoice without loading the contract ledger. */
+export async function getContractByDepositInvoice(
+  invoiceId: string,
+): Promise<Contract | null> {
+  const supabase = getServiceClient("getContractByDepositInvoice");
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from("contracts")
+    .select("*")
+    .eq("deposit_invoice_id", invoiceId)
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    warn("getContractByDepositInvoice", error);
+    return null;
+  }
+  return data ? contractFromRow(data as Row) : null;
+}
+
 export async function listContracts(): Promise<Contract[]> {
   const supabase = getServiceClient("listContracts");
   if (!supabase) return [];
@@ -282,6 +318,61 @@ export async function createContractForInspection(
   return data ? contractFromRow(data as Row) : null;
 }
 
+export interface CreateDocumentContractInput {
+  title: string;
+  signerName: string;
+  signerEmail: string;
+  pdfBytes: Uint8Array;
+  depositAmountDue?: number | null;
+  finalAmountDue?: number | null;
+  cardFeePassthrough?: boolean;
+  crmAccountId?: string | null;
+  crmOpportunityId?: string | null;
+  crmContactId?: string | null;
+}
+
+/** Upload a source PDF, then create its document-backed contract row. */
+export async function createContractForDocument(
+  input: CreateDocumentContractInput,
+): Promise<Contract | null> {
+  const supabase = getServiceClient("createContractForDocument");
+  if (!supabase) return null;
+
+  const id = crypto.randomUUID();
+  const sourcePath = await uploadToContracts(
+    sourcePdfPath(id),
+    input.pdfBytes,
+    "application/pdf",
+  );
+  if (!sourcePath) return null;
+
+  const { data, error } = await supabase
+    .from("contracts")
+    .insert({
+      id,
+      title: input.title,
+      source_pdf_path: sourcePath,
+      signer_name: input.signerName,
+      signer_email: input.signerEmail,
+      deposit_amount_due: input.depositAmountDue ?? null,
+      final_amount_due: input.finalAmountDue ?? null,
+      card_fee_passthrough: input.cardFeePassthrough === true,
+      crm_account_id: input.crmAccountId ?? null,
+      crm_opportunity_id: input.crmOpportunityId ?? null,
+      crm_contact_id: input.crmContactId ?? null,
+      status: "pending",
+    })
+    .select("*")
+    .single();
+
+  if (error) {
+    // First-write-wins Storage objects are intentionally not deleted here.
+    warn(`createContractForDocument(orphan ${sourcePath})`, error);
+    return null;
+  }
+  return data ? contractFromRow(data as Row) : null;
+}
+
 /** Flip a pending contract to 'sent' when its sign link is shared. */
 export async function markContractSent(id: string): Promise<Contract | null> {
   const supabase = getServiceClient("markContractSent");
@@ -306,6 +397,7 @@ export async function markContractSent(id: string): Promise<Contract | null> {
 export interface MarkSignedInput {
   signerName: string;
   signerTitle?: string | null;
+  signerAddress?: string | null;
   signaturePath: string | null;
   pdfPath: string | null;
   /** Execution timestamp captured by the route (matches the PDF audit stamp). */
@@ -331,6 +423,9 @@ export async function markContractSigned(
       status: "signed",
       signer_name: input.signerName,
       signer_title: input.signerTitle ?? null,
+      // Only document contracts carry an address. Omitting the key keeps the
+      // inspection UPDATE valid on databases without migration 0004.
+      ...(input.signerAddress != null ? { signer_address: input.signerAddress } : {}),
       signature_path: input.signaturePath,
       pdf_path: input.pdfPath,
       signed_at: input.signedAtIso ?? new Date().toISOString(),
@@ -339,7 +434,8 @@ export async function markContractSigned(
       audit_method: input.audit?.method ?? null,
     })
     .eq("id", id)
-    .neq("status", "signed")
+    // Only an open contract can be signed: never re-sign, never revive a void one.
+    .in("status", ["pending", "sent"])
     .select("*")
     .maybeSingle();
 
@@ -350,16 +446,84 @@ export async function markContractSigned(
   return data ? contractFromRow(data as Row) : getContract(id);
 }
 
-// --- Storage (private `contracts` bucket) --------------------------------
+/** Record that the automated sign-invite email was sent. */
+export async function markSignInviteSent(id: string): Promise<Contract | null> {
+  const supabase = getServiceClient("markSignInviteSent");
+  if (!supabase) return null;
 
-/** Object path for a contract's signature PNG. */
-export function signaturePath(contractId: string): string {
-  return `${contractId}/signature.png`;
+  const { data, error } = await supabase
+    .from("contracts")
+    .update({ sign_invite_sent_at: new Date().toISOString() })
+    .eq("id", id)
+    .is("sign_invite_sent_at", null)
+    .select("*")
+    .maybeSingle();
+
+  if (error) {
+    warn("markSignInviteSent", error);
+    return null;
+  }
+  return data ? contractFromRow(data as Row) : getContract(id);
 }
 
-/** Object path for a contract's executed agreement PDF. */
-export function pdfPath(contractId: string): string {
-  return `${contractId}/agreement.pdf`;
+/**
+ * Attach a billing deposit invoice to a contract. The `is null` guard means a
+ * retried sign request cannot attach a second invoice.
+ */
+export async function attachDepositInvoice(
+  id: string,
+  invoiceId: string,
+): Promise<boolean> {
+  const supabase = getServiceClient("attachDepositInvoice");
+  if (!supabase) return false;
+
+  const { data, error } = await supabase
+    .from("contracts")
+    .update({ deposit_invoice_id: invoiceId })
+    .eq("id", id)
+    .is("deposit_invoice_id", null)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    warn("attachDepositInvoice", error);
+    return false;
+  }
+  return Boolean(data);
+}
+
+/** Record when the deposit invoice email actually went out. */
+export async function markDepositInvoiceSent(id: string): Promise<void> {
+  const supabase = getServiceClient("markDepositInvoiceSent");
+  if (!supabase) return;
+
+  const { error } = await supabase
+    .from("contracts")
+    .update({ deposit_invoice_sent_at: new Date().toISOString() })
+    .eq("id", id)
+    .is("deposit_invoice_sent_at", null);
+  if (error) warn("markDepositInvoiceSent", error);
+}
+
+// --- Storage (private `contracts` bucket) --------------------------------
+
+/**
+ * Object path for a contract's signature PNG. An `attempt` id gives each
+ * document signing attempt its own objects, so a losing concurrent attempt can
+ * never leave its artifacts under the paths the winning row records.
+ */
+export function signaturePath(contractId: string, attempt?: string): string {
+  return attempt ? `${contractId}/signature-${attempt}.png` : `${contractId}/signature.png`;
+}
+
+/** Object path for an uploaded contract's original source PDF. */
+export function sourcePdfPath(contractId: string): string {
+  return `${contractId}/source.pdf`;
+}
+
+/** Object path for a contract's executed agreement PDF (see signaturePath). */
+export function pdfPath(contractId: string, attempt?: string): string {
+  return attempt ? `${contractId}/agreement-${attempt}.pdf` : `${contractId}/agreement.pdf`;
 }
 
 /**
@@ -379,7 +543,7 @@ async function uploadToContracts(
   // upsert: false so a signed legal artifact is never silently overwritten. An
   // "already exists" conflict means the artifact was persisted by the first
   // execution — treat it as success and return the existing path (mirrors the DB
-  // "first write wins" guard: markContractSigned's neq status 'signed').
+  // "first write wins" guard: markContractSigned's open-status filter).
   const { error } = await supabase.storage
     .from(CONTRACTS_BUCKET)
     .upload(path, body, { contentType, upsert: false });
@@ -396,16 +560,18 @@ async function uploadToContracts(
 export function storeSignaturePng(
   contractId: string,
   png: Uint8Array,
+  attempt?: string,
 ): Promise<string | null> {
-  return uploadToContracts(signaturePath(contractId), png, "image/png");
+  return uploadToContracts(signaturePath(contractId, attempt), png, "image/png");
 }
 
 /** Store an executed contract PDF; returns its Storage path or null. */
 export function storeContractPdf(
   contractId: string,
   pdf: Uint8Array,
+  attempt?: string,
 ): Promise<string | null> {
-  return uploadToContracts(pdfPath(contractId), pdf, "application/pdf");
+  return uploadToContracts(pdfPath(contractId, attempt), pdf, "application/pdf");
 }
 
 /** Download stored bytes from the contracts bucket, or null when unavailable. */

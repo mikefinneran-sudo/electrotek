@@ -14,7 +14,7 @@
     "./session": "./src/session.ts"
   },
   "scripts": {
-    "test": "node --import tsx/esm src/pagination.test.ts",
+    "test": "tsx src/pagination.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint ."
   },
@@ -32,7 +32,6 @@
     "next": "16.3.8",
     "typescript": "^5.8.3",
     "eslint": "^9.39.5",
-    "tsx": "^4.22.4",
     "@waltersignal/bananaforce-eslint-config": "workspace:*"
   }
 }

@@ -27,7 +27,7 @@ export function createSignPage(clientConfig: ClientConfig) {
           <section className="container" style={{ maxWidth: 720 }}>
             <header className="page-head">
               <span className="eyebrow">{clientConfig.brand.name}</span>
-              <h1>Signing link required</h1>
+              <h1>Signing Link Required</h1>
             </header>
             <div className="callout">
               This page needs a valid signing link. Please use the link sent to you.

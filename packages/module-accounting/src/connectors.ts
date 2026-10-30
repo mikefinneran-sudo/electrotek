@@ -7,7 +7,11 @@ import {
   isGoogleSheetsEnvConfigured,
   tillerExportTabName,
 } from "./google-sheets";
-import { buildTillerExportRow, tillerRowValues } from "./tiller-export";
+import {
+  buildTillerExportRow,
+  pickTillerSheet,
+  tillerRowValues,
+} from "./tiller-export";
 import type {
   ConnectorName,
   LedgerEventType,
@@ -63,6 +67,7 @@ async function loadWaveCredentials(
 }
 
 export function createTillerConnector(deps: {
+  resolveSheetId?: () => Promise<string | null>;
   resolveCategory?: (
     eventType: LedgerEventType,
     defaultCategory: string,
@@ -77,7 +82,12 @@ export function createTillerConnector(deps: {
       }
 
       const saJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? "";
-      const sheetId = process.env.TILLER_SHEET_ID ?? "";
+      const sheetId = deps.resolveSheetId
+        ? await deps.resolveSheetId()
+        : process.env.TILLER_SHEET_ID ?? "";
+      if (!sheetId) {
+        return { ok: false, skipped: true };
+      }
       const token = await getGoogleAccessToken(saJson);
       if (!token) {
         return { ok: false, error: "Could not authenticate to Google Sheets." };
@@ -320,9 +330,21 @@ async function pushWaveInvoice(
   return { ok: true, recordsSynced: 1 };
 }
 
-/** Tiller: Google service account + sheet id. */
+/** Tiller: platform Google service account present (the sheet may be connected in the UI). */
 export function isTillerConfigured(): boolean {
   return isGoogleSheetsEnvConfigured();
+}
+
+/** Sheet the Tiller connector writes to: UI-connected sheet, else env default. */
+export async function resolveTillerSheet(
+  loadCredentials: () => Promise<string | null>,
+): Promise<{ sheetId: string; source: "connected" | "default" } | null> {
+  if (!isTillerConfigured()) return null;
+  const blob = await loadCredentials();
+  return pickTillerSheet(
+    blob ? decodeStoredCredentials(blob) : null,
+    process.env.TILLER_SHEET_ID,
+  );
 }
 
 /** Wave: OAuth app env vars present. */
@@ -340,6 +362,7 @@ export async function waveConnectorStatus(
 export function selectConnector(
   name: string,
   deps: {
+    resolveTillerSheetId?: () => Promise<string | null>;
     loadWaveCredentials: () => Promise<string | null>;
     saveWaveCredentials: (blob: string) => Promise<boolean>;
     resolveCategory?: (
@@ -349,7 +372,10 @@ export function selectConnector(
   },
 ): AccountingConnector | null {
   if (name === "tiller") {
-    return createTillerConnector({ resolveCategory: deps.resolveCategory });
+    return createTillerConnector({
+      resolveSheetId: deps.resolveTillerSheetId,
+      resolveCategory: deps.resolveCategory,
+    });
   }
   if (name === "wave") {
     return createWaveConnector({

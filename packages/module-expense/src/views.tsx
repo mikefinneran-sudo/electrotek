@@ -297,7 +297,7 @@ export function UnreportedPanel({
     <section className="panel-group">
       <header className="panel-group-head expense-panel-head">
         <div>
-          <h2>Not on a report</h2>
+          <h2>Not on a Report</h2>
           <p>
             {totals.count} {totals.count === 1 ? "expense" : "expenses"}, {money(totals.total)}. Add
             them to a report to be reimbursed.

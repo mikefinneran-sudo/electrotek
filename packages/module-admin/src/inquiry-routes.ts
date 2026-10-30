@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -16,6 +17,10 @@ function notifyTo(): string[] {
 }
 
 async function sendEmail(subject: string, text: string): Promise<{ ok: boolean; skipped?: boolean }> {
+  if (isDemo()) {
+    logDemoSideEffect("admin.inquiry-email");
+    return { ok: false, skipped: true };
+  }
   const key = process.env.RESEND_API_KEY;
   const to = notifyTo();
   if (!key || to.length === 0) return { ok: false, skipped: true };

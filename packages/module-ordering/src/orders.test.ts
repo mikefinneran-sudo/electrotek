@@ -1,4 +1,4 @@
-import { computeLineTotal, computeSubtotal } from "./index";
+import { computeLineTotal, computeSubtotal, parseCartQty } from "./index";
 import { buildOrderNotificationEmail, escapeHtml } from "./email";
 
 let passed = 0;
@@ -104,6 +104,14 @@ test("order email escapes customer and product values", () => {
   assert(email.html.includes("A&amp;B &lt;Fireworks&gt;"), "business name should be escaped");
   assert(!email.html.includes("<script>alert(1)</script>"), "raw script must not render");
   assert(email.subject.includes("$19.98"), "subject should include the formatted subtotal");
+});
+
+test("parseCartQty rejects non-numeric, fractional and out-of-range quantities", () => {
+  assert(parseCartQty(null) === 1, "absent qty defaults to 1");
+  assert(parseCartQty("3") === 3, "whole number passes");
+  for (const bad of ["abc", "NaN", "Infinity", "-1", "0", "2.5", "10001", "1e15"]) {
+    assert(parseCartQty(bad) === null, `${bad} must be rejected`);
+  }
 });
 
 console.log(`ordering tests passed (${passed})`);

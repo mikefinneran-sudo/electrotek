@@ -229,11 +229,11 @@ export function ProductDetail({
           <BackToCatalog />
           {setupRequired ? (
             <EmptyState
-              title="Catalog setup required"
+              title="Catalog Setup Required"
               body="Set Supabase environment variables and apply the catalog migration before product detail pages can load data."
             />
           ) : (
-            <EmptyState title="Product unavailable" body="This product is not available." />
+            <EmptyState title="Product Unavailable" body="This product is not available." />
           )}
         </main>
       </div>

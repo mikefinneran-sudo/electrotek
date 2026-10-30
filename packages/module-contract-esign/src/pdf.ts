@@ -6,6 +6,7 @@
 // decoded signature PNG, and returns the PDF bytes. server.ts handles storing
 // the result in the private `contracts` Storage bucket.
 
+import { constants as zlibConstants, inflateRawSync } from "node:zlib";
 import PDFDocument from "pdfkit";
 import type { InspectionRef } from "./server";
 
@@ -521,15 +522,75 @@ export function generateContractPdf(
   });
 }
 
-/** Decode a `data:image/png;base64,...` signature data URL into PNG bytes. */
+const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+// A signature pad is a few hundred CSS pixels; anything far larger is a crafted
+// image whose inflated pixel data would exhaust the function's memory.
+const MAX_SIGNATURE_DIMENSION = 4096;
+
+/**
+ * Decode a `data:image/png;base64,...` signature data URL into PNG bytes.
+ * Rejects bytes without a PNG header or with oversized IHDR dimensions.
+ */
 export function decodeSignaturePng(dataUrl: string | null | undefined): Uint8Array | null {
   const PNG_PREFIX = "data:image/png;base64,";
   if (!dataUrl || !dataUrl.startsWith(PNG_PREFIX)) return null;
   const b64 = dataUrl.slice(PNG_PREFIX.length);
+  let bytes: Uint8Array;
   try {
-    return new Uint8Array(Buffer.from(b64, "base64"));
+    bytes = new Uint8Array(Buffer.from(b64, "base64"));
   } catch {
     return null;
+  }
+  if (bytes.length < 24 || PNG_SIGNATURE.some((b, i) => bytes[i] !== b)) return null;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const width = view.getUint32(16);
+  const height = view.getUint32(20);
+  if (!width || !height || width > MAX_SIGNATURE_DIMENSION || height > MAX_SIGNATURE_DIMENSION) {
+    return null;
+  }
+  return inflatesWithinDimensions(bytes, view, width, height) ? bytes : null;
+}
+
+const PNG_CHANNELS: Record<number, number> = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 };
+
+/**
+ * True when the IDAT stream inflates to no more than the declared dimensions
+ * need. The IHDR cap alone lets a PNG claim 1x1 and carry a zlib bomb that the
+ * PDF embedder would inflate in full.
+ */
+function inflatesWithinDimensions(
+  bytes: Uint8Array,
+  view: DataView,
+  width: number,
+  height: number,
+): boolean {
+  const channels = PNG_CHANNELS[bytes[25]];
+  if (!channels) return false;
+  const rowBytes = Math.ceil((width * channels * bytes[24]) / 8) + 1;
+  // Adam7 interlacing adds at most one filter byte per sub-image row.
+  const limit = rowBytes * height + 8 * height + 1024;
+  const idat: Uint8Array[] = [];
+  let offset = 8;
+  while (offset + 12 <= bytes.length) {
+    const length = view.getUint32(offset);
+    const end = offset + 12 + length;
+    if (end > bytes.length) return false;
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+    if (type === "IDAT") idat.push(bytes.subarray(offset + 8, offset + 8 + length));
+    if (type === "IEND") break;
+    offset = end;
+  }
+  if (!idat.length) return false;
+  try {
+    // Raw inflate past the 2-byte zlib header, tolerating a bad Adler-32 as the
+    // PDF embedder does: only the inflated size matters here.
+    inflateRawSync(Buffer.concat(idat).subarray(2), {
+      maxOutputLength: limit,
+      finishFlush: zlibConstants.Z_SYNC_FLUSH,
+    });
+    return true;
+  } catch {
+    return false;
   }
 }
 

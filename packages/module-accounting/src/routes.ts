@@ -5,11 +5,15 @@
 //        ?resource=account-map&connector=tiller|wave
 //   POST ?action=run-sync       body: { connector }
 //        ?action=upsert-map     body: { connector, internal_key, external_id, label? }
+//        ?action=tiller-connect body: { sheet }  (Google Sheets link or id)
+//        ?action=tiller-disconnect
 
 import "server-only";
 import { timingSafeEqual } from "node:crypto";
 import {
+  connectTillerSheet,
   countPendingOutbox,
+  disconnectTiller,
   drainOutbox,
   getExportSettings,
   isAccountingConfigured,
@@ -280,6 +284,22 @@ export function createAccountingRouteHandlers(options: AccountingRouteOptions) {
       return json({ ok: true, url: authorizeUrl, state });
     }
 
+    if (action === "tiller-connect") {
+      const body = await readBody(request);
+      const sheet = typeof body.sheet === "string" ? body.sheet.slice(0, 500) : "";
+      const result = await connectTillerSheet(sheet);
+      return result.ok
+        ? json(result)
+        : json(result, { status: result.status });
+    }
+
+    if (action === "tiller-disconnect") {
+      const ok = await disconnectTiller();
+      return ok
+        ? json({ ok: true })
+        : json({ ok: false, error: "Could not disconnect Tiller." }, { status: 500 });
+    }
+
     if (action === "upsert-map") {
       const body = await readBody(request);
       const connector = body.connector;
@@ -317,7 +337,7 @@ export function createAccountingRouteHandlers(options: AccountingRouteOptions) {
 
     // Unknown or missing action.
     return badRequest(
-      "action is required. Valid values: run-sync, export-now, save-export-schedule, retry-export, wave-oauth-url, upsert-map.",
+      "action is required. Valid values: run-sync, export-now, save-export-schedule, retry-export, wave-oauth-url, tiller-connect, tiller-disconnect, upsert-map.",
     );
   }
 

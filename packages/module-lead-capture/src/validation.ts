@@ -3,6 +3,7 @@ import {
   type LeadCaptureInput,
   type LeadCaptureRecord,
 } from "./index";
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
 
 export const FIELD_LIMITS = {
   name: 200,
@@ -69,6 +70,12 @@ export interface RateLimitResult {
   allowed: boolean;
   count: number;
   retryAfterMs: number;
+}
+
+export interface RateLimitOptions {
+  max?: number;
+  windowMs?: number;
+  namespace?: string;
 }
 
 const hits = new Map<string, number[]>();
@@ -211,30 +218,37 @@ export function validateLeadAttachments(files: readonly File[]): AttachmentValid
 
 // Best-effort per-IP throttle. Module scope persists across warm invocations on
 // the same serverless instance; it is a backstop, not a hard abuse boundary.
-export function checkRateLimit(ip: string, now = Date.now()): RateLimitResult {
+export function checkRateLimit(
+  ip: string,
+  now = Date.now(),
+  options: RateLimitOptions = {},
+): RateLimitResult {
   if (!ip) {
     return { allowed: true, count: 0, retryAfterMs: 0 };
   }
 
-  const recent = (hits.get(ip) ?? []).filter((timestamp) => now - timestamp < RATE_WINDOW_MS);
+  const windowMs = options.windowMs ?? RATE_WINDOW_MS;
+  const max = options.max ?? RATE_MAX;
+  const key = `${options.namespace ?? "lead"}:${ip}`;
+  const recent = (hits.get(key) ?? []).filter((timestamp) => now - timestamp < windowMs);
   recent.push(now);
-  hits.set(ip, recent);
+  hits.set(key, recent);
 
   // Bound memory without nuking active counters: evict only entries whose most
   // recent hit is already outside the window (best-effort backstop).
   if (hits.size > 5000) {
     for (const [key, timestamps] of hits) {
       const last = timestamps[timestamps.length - 1] ?? 0;
-      if (key !== ip && now - last >= RATE_WINDOW_MS) hits.delete(key);
+      if (key !== `${options.namespace ?? "lead"}:${ip}` && now - last >= windowMs) hits.delete(key);
     }
   }
 
   const oldest = recent[0] ?? now;
 
   return {
-    allowed: recent.length <= RATE_MAX,
+    allowed: recent.length <= max,
     count: recent.length,
-    retryAfterMs: Math.max(0, RATE_WINDOW_MS - (now - oldest)),
+    retryAfterMs: Math.max(0, windowMs - (now - oldest)),
   };
 }
 
@@ -246,7 +260,15 @@ export function resetRateLimit(): void {
 // env vars are set. Returns null when Upstash is unconfigured or unreachable so
 // the caller falls back to the in-memory backstop (fail-open, never blocks the
 // form on an infra hiccup).
-async function upstashRateLimit(ip: string, now: number): Promise<RateLimitResult | null> {
+async function upstashRateLimit(
+  ip: string,
+  now: number,
+  options: RateLimitOptions,
+): Promise<RateLimitResult | null> {
+  if (isDemo()) {
+    logDemoSideEffect("upstash.rate-limit");
+    return null;
+  }
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) return null;
@@ -254,17 +276,19 @@ async function upstashRateLimit(ip: string, now: number): Promise<RateLimitResul
   // True sliding window via a sorted set (matches the in-memory limiter, no
   // fixed-window boundary burst): evict entries older than the window, add this
   // hit, count what remains, and refresh the key TTL.
-  const key = `lead_rl:${ip}`;
+  const windowMs = options.windowMs ?? RATE_WINDOW_MS;
+  const max = options.max ?? RATE_MAX;
+  const key = `${(options.namespace ?? "lead").replace(/[^a-z0-9_-]/gi, "_")}_rl:${ip}`;
   const member = `${now}-${Math.random().toString(36).slice(2)}`;
   try {
     const res = await fetch(`${url}/pipeline`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify([
-        ["ZREMRANGEBYSCORE", key, "0", String(now - RATE_WINDOW_MS)],
+        ["ZREMRANGEBYSCORE", key, "0", String(now - windowMs)],
         ["ZADD", key, String(now), member],
         ["ZCARD", key],
-        ["PEXPIRE", key, String(RATE_WINDOW_MS)],
+        ["PEXPIRE", key, String(windowMs)],
       ]),
     });
     if (!res.ok) return null;
@@ -272,9 +296,9 @@ async function upstashRateLimit(ip: string, now: number): Promise<RateLimitResul
     const count = Number(out[2]?.result ?? 0);
     if (!Number.isFinite(count) || count <= 0) return null;
     return {
-      allowed: count <= RATE_MAX,
+      allowed: count <= max,
       count,
-      retryAfterMs: RATE_WINDOW_MS,
+      retryAfterMs: windowMs,
     };
   } catch {
     return null;
@@ -286,8 +310,12 @@ async function upstashRateLimit(ip: string, now: number): Promise<RateLimitResul
  * serverless instances) and falls back to the in-memory backstop when Upstash
  * is not configured. Routes should call this.
  */
-export async function enforceRateLimit(ip: string, now = Date.now()): Promise<RateLimitResult> {
+export async function enforceRateLimit(
+  ip: string,
+  now = Date.now(),
+  options: RateLimitOptions = {},
+): Promise<RateLimitResult> {
   if (!ip) return { allowed: true, count: 0, retryAfterMs: 0 };
-  const distributed = await upstashRateLimit(ip, now);
-  return distributed ?? checkRateLimit(ip, now);
+  const distributed = await upstashRateLimit(ip, now, options);
+  return distributed ?? checkRateLimit(ip, now, options);
 }

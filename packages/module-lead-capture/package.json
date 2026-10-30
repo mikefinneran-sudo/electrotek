@@ -8,6 +8,7 @@
     "./page": "./src/page.tsx",
     "./ui": "./src/ui.tsx",
     "./server": "./src/server.ts",
+    "./validation": "./src/validation.ts",
     "./routes": "./src/routes.ts"
   },
   "scripts": {

@@ -3,6 +3,7 @@
 
 import "server-only";
 import { createSign } from "node:crypto";
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
 
 const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -56,6 +57,10 @@ function signJwt(sa: ServiceAccountKey): string {
 export async function getGoogleAccessToken(
   serviceAccountJson: string,
 ): Promise<string | null> {
+  if (isDemo()) {
+    logDemoSideEffect("google-sheets.token");
+    return null;
+  }
   const sa = parseServiceAccount(serviceAccountJson);
   if (!sa) return null;
 
@@ -82,6 +87,10 @@ export async function appendSheetRows(
   tabName: string,
   rows: string[][],
 ): Promise<{ ok: boolean; rowsAppended?: number; error?: string }> {
+  if (isDemo()) {
+    logDemoSideEffect("google-sheets.append", { sheetId });
+    return { ok: false, error: "Google Sheets is disabled in demo mode." };
+  }
   if (rows.length === 0) {
     return { ok: true, rowsAppended: 0 };
   }
@@ -123,12 +132,85 @@ export async function appendSheetRows(
 }
 
 export function isGoogleSheetsEnvConfigured(): boolean {
-  return (
-    Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_JSON) &&
-    Boolean(process.env.TILLER_SHEET_ID)
-  );
+  return !isDemo() && Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 }
 
 export function tillerExportTabName(): string {
   return process.env.TILLER_EXPORT_TAB?.trim() || "BananaFORCE Export";
+}
+
+/** The platform service account a client must share their Tiller sheet with. */
+export function serviceAccountEmail(): string | null {
+  if (isDemo()) return null;
+  return (
+    parseServiceAccount(process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? "")
+      ?.client_email ?? null
+  );
+}
+
+/**
+ * Confirms the service account can open the sheet, then adds the export tab
+ * with its header row when the tab is missing.
+ */
+export async function ensureExportTab(
+  accessToken: string,
+  sheetId: string,
+  tabName: string,
+  headers: string[],
+): Promise<
+  | { ok: true; title: string; created: boolean }
+  | { ok: false; denied: boolean; error: string }
+> {
+  if (isDemo()) {
+    logDemoSideEffect("google-sheets.ensure-tab", { sheetId });
+    return { ok: false, denied: false, error: "Google Sheets is disabled in demo mode." };
+  }
+  const base = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}`;
+  const auth = { Authorization: `Bearer ${accessToken}` };
+
+  const meta = await fetch(
+    `${base}?fields=properties.title,sheets.properties.title`,
+    { headers: auth },
+  ).catch(() => null);
+  if (!meta) {
+    return { ok: false, denied: false, error: "Could not reach Google Sheets." };
+  }
+  if (meta.status === 403 || meta.status === 404) {
+    return { ok: false, denied: true, error: `Sheets API returned ${meta.status}.` };
+  }
+  if (!meta.ok) {
+    return { ok: false, denied: false, error: `Sheets API returned ${meta.status}.` };
+  }
+
+  const body = (await meta.json().catch(() => ({}))) as {
+    properties?: { title?: string };
+    sheets?: Array<{ properties?: { title?: string } }>;
+  };
+  const title = body.properties?.title ?? "Untitled spreadsheet";
+  if (body.sheets?.some((sheet) => sheet.properties?.title === tabName)) {
+    return { ok: true, title, created: false };
+  }
+
+  const add = await fetch(`${base}:batchUpdate`, {
+    method: "POST",
+    headers: { ...auth, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      requests: [{ addSheet: { properties: { title: tabName } } }],
+    }),
+  }).catch(() => null);
+  if (!add?.ok) {
+    // Read-only (Viewer) shares fail here rather than on the metadata read.
+    const denied = add?.status === 403;
+    return {
+      ok: false,
+      denied,
+      error: `Could not add the "${tabName}" tab${add ? ` (Sheets API ${add.status})` : ""}.`,
+    };
+  }
+
+  const header = await appendSheetRows(accessToken, sheetId, tabName, [headers]);
+  if (!header.ok) {
+    return { ok: false, denied: false, error: header.error ?? "Could not write headers." };
+  }
+  return { ok: true, title, created: true };
 }

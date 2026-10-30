@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isDemo } from "@waltersignal/bananaforce-core/demo";
 import { getSupabaseServerClient } from "./server";
 import { getSupabaseServiceClient } from "./service";
 
@@ -30,7 +31,7 @@ export async function getStaffDbClient(): Promise<SupabaseClient | null> {
   // is a prod deploy that depends on it; app boot logs a loud warning when the
   // flag is set alongside a real service-role key). Never set it on a deploy
   // holding real client data.
-  if (process.env.BANANAFORCE_DEMO_OPEN_API === "1") {
+  if (!isDemo() && process.env.BANANAFORCE_DEMO_OPEN_API === "1") {
     return getSupabaseServiceClient();
   }
   return null;

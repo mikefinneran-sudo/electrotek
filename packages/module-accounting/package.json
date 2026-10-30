@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "tsx src/sync.test.ts && tsx src/tiller-export.test.ts && tsx src/export-schedule.test.ts && tsx src/outbox-reaper.test.ts && tsx src/wave-oauth-state.test.ts",
+    "test": "tsx src/sync.test.ts && tsx src/tiller-export.test.ts && tsx src/export-schedule.test.ts && tsx src/outbox-reaper.test.ts && tsx src/wave-oauth-state.test.ts && tsx src/corporate-logic.test.ts",
     "lint": "eslint ."
   },
   "exports": {
@@ -16,6 +16,8 @@
     "./events": "./src/events.ts",
     "./connectors": "./src/connectors.ts",
     "./routes": "./src/routes.ts",
+    "./corporate-page": "./src/corporate-page.tsx",
+    "./corporate-routes": "./src/corporate-routes.ts",
     "./sync": "./src/sync.ts"
   },
   "dependencies": {

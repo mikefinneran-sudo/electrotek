@@ -8,6 +8,7 @@ import { getSupabaseServerClient } from "@waltersignal/bananaforce-data-supabase
 import { resolvePrice } from "@waltersignal/bananaforce-module-catalog/pricing";
 import type { CustomerTier } from "@waltersignal/bananaforce-module-catalog";
 import type { OrderActionResult } from "./index";
+import { parseCartQty } from "./index";
 import { sendOrderNotification } from "./email";
 
 type ServerClient = Awaited<ReturnType<typeof getSupabaseServerClient>>;
@@ -86,10 +87,14 @@ async function recomputeSubtotal(
 
 export async function addToOrder(formData: FormData): Promise<OrderActionResult> {
   const productId = Number(formData.get("productId"));
-  const qty = Math.max(1, Math.trunc(Number(formData.get("qty") ?? 1)));
+  // Math.max(1, NaN) is NaN, so a non-numeric qty used to reach the cart write.
+  const qty = parseCartQty(formData.get("qty"));
 
   if (!Number.isInteger(productId) || productId <= 0) {
     return { ok: false, error: "A valid product is required." };
+  }
+  if (qty === null) {
+    return { ok: false, error: "Quantity must be a whole number from 1 to 10,000." };
   }
 
   const auth = await authedClient();

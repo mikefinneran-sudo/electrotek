@@ -88,8 +88,6 @@ export function validateClientConfig(
 
   if (config.data.adapter === "supabase" && !config.data.projectRef?.trim())
     errors.push('data.projectRef is required when adapter is "supabase"');
-  if (config.data.adapter === "airtable" && !config.data.bases)
-    errors.push('data.bases is required when adapter is "airtable"');
 
   if (config.ai) {
     if (!config.ai.model.trim()) errors.push("ai.model is required when ai is set");

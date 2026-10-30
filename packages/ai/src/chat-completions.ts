@@ -1,4 +1,5 @@
 import "server-only";
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
 import { RECEIPT_PROMPT, normalizeReceiptResponse } from "./receipt";
 import type { AiConfig, ReceiptFields, ReceiptImage } from "./types";
 
@@ -19,6 +20,10 @@ export async function extractReceiptFields(
   apiKey: string,
   image: ReceiptImage,
 ): Promise<{ ok: true; fields: ReceiptFields } | { ok: false; detail: string }> {
+  if (isDemo()) {
+    logDemoSideEffect("ai.receipt-extraction");
+    return { ok: false, detail: "AI receipt extraction is disabled in demo mode." };
+  }
   const endpoint = `${baseUrl.replace(/\/+$/, "")}/chat/completions`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);

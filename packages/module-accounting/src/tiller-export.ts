@@ -40,8 +40,11 @@ export function buildTillerExportRow(
   categoryOverride?: string,
 ): TillerExportRow {
   const amount = payload.amount ?? 0;
+  // Tiller convention: money out is negative.
   const signedAmount =
-    eventType === "payment.refunded" ? -Math.abs(amount) : amount;
+    eventType === "payment.refunded" || eventType === "expense.recorded"
+      ? -Math.abs(amount)
+      : amount;
 
   const description =
     payload.description ??
@@ -71,4 +74,35 @@ export function tillerRowValues(row: TillerExportRow): string[] {
     row.sourceRef,
     row.idempotencyKey,
   ];
+}
+
+/** Header row for the export tab; matches tillerRowValues column order. */
+export const TILLER_EXPORT_HEADERS = [
+  "Date",
+  "Description",
+  "Amount",
+  "Category",
+  "Source Module",
+  "Source Ref",
+  "Idempotency Key",
+];
+
+/** Accepts a Google Sheets URL or a bare spreadsheet id; null when neither. */
+export function parseSheetId(input: string): string | null {
+  const trimmed = input.trim();
+  const id = trimmed.match(/\/spreadsheets\/d\/([A-Za-z0-9_-]+)/)?.[1] ?? trimmed;
+  return /^[A-Za-z0-9_-]{20,}$/.test(id) ? id : null;
+}
+
+/** A sheet connected in the UI wins; the env sheet id is the fallback. */
+export function pickTillerSheet(
+  stored: Record<string, unknown> | null,
+  envSheetId: string | undefined,
+): { sheetId: string; source: "connected" | "default" } | null {
+  const connected = stored?.sheet_id;
+  if (typeof connected === "string" && connected) {
+    return { sheetId: connected, source: "connected" };
+  }
+  const fallback = envSheetId?.trim();
+  return fallback ? { sheetId: fallback, source: "default" } : null;
 }

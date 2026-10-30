@@ -106,6 +106,16 @@ export function computeSubtotal(items: { line_total: number }[]): number {
   return Number(total.toFixed(2));
 }
 
+// ponytail: fixed per-line cap; raise it if a real wholesale order needs more. numeric(10,2) line_total is the hard ceiling.
+export const MAX_LINE_QTY = 10_000;
+
+/** Quantity from a form value: a whole number from 1 to MAX_LINE_QTY, else null. Absent means 1. */
+export function parseCartQty(raw: FormDataEntryValue | null): number | null {
+  if (raw === null || raw === "") return 1;
+  const qty = Number(raw);
+  return Number.isInteger(qty) && qty >= 1 && qty <= MAX_LINE_QTY ? qty : null;
+}
+
 /** Pure line-total helper; rounded to cents to match numeric(10,2) storage. */
 export function computeLineTotal(unitPrice: number, qty: number): number {
   return Number((unitPrice * qty).toFixed(2));

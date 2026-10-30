@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { runGuardedLoad } from "@waltersignal/bananaforce-core";
 import type {
@@ -63,7 +64,15 @@ export async function fetchFailedOutboxEvents(endpoint: string): Promise<LedgerO
 export interface AccountingViewProps {
   title?: string;
   /** Which connectors are configured (booleans from the server; no env names). */
-  connectorStatus?: { tiller: boolean; wave: boolean };
+  connectorStatus?: {
+    tiller: boolean;
+    wave: boolean;
+    tillerSetup?: {
+      serviceAccountEmail: string | null;
+      sheetId: string | null;
+      source: "connected" | "default" | null;
+    };
+  };
   notAuthorized?: boolean;
   setupRequired?: boolean;
   pendingOutbox?: number;
@@ -93,6 +102,109 @@ function ConnectorBadge({
     >
       {name}: {configured ? "connected" : "not connected"}
     </span>
+  );
+}
+
+/**
+ * Self-serve Tiller connect: share the sheet with the platform service
+ * account, paste its link, connect. Reloads so server status re-renders.
+ */
+function TillerConnectPanel({
+  endpoint,
+  setup,
+}: {
+  endpoint: string;
+  setup: NonNullable<NonNullable<AccountingViewProps["connectorStatus"]>["tillerSetup"]>;
+}) {
+  const [sheet, setSheet] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+
+  async function post(action: "tiller-connect" | "tiller-disconnect") {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const r = await fetch(`${endpoint}?action=${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(action === "tiller-connect" ? { sheet } : {}),
+      });
+      const body = (await r.json().catch(() => ({}))) as {
+        ok?: boolean;
+        title?: string;
+        error?: string;
+      };
+      if (body.ok) {
+        window.location.reload();
+        return;
+      }
+      setMessage({ ok: false, text: body.error ?? "Request failed." });
+    } catch {
+      setMessage({ ok: false, text: "Could not contact the server." });
+    }
+    setBusy(false);
+  }
+
+  if (!setup.serviceAccountEmail) return null;
+  const sheetUrl = setup.sheetId
+    ? `https://docs.google.com/spreadsheets/d/${setup.sheetId}/edit`
+    : null;
+
+  return (
+    <div className="panel pad" style={{ marginBottom: "1.5rem" }}>
+      <span className="label" style={{ display: "block", marginBottom: "0.5rem" }}>
+        Tiller sheet
+      </span>
+      {sheetUrl ? (
+        <p className="price-note" style={{ marginBottom: "0.75rem" }}>
+          Exporting to{" "}
+          <a href={sheetUrl} target="_blank" rel="noreferrer">
+            this sheet
+          </a>
+          {setup.source === "default" ? " (site default)" : ""}.
+        </p>
+      ) : null}
+      <p className="price-note" style={{ marginBottom: "0.75rem" }}>
+        In your Tiller sheet, click Share and add{" "}
+        <code style={{ userSelect: "all" }}>{setup.serviceAccountEmail}</code> as an
+        Editor. Then paste the sheet link below.
+      </p>
+      <form
+        style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          void post("tiller-connect");
+        }}
+      >
+        <input
+          type="url"
+          required
+          aria-label="Tiller sheet link"
+          placeholder="https://docs.google.com/spreadsheets/d/…"
+          value={sheet}
+          onChange={(e) => setSheet(e.target.value)}
+          style={{ flex: "1 1 20rem", minWidth: 0 }}
+        />
+        <button type="submit" className="btn primary" disabled={busy || !sheet.trim()}>
+          {busy ? "Connecting…" : sheetUrl ? "Connect a different sheet" : "Connect Tiller"}
+        </button>
+        {setup.source === "connected" ? (
+          <button
+            type="button"
+            className="btn ghost"
+            disabled={busy}
+            onClick={() => void post("tiller-disconnect")}
+          >
+            Disconnect
+          </button>
+        ) : null}
+      </form>
+      {message ? (
+        <p role="status" className={`form-msg ${message.ok ? "success" : "error"}`} style={{ marginTop: "0.5rem" }}>
+          {message.text}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
@@ -869,6 +981,9 @@ export function AccountingView({
         <header className="page-head">
           <span className="eyebrow">Accounting</span>
           <h1>{title}</h1>
+          <p className="price-note">
+            <Link href="/accounting/corporate">Corporate info</Link> — EIN, registrations, filings, and documents.
+          </p>
         </header>
 
         {waveBanner ? (
@@ -940,6 +1055,10 @@ export function AccountingView({
             </p>
           ) : null}
         </div>
+
+        {connectorStatus.tillerSetup ? (
+          <TillerConnectPanel endpoint={endpoint} setup={connectorStatus.tillerSetup} />
+        ) : null}
 
         <ExportSchedulePanel endpoint={endpoint} initialSettings={exportSettings} />
 

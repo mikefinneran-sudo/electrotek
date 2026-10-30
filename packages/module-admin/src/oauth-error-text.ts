@@ -1,6 +1,6 @@
 /**
- * Human-readable text for the ?error= reasons createOAuthCallbackRoute forwards
- * to /admin/login.
+ * Human-readable text for the ?error= reasons createOAuthCallbackRoute and
+ * createStaffLinkRoute forward to /admin/login.
  *
  * Split out of admin-pages.tsx so it is testable without dragging the server-only
  * Supabase imports into a unit test. The original bug this whole path exists to
@@ -16,6 +16,8 @@ export const OAUTH_ERROR_TEXT: Record<string, string> = {
   oauth_exchange_failed:
     "Could not complete Google sign-in. The link may have expired — please try again.",
   access_denied: "Google sign-in was cancelled.",
+  invalid_sign_in_link: "That sign-in link is not valid. Request a new one.",
+  sign_in_link_expired: "That sign-in link has expired or was already used. Request a new one.",
 };
 
 /**

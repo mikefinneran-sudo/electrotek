@@ -16,6 +16,7 @@
     "./inquiry-pages": "./src/inquiry-pages.tsx",
     "./inquiry-routes": "./src/inquiry-routes.ts",
     "./oauth-callback-route": "./src/oauth-callback-route.ts",
+    "./staff-link-route": "./src/staff-link-route.ts",
     "./staff-chrome": "./src/staff-chrome.tsx",
     "./master-sheet-formats": "./src/master-sheet-formats.ts"
   },

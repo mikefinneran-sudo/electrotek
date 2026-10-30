@@ -1,6 +1,7 @@
 // Wave OAuth helpers. Wave Pro is required for third-party OAuth (since May 2025).
 
 import "server-only";
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
 
 const WAVE_AUTHORIZE_URL = "https://api.waveapps.com/oauth2/authorize/";
 const WAVE_TOKEN_URL = "https://api.waveapps.com/oauth2/token/";
@@ -18,6 +19,7 @@ const DEFAULT_SCOPES = [
 ].join(" ");
 
 export function isWaveOAuthEnvConfigured(): boolean {
+  if (isDemo()) return false;
   return (
     Boolean(process.env.WAVE_CLIENT_ID?.trim()) &&
     Boolean(process.env.WAVE_CLIENT_SECRET?.trim())
@@ -25,6 +27,7 @@ export function isWaveOAuthEnvConfigured(): boolean {
 }
 
 export function buildWaveAuthorizeUrl(redirectUri: string, state: string): string | null {
+  if (isDemo()) return null;
   const clientId = process.env.WAVE_CLIENT_ID?.trim();
   if (!clientId) return null;
 
@@ -42,6 +45,10 @@ export async function exchangeWaveCode(
   code: string,
   redirectUri: string,
 ): Promise<Record<string, unknown> | null> {
+  if (isDemo()) {
+    logDemoSideEffect("wave.oauth-exchange");
+    return null;
+  }
   const clientId = process.env.WAVE_CLIENT_ID?.trim();
   const clientSecret = process.env.WAVE_CLIENT_SECRET?.trim();
   if (!clientId || !clientSecret) return null;
@@ -70,6 +77,10 @@ export async function refreshWaveAccessToken(
   refreshToken: string,
   redirectUri: string,
 ): Promise<Record<string, unknown> | null> {
+  if (isDemo()) {
+    logDemoSideEffect("wave.oauth-refresh");
+    return null;
+  }
   const clientId = process.env.WAVE_CLIENT_ID?.trim();
   const clientSecret = process.env.WAVE_CLIENT_SECRET?.trim();
   if (!clientId || !clientSecret) return null;
@@ -98,6 +109,10 @@ export async function waveGraphql<T>(
   query: string,
   variables: Record<string, unknown> = {},
 ): Promise<{ ok: true; data: T } | { ok: false; error: string }> {
+  if (isDemo()) {
+    logDemoSideEffect("wave.graphql");
+    return { ok: false, error: "Wave is disabled in demo mode." };
+  }
   const response = await fetch(WAVE_GRAPHQL_URL, {
     method: "POST",
     headers: {

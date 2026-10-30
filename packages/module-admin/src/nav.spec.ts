@@ -28,6 +28,18 @@ describe("resolveStaffNav", () => {
     expect(hrefs).not.toContain("/admin");
   });
 
+  // apps/abc: a service-business client with no module-admin. Before these
+  // entries its sidebar held only CRM, so quoting and scheduling had no link.
+  it("gives a field-service client every staff surface it enabled", () => {
+    const nav = resolveStaffNav([
+      "lead-capture", "crm", "quote-engine", "scheduling", "contract-esign",
+      "crew-portal", "visit-checkflow", "client-portal", "communications", "reporting",
+    ]);
+    expect(nav.map((i) => i.href)).toEqual([
+      "/crm", "/intake", "/schedule", "/contract", "/visit", "/crew", "/messages", "/reports",
+    ]);
+  });
+
   // Regression guard: resolveAdminNav is what produced the empty nav.
   it("resolveAdminNav is still /admin-only", () => {
     expect(resolveAdminNav(["crm", "expense"])).toEqual([]);
@@ -50,9 +62,9 @@ describe("case-file staff nav", () => {
     expect(nav.map((item) => item.href)).not.toContain("/cases");
   });
 
-  it("does not show /crm to a forensic-case client -- the case file IS the CRM", () => {
+  it("keeps /crm for a forensic-case client -- enabling a module never hides another", () => {
     const nav = resolveStaffNav(["crm", "expense", "forensic-case"]);
-    expect(nav.map((item) => item.href)).not.toContain("/crm");
+    expect(nav.map((item) => item.href)).toContain("/crm");
   });
 
   it("still shows /crm to a non-forensic client", () => {
@@ -60,9 +72,32 @@ describe("case-file staff nav", () => {
     expect(nav.map((item) => item.href)).toContain("/crm");
   });
 
-  it("keeps /cases first for a forensic client even with /crm collapsed", () => {
+  it("keeps /cases first for a forensic client, with /crm still present", () => {
     const nav = resolveStaffNav(["crm", "expense", "forensic-case"]);
-    expect(nav[0]?.href).toBe("/cases");
-    expect(nav.map((item) => item.href)).toEqual(["/cases", "/expenses"]);
+    expect(nav.map((item) => item.href)).toEqual(["/cases", "/crm", "/expenses"]);
+  });
+});
+
+describe("billing staff nav", () => {
+  it("shows Invoices when billing is enabled", () => {
+    expect(resolveStaffNav(["billing"])).toContainEqual({
+      href: "/billing",
+      label: "Invoices",
+      requires: ["billing"],
+    });
+  });
+
+  it("does not show Invoices when billing is absent", () => {
+    expect(resolveStaffNav(["crm", "expense"]).map((item) => item.label)).not.toContain(
+      "Invoices",
+    );
+  });
+
+  it("adding billing never removes another config's destinations", () => {
+    const modules = ["crm", "quote-engine", "scheduling", "expense"];
+    const before = resolveStaffNav(modules).map((item) => item.href);
+    const after = resolveStaffNav([...modules, "billing"]).map((item) => item.href);
+
+    expect(after).toEqual(expect.arrayContaining(before));
   });
 });

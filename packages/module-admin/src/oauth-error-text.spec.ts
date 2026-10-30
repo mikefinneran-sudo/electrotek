@@ -13,9 +13,11 @@ import { oauthErrorMessage, OAUTH_ERROR_TEXT } from "./oauth-error-text";
  * Google's own codes, which are unbounded and handled by the fallback.
  */
 function reasonsEmittedByRoute(): string[] {
-  const routeFile = fileURLToPath(new URL("./oauth-callback-route.ts", import.meta.url));
-  const source = readFileSync(routeFile, "utf8");
-  return [...source.matchAll(/loginRedirect\("([^"]+)"\)/g)].map((m) => m[1]);
+  return ["./oauth-callback-route.ts", "./staff-link-route.ts", "./staff-sign-in.ts"].flatMap((file) => {
+    const source = readFileSync(fileURLToPath(new URL(file, import.meta.url)), "utf8");
+    // Both loginRedirect("reason") and loginRedirect(origin, "reason").
+    return [...source.matchAll(/loginRedirect\((?:[\w.]+,\s*)?"([^"]+)"\)/g)].map((m) => m[1]);
+  });
 }
 
 describe("oauthErrorMessage", () => {
@@ -24,6 +26,7 @@ describe("oauthErrorMessage", () => {
     // Guard the guard: if the regex stops matching, the loop below would pass
     // vacuously over an empty array.
     expect(emitted.length).toBeGreaterThanOrEqual(3);
+    expect(emitted).toContain("sign_in_link_expired");
 
     for (const reason of emitted) {
       expect(OAUTH_ERROR_TEXT[reason], `route emits "${reason}" with no mapping`).toBeTruthy();

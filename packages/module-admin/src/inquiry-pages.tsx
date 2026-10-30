@@ -41,7 +41,7 @@ export function createWholesalePage(clientConfig: ClientConfig) {
         <section className="container" style={{ maxWidth: 720 }}>
           <header className="page-head">
             <span className="eyebrow">{clientConfig.brand.name}</span>
-            <h1>Wholesale inquiry</h1>
+            <h1>Wholesale Inquiry</h1>
             <p className="lede">Apply for wholesale pricing and account approval.</p>
           </header>
           <div className="panel pad">

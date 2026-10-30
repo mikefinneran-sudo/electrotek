@@ -11,6 +11,8 @@ export interface AdminShellProps {
   staffEmail: string;
   staffName: string | null;
   staffRole: string;
+  /** Where the brand links. Defaults to /admin; a client without module-admin passes its staffHome. */
+  homeHref?: string;
   children: React.ReactNode;
 }
 
@@ -20,6 +22,7 @@ export function AdminShell({
   staffEmail,
   staffName,
   staffRole,
+  homeHref = "/admin",
   children,
 }: AdminShellProps) {
   const pathname = usePathname();
@@ -27,7 +30,7 @@ export function AdminShell({
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <Link href="/admin" className="admin-brand">
+        <Link href={homeHref} className="admin-brand">
           {brandName}
           <span className="admin-brand-sub">Back office</span>
         </Link>
@@ -57,7 +60,7 @@ export function AdminShell({
       </aside>
       <div className="admin-main">
         <header className="admin-mobile-bar">
-          <Link href="/admin" className="admin-brand compact">
+          <Link href={homeHref} className="admin-brand compact">
             {brandName}
           </Link>
           <SignOutButton />

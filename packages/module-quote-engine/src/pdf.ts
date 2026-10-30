@@ -4,6 +4,7 @@
 // keeping this module bolt-on per client.config.ts.
 
 import PDFDocument from "pdfkit";
+import { businessDateIso, formatBusinessDateLong } from "./dates";
 import { resolveQuoteLabels, type QuoteLabels } from "./labels";
 import { computeTotals, lineTax, lineTotal, type QuoteLineItem } from "./line-items";
 import {
@@ -52,10 +53,6 @@ interface ScopeItem {
   area: string;
 }
 
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function addDays(iso: string, days: number): string {
   const d = new Date(`${iso}T12:00:00`);
   d.setDate(d.getDate() + days);
@@ -63,10 +60,7 @@ function addDays(iso: string, days: number): string {
 }
 
 function formatDateLong(value: string | null | undefined): string {
-  if (!value) return "—";
-  const d = new Date(`${String(value).slice(0, 10)}T12:00:00`);
-  if (Number.isNaN(d.getTime())) return String(value);
-  return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  return formatBusinessDateLong(value);
 }
 
 function visitFrequencyLong(visitsPerWeek: number | null): string {
@@ -639,7 +633,7 @@ export function generateQuotePdf(
   // and a new issue date — the document contradicted itself between downloads.
   // The addDays fallback now only covers a draft preview, which has no
   // valid_until until it is sent.
-  const issueDate = (inspection.sent_at ?? inspection.created_at ?? todayIso()).slice(0, 10);
+  const issueDate = businessDateIso(inspection.sent_at ?? inspection.created_at ?? new Date());
   const validUntil = inspection.valid_until ?? addDays(issueDate, 30);
   const quoteNumber = inspection.estimate_number || inspection.inspection_slug || inspection.id;
   const company = inspection.prospect_company || inspection.prospect_name || "Client";

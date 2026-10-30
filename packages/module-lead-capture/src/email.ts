@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
 import type { LeadCaptureRecord } from "./index";
 
 export interface LeadEmailContent {
@@ -148,6 +149,10 @@ export function buildLeadNotificationEmail(lead: LeadCaptureRecord): LeadEmailCo
 export async function sendLeadNotification(
   lead: LeadCaptureRecord,
 ): Promise<SendLeadNotificationResult> {
+  if (isDemo()) {
+    logDemoSideEffect("lead.notification");
+    return { ok: false, skipped: true, error: "RESEND_API_KEY not set" };
+  }
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return { ok: false, skipped: true, error: "RESEND_API_KEY not set" };

@@ -66,7 +66,7 @@ export function OrdersView({
 }: OrdersViewProps) {
   if (setupRequired) {
     return (
-      <Shell title="Your order">
+      <Shell title="Your Order">
         <p className="callout">
           Ordering is not configured. Contact your administrator.
         </p>
@@ -76,7 +76,7 @@ export function OrdersView({
 
   if (!authenticated) {
     return (
-      <Shell title="Your order">
+      <Shell title="Your Order">
         <p style={{ ...mutedStyle, margin: 0, lineHeight: 1.6 }}>
           Please{" "}
           <Link href="/account" className="inline-link">
@@ -90,7 +90,7 @@ export function OrdersView({
 
   if (!order || order.items.length === 0) {
     return (
-      <Shell title="Your order">
+      <Shell title="Your Order">
         <p style={{ ...mutedStyle, margin: 0, lineHeight: 1.6 }}>
           Your order is empty.{" "}
           <Link href="/catalog" className="inline-link">
@@ -201,7 +201,7 @@ export function AccountView({ account, setupRequired = false }: AccountViewProps
             <AuthForm />
           </section>
           <section className="panel pad">
-            <h2 style={{ margin: 0, fontSize: "1.125rem", fontWeight: 600 }}>Wholesale accounts</h2>
+            <h2 style={{ margin: 0, fontSize: "1.125rem", fontWeight: 600 }}>Wholesale Accounts</h2>
             <p style={{ ...mutedStyle, margin: "0.5rem 0 0", lineHeight: 1.5 }}>
               Wholesale buyers get tiered pricing once approved. New accounts start as retail and
               require staff approval before wholesale pricing is shown.

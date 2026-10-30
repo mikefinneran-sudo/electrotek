@@ -12,14 +12,24 @@ import {
   warnSupabase,
 } from "@waltersignal/bananaforce-data-supabase/server-helpers";
 import {
-  isTillerConfigured,
   isWaveOAuthEnvConfigured,
+  resolveTillerSheet,
   selectConnector,
   waveConnectorStatus,
   type SyncResult,
 } from "./connectors";
 import { encodeStoredCredentials, isCredentialsEncryptionConfigured } from "./credentials";
-import { ledgerIdempotencyKey } from "./tiller-export";
+import {
+  ensureExportTab,
+  getGoogleAccessToken,
+  serviceAccountEmail,
+  tillerExportTabName,
+} from "./google-sheets";
+import {
+  ledgerIdempotencyKey,
+  parseSheetId,
+  TILLER_EXPORT_HEADERS,
+} from "./tiller-export";
 import {
   isScheduledExportDue,
   shouldExportWhenRecorded,
@@ -111,15 +121,102 @@ export function isAccountingConfigured(): boolean {
 export async function connectorStatus(): Promise<{
   tiller: boolean;
   wave: boolean;
+  tillerSetup: TillerSetup;
 }> {
+  const sheet = await tillerSheet();
   return {
-    tiller: isTillerConfigured(),
+    tiller: Boolean(sheet),
     wave: await waveConnectorStatus(() => loadConnectorCredentialsBlob("wave")),
+    tillerSetup: {
+      serviceAccountEmail: serviceAccountEmail(),
+      sheetId: sheet?.sheetId ?? null,
+      source: sheet?.source ?? null,
+    },
   };
+}
+
+/** What the connect screen needs: who to share with, and what is connected. */
+export interface TillerSetup {
+  serviceAccountEmail: string | null;
+  sheetId: string | null;
+  source: "connected" | "default" | null;
+}
+
+const tillerSheet = () =>
+  resolveTillerSheet(() => loadConnectorCredentialsBlob("tiller"));
+
+export type ConnectTillerResult =
+  | { ok: true; sheetId: string; title: string; tabCreated: boolean }
+  | { ok: false; status: number; error: string };
+
+/**
+ * Self-serve Tiller connect: the client shares their sheet with the platform
+ * service account, pastes the link, and this verifies access, adds the export
+ * tab if missing, and stores the sheet id (encrypted) in connector_credentials.
+ */
+export async function connectTillerSheet(
+  input: string,
+): Promise<ConnectTillerResult> {
+  const sheetId = parseSheetId(input);
+  if (!sheetId) {
+    return { ok: false, status: 400, error: "Paste the Google Sheets link or spreadsheet id." };
+  }
+  const email = serviceAccountEmail();
+  const saJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? "";
+  if (!email || !isCredentialsEncryptionConfigured()) {
+    return {
+      ok: false,
+      status: 503,
+      error: "Tiller connections are not set up on this site. Contact your administrator.",
+    };
+  }
+
+  const token = await getGoogleAccessToken(saJson);
+  if (!token) {
+    return { ok: false, status: 502, error: "Could not authenticate to Google Sheets." };
+  }
+
+  const tab = await ensureExportTab(
+    token,
+    sheetId,
+    tillerExportTabName(),
+    TILLER_EXPORT_HEADERS,
+  );
+  if (!tab.ok) {
+    return {
+      ok: false,
+      status: tab.denied ? 403 : 502,
+      error: tab.denied
+        ? `Share the sheet with ${email} as an Editor, then connect again.`
+        : tab.error,
+    };
+  }
+
+  const blob = encodeStoredCredentials({ sheet_id: sheetId });
+  if (!blob || !(await saveConnectorCredentials("tiller", blob))) {
+    return { ok: false, status: 500, error: "Could not save the Tiller connection." };
+  }
+  return { ok: true, sheetId, title: tab.title, tabCreated: tab.created };
+}
+
+/** Removes the UI-connected sheet; exports fall back to the site default, if any. */
+export async function disconnectTiller(): Promise<boolean> {
+  const supabase = getServiceClient("disconnectTiller");
+  if (!supabase) return false;
+  const { error } = await supabase
+    .from("connector_credentials")
+    .delete()
+    .eq("connector", "tiller");
+  if (error) {
+    warn("disconnectTiller", error);
+    return false;
+  }
+  return true;
 }
 
 function connectorDeps() {
   return {
+    resolveTillerSheetId: async () => (await tillerSheet())?.sheetId ?? null,
     loadWaveCredentials: () => loadConnectorCredentialsBlob("wave"),
     saveWaveCredentials: (blob: string) =>
       saveConnectorCredentials("wave", blob),
@@ -702,7 +799,7 @@ async function processOutboxEvent(
 ): Promise<{ ok: boolean; error?: string; defer?: boolean }> {
   const deps = connectorDeps();
   const waveBlob = await loadConnectorCredentialsBlob("wave");
-  const tillerReady = isTillerConfigured();
+  const tillerReady = Boolean(await tillerSheet());
   const waveReady = isWaveOAuthEnvConfigured() && Boolean(waveBlob);
 
   if (!tillerReady && !waveReady) {
