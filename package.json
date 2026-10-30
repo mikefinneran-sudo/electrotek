@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
+    "tsx": "^4.23.15",
     "vitest": "^4.1.10"
   },
   "packageManager": "pnpm@10.12.1",
