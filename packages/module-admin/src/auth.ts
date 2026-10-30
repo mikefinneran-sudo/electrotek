@@ -1,6 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
+import { isDemo } from "@waltersignal/bananaforce-core/demo";
 import {
   getSupabaseServerClient,
 } from "@waltersignal/bananaforce-data-supabase/server";
@@ -55,7 +56,7 @@ export async function requireStaff(): Promise<StaffUser> {
 
 /** Route/page authorize: demo flag OR real staff session. */
 export async function staffAuthorize(): Promise<boolean> {
-  if (process.env.BANANAFORCE_DEMO_OPEN_API === "1") return true;
+  if (!isDemo() && process.env.BANANAFORCE_DEMO_OPEN_API === "1") return true;
   const staff = await getStaffUser();
   return staff != null;
 }

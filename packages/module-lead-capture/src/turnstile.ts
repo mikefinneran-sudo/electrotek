@@ -1,3 +1,5 @@
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
+
 export const TURNSTILE_SECRET_ENV = "TURNSTILE_SECRET_KEY";
 export const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -25,6 +27,10 @@ export async function verifyTurnstile(
   remoteIp?: string,
   options: TurnstileVerifyOptions = {},
 ): Promise<TurnstileVerificationResult> {
+  if (isDemo()) {
+    logDemoSideEffect("turnstile.verify");
+    return { ok: true, skipped: true };
+  }
   const secret = options.secret ?? process.env[TURNSTILE_SECRET_ENV];
   if (!secret) return { ok: true, skipped: true };
   if (!token.trim()) {

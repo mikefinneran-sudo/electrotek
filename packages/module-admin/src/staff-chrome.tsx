@@ -36,6 +36,7 @@ export function createStaffLayout(clientConfig: ClientConfig) {
         staffEmail={staff.email}
         staffName={staff.name}
         staffRole={staff.role}
+        homeHref={clientConfig.auth?.staff?.staffHome ?? "/admin"}
       >
         {children}
       </AdminShell>

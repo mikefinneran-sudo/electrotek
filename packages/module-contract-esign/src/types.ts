@@ -8,13 +8,28 @@ export const CONTRACT_STATUSES: readonly ContractStatus[] = [
 ];
 
 /**
- * One signed cleaning services agreement per accepted inspection. Mirrors the
- * `contracts` table. `signature_path` and `pdf_path` are object paths within the
- * private `contracts` Supabase Storage bucket — never public URLs.
+ * One signed agreement, backed by either an accepted inspection or an uploaded
+ * source PDF. Storage path fields are object paths within the private
+ * `contracts` Supabase Storage bucket — never public URLs.
  */
 export interface Contract {
   id: string;
-  inspection_id: string;
+  inspection_id: string | null;
+  title?: string | null;
+  source_pdf_path?: string | null;
+  signer_email?: string | null;
+  signer_address?: string | null;
+  deposit_amount_due?: number | null;
+  final_amount_due?: number | null;
+  card_fee_passthrough?: boolean;
+  deposit_invoice_id?: string | null;
+  final_invoice_id?: string | null;
+  sign_invite_sent_at?: string | null;
+  followup_texts?: boolean;
+  deposit_invoice_sent_at?: string | null;
+  crm_account_id?: string | null;
+  crm_opportunity_id?: string | null;
+  crm_contact_id?: string | null;
   status: ContractStatus;
   signer_name: string | null;
   signer_title: string | null;

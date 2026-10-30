@@ -7,7 +7,14 @@ export const accountingModule = {
   name: "Accounting",
   description:
     "Tiller→Sheets export (default) + Wave GraphQL OAuth; ledger outbox sync.",
-  routes: ["/accounting", "/api/accounting", "/api/accounting/oauth/wave", "/api/accounting/cron"],
+  routes: [
+    "/accounting",
+    "/accounting/corporate",
+    "/api/accounting",
+    "/api/accounting/corporate",
+    "/api/accounting/oauth/wave",
+    "/api/accounting/cron",
+  ],
   dataAdapters: ["supabase"],
   audience: "staff",
 } satisfies ClientModule;
@@ -36,6 +43,21 @@ export const accountingMounts = [
     appFile: "app/api/accounting/cron/route.ts",
     entrypoint: "@waltersignal/bananaforce-module-accounting/routes",
     methods: ["GET"],
+  },
+  {
+    moduleId: ACCOUNTING_MODULE_ID,
+    kind: "page",
+    route: "/accounting/corporate",
+    appFile: "app/accounting/corporate/page.tsx",
+    entrypoint: "@waltersignal/bananaforce-module-accounting/corporate-page",
+  },
+  {
+    moduleId: ACCOUNTING_MODULE_ID,
+    kind: "route",
+    route: "/api/accounting/corporate",
+    appFile: "app/api/accounting/corporate/route.ts",
+    entrypoint: "@waltersignal/bananaforce-module-accounting/corporate-routes",
+    methods: ["GET", "POST"],
   },
 ] as const satisfies readonly ModuleMount[];
 

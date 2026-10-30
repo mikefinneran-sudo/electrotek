@@ -91,6 +91,22 @@ test("rate limiter blocks the sixth hit inside ten minutes", () => {
   assert(!blocked.allowed, "sixth hit should be blocked");
 });
 
+test("rate limiter supports the demo auth 10-per-minute policy", () => {
+  const now = 2_000_000;
+  for (let index = 0; index < 10; index += 1) {
+    assert(checkRateLimit("203.0.113.11", now + index, {
+      max: 10,
+      windowMs: 60_000,
+      namespace: "demo-auth",
+    }).allowed, `demo auth hit ${index + 1} should be allowed`);
+  }
+  assert(!checkRateLimit("203.0.113.11", now + 10, {
+    max: 10,
+    windowMs: 60_000,
+    namespace: "demo-auth",
+  }).allowed, "demo auth hit 11 should be blocked");
+});
+
 test("email HTML escapes submitted values", () => {
   const email = buildLeadNotificationEmail({
     name: "<script>alert(1)</script>",

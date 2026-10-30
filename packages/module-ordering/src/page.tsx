@@ -50,7 +50,7 @@ export function createOfflineSalesPage() {
   return function OfflineSalesPage() {
     return (
       <OfflineSalesView
-        title="Offline sales queue"
+        title="Offline Sales Queue"
         setupRequired={!isOfflineSalesConfigured()}
       />
     );

@@ -1,9 +1,9 @@
 import "server-only";
 
-import { NextResponse } from "next/server";
 import type { ClientConfig } from "@waltersignal/bananaforce-core";
 import { getSupabaseServerClient } from "@waltersignal/bananaforce-data-supabase/server";
 import { isSupabaseConfigured } from "@waltersignal/bananaforce-data-supabase/client";
+import { finishStaffSignIn, loginRedirect as redirectToLogin } from "./staff-sign-in";
 
 /**
  * Second hop of the staff Google SSO flow.
@@ -28,11 +28,7 @@ export function createOAuthCallbackRoute(config: ClientConfig) {
   return async function GET(request: Request): Promise<Response> {
     const requestUrl = new URL(request.url);
 
-    function loginRedirect(reason: string) {
-      const redirectUrl = new URL("/admin/login", requestUrl.origin);
-      redirectUrl.searchParams.set("error", reason);
-      return NextResponse.redirect(redirectUrl);
-    }
+    const loginRedirect = (reason: string) => redirectToLogin(requestUrl.origin, reason);
 
     // Google reports a refused/cancelled consent as ?error= rather than ?code=.
     // Surfacing it beats the generic missing_oauth_code, which reads like a
@@ -48,29 +44,7 @@ export function createOAuthCallbackRoute(config: ClientConfig) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) return loginRedirect("oauth_exchange_failed");
 
-    // Domain enforcement for External consent screens.
-    //
-    // An Internal consent screen restricts sign-in to its own Workspace org, so
-    // clients configured that way set no googleWorkspaceDomain and skip this.
-    // With External, `hd` on the authorize URL is only a hint to the account
-    // chooser -- anyone can strip it -- so the real check has to happen here,
-    // after the exchange, against the email Google actually returned.
-    //
-    // Signing out on rejection matters: the exchange already established a
-    // session. Leaving it would strand a signed-in non-staff user who then sees
-    // the "signed in as X, not on the staff list" panel rather than being told
-    // their domain was refused.
-    const requiredDomain = config.auth?.staff?.googleWorkspaceDomain?.toLowerCase();
-    if (requiredDomain) {
-      const email = data?.user?.email?.toLowerCase() ?? "";
-      const domain = email.includes("@") ? email.slice(email.lastIndexOf("@") + 1) : "";
-      if (domain !== requiredDomain) {
-        await supabase.auth.signOut();
-        return loginRedirect("wrong_domain");
-      }
-    }
-
-    const staffHome = config.auth?.staff?.staffHome ?? "/admin";
-    return NextResponse.redirect(new URL(staffHome, requestUrl.origin));
+    // Domain check and staffHome redirect: see finishStaffSignIn.
+    return finishStaffSignIn(config, requestUrl.origin, data?.user?.email, () => supabase.auth.signOut({ scope: "local" }));
   };
 }

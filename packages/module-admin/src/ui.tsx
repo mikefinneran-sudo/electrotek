@@ -174,7 +174,7 @@ function CatalogTab({
       <Flash flash={flash} />
       {products.length === 0 ? (
         <div className="empty">
-          <h2>No products</h2>
+          <h2>No Products</h2>
           <p>Products from the catalog will appear here once the catalog is seeded.</p>
         </div>
       ) : (
@@ -352,7 +352,7 @@ function ApprovalsTab({ initial }: { initial: Customer[] }) {
       <Flash flash={flash} />
       {customers.length === 0 ? (
         <div className="empty">
-          <h2>No customers</h2>
+          <h2>No Customers</h2>
           <p>Customer accounts appear here as they sign up.</p>
         </div>
       ) : (
@@ -464,7 +464,7 @@ function InventoryTab({
   if (locations.length === 0) {
     return (
       <div className="empty">
-        <h2>No locations</h2>
+        <h2>No Locations</h2>
         <p>Add locations to the catalog before adjusting per-location inventory.</p>
       </div>
     );
@@ -530,7 +530,7 @@ function OrdersTab({ initial }: { initial: Order[] }) {
   if (orders.length === 0) {
     return (
       <div className="empty">
-        <h2>No orders</h2>
+        <h2>No Orders</h2>
         <p>Submitted customer orders appear here for confirmation and fulfillment.</p>
       </div>
     );

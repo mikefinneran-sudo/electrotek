@@ -19,7 +19,7 @@ export default async function ErpIndexPage() {
         <header className="dashboard-head">
           <div>
             <p className="dashboard-kicker">Module directory</p>
-            <h1>All surfaces</h1>
+            <h1>All Surfaces</h1>
             <p className="dashboard-lede">
               Every module in the catalog. Locked modules are not part of this deploy.
             </p>

@@ -18,6 +18,7 @@ import type {
 import { ACTIVITY_TYPES, CASE_STATUSES, OPPORTUNITY_STATUSES } from "./types";
 import { openVsClosed, pipelineByStage, weightedPipelineValue } from "./pipeline";
 import { defaultStageDraft } from "./stage-drafts";
+import { linkParts, newRecordLink } from "./search";
 import type { StageDraft } from "./stage-drafts";
 
 export interface CrmViewProps {
@@ -36,6 +37,8 @@ export interface CrmViewProps {
    * else's job.
    */
   surfaces?: readonly Tab[];
+  /** The page's `?new=` value: `/crm?new=account` opens on that create form (BananaOS empty states). */
+  newRecord?: string | null;
 }
 
 export type Tab = "pipeline" | "cases" | "accounts" | "contacts" | "tasks";
@@ -288,11 +291,13 @@ export function CrmView({
   title = "CRM",
   setupRequired = false,
   surfaces = ALL_CRM_SURFACES,
+  newRecord = null,
 }: CrmViewProps) {
   // An empty list would render a workspace with no way into anything, so the
   // full set is the floor rather than the caller's mistake becoming a blank page.
   const shown = surfaces.length > 0 ? surfaces : ALL_CRM_SURFACES;
-  const [tab, setTab] = useState<Tab>(shown[0]);
+  const link = newRecordLink(newRecord, shown);
+  const [tab, setTab] = useState<Tab>(link?.tab ?? shown[0]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [cases, setCases] = useState<Case[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -324,10 +329,10 @@ export function CrmView({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-  const [showOppForm, setShowOppForm] = useState(false);
-  const [showAcctForm, setShowAcctForm] = useState(false);
-  const [showCaseForm, setShowCaseForm] = useState(false);
-  const [showContactForm, setShowContactForm] = useState(false);
+  const [showOppForm, setShowOppForm] = useState(link?.kind === "opportunity");
+  const [showAcctForm, setShowAcctForm] = useState(link?.kind === "account");
+  const [showCaseForm, setShowCaseForm] = useState(link?.kind === "case");
+  const [showContactForm, setShowContactForm] = useState(link?.kind === "contact");
   const [showSettings, setShowSettings] = useState(false);
   const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
   const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
@@ -1456,6 +1461,27 @@ function Kpi({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Note text with its http(s) and obsidian:// URLs as clickable links. */
+function LinkedText({ text }: { text: string }) {
+  return (
+    <span style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+      {linkParts(text).map((part, i) =>
+        part.href ? (
+          part.href.startsWith("obsidian://") ? (
+            <a key={i} href={part.href}>Open in Obsidian</a>
+          ) : (
+            <a key={i} href={part.href} target="_blank" rel="noopener noreferrer">
+              {part.text}
+            </a>
+          )
+        ) : (
+          part.text
+        ),
+      )}
+    </span>
+  );
+}
+
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label style={{ display: "block" }}>
@@ -1918,6 +1944,10 @@ function OpportunityDrawer({
 }) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [tasks, setTasks] = useState<CrmTask[]>([]);
+  const accountNotes = accounts.find((a) => a.id === opp.account_id)?.notes ?? null;
+  const [attachments, setAttachments] = useState<
+    { id: string; file_name: string; size_bytes: number; url: string | null }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -1929,14 +1959,18 @@ function OpportunityDrawer({
   const dialogRef = useDialogFocusTrap<HTMLDivElement>();
 
   const load = useCallback(async () => {
-    const [actData, taskData] = await Promise.all([
+    const [actData, taskData, attData] = await Promise.all([
       fetchJson<ApiEnvelope & { activities?: Activity[] }>(
         buildEndpoint(endpoint, { entity: "activities", opportunityId: opp.id }),
       ),
       fetchJson<ApiEnvelope & { tasks?: CrmTask[] }>(
         buildEndpoint(endpoint, { entity: "tasks", opportunityId: opp.id }),
       ),
+      fetchJson<ApiEnvelope & { attachments?: { id: string; file_name: string; size_bytes: number; url: string | null }[] }>(
+        buildEndpoint(endpoint, { entity: "attachments", opportunityId: opp.id }),
+      ).catch(() => ({ attachments: [] })),
     ]);
+    setAttachments(attData.attachments ?? []);
     setActivities(actData.activities ?? []);
     setTasks(taskData.tasks ?? []);
   }, [endpoint, opp.id]);
@@ -2060,6 +2094,14 @@ function OpportunityDrawer({
         <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.35rem 1rem", margin: "1rem 0 1.5rem" }}>
           <dt className="eyebrow">Account</dt>
           <dd style={{ margin: 0 }}>{accountName}</dd>
+          {accountNotes ? (
+            <>
+              <dt className="eyebrow">Account notes</dt>
+              <dd style={{ margin: 0 }}>
+                <LinkedText text={accountNotes} />
+              </dd>
+            </>
+          ) : null}
           <dt className="eyebrow">Stage</dt>
           <dd style={{ margin: 0 }}>{stageName}</dd>
           <dt className="eyebrow">Amount</dt>
@@ -2097,7 +2139,7 @@ function OpportunityDrawer({
 
         {/* Tasks */}
         <section style={{ marginBottom: "1.75rem", marginTop: editing ? "1.25rem" : 0 }}>
-          <h3 className="section-title" style={{ marginBottom: "0.5rem" }}>Follow-up tasks</h3>
+          <h3 className="section-title" style={{ marginBottom: "0.5rem" }}>Follow-Up Tasks</h3>
           <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
             <input
               value={taskTitle}
@@ -2175,6 +2217,23 @@ function OpportunityDrawer({
               </button>
             </div>
           </div>
+          {attachments.length > 0 ? (
+            <div style={{ marginBottom: "0.75rem" }}>
+              <strong>Attachments</strong>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0.25rem 0 0", display: "grid", gap: "0.25rem" }}>
+                {attachments.map((a) => (
+                  <li key={a.id}>
+                    {a.url ? (
+                      <a href={a.url} target="_blank" rel="noreferrer">{a.file_name}</a>
+                    ) : (
+                      a.file_name
+                    )}{" "}
+                    <span className="price-note">{Math.max(1, Math.round(a.size_bytes / 1024))} KB</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {loading ? (
             <p className="price-note">Loading…</p>
           ) : activities.length === 0 ? (
@@ -2449,6 +2508,7 @@ function AccountForm({
       </div>
       <Field label="Notes">
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+        {linkParts(notes).some((part) => part.href) ? <LinkedText text={notes} /> : null}
       </Field>
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
         <button className="btn" disabled={busy} onClick={submit}>

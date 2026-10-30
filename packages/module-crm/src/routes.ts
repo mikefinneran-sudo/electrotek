@@ -28,6 +28,7 @@ import {
   listAllTasks,
   listContacts,
   listDealContacts,
+  listOpportunityAttachments,
   listOpportunities,
   listPipelines,
   listTasks,
@@ -83,6 +84,7 @@ const VALID_ENTITIES = new Set([
   "contacts",
   "opportunities",
   "activities",
+  "attachments",
   "tasks",
   "stages",
   "pipelines",
@@ -90,7 +92,7 @@ const VALID_ENTITIES = new Set([
 ]);
 
 const VALID_ENTITY_LABEL =
-  "accounts|cases|contacts|opportunities|activities|tasks|stages|pipelines|deal_contacts";
+  "accounts|cases|contacts|opportunities|activities|attachments|tasks|stages|pipelines|deal_contacts";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -525,6 +527,11 @@ export function createCrmRouteHandlers(options: CrmRouteOptions) {
       if (!dealId || !isUuid(dealId)) return badRequest("dealId must be a valid UUID.");
       const rows = await listDealContacts(dealId);
       return json({ ok: true, deal_contacts: rows });
+    }
+    if (entity === "attachments") {
+      const opportunityId = url.searchParams.get("opportunityId");
+      if (!opportunityId || !isUuid(opportunityId)) return badRequest("opportunityId must be a valid UUID.");
+      return json({ ok: true, attachments: await listOpportunityAttachments(opportunityId) });
     }
     if (entity === "activities") {
       const opportunityId = url.searchParams.get("opportunityId");

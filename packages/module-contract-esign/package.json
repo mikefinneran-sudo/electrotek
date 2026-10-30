@@ -9,6 +9,9 @@
     "./ui": "./src/ui.tsx",
     "./server": "./src/server.ts",
     "./routes": "./src/routes.ts",
+    "./automation": "./src/automation.ts",
+    "./email": "./src/email.ts",
+    "./followups": "./src/followups.ts",
     "./pdf": "./src/pdf.ts",
     "./tokens": "./src/tokens.ts"
   },
@@ -20,7 +23,9 @@
   "dependencies": {
     "@waltersignal/bananaforce-core": "workspace:*",
     "@waltersignal/bananaforce-data-supabase": "workspace:*",
+    "@waltersignal/bananaforce-module-billing": "workspace:*",
     "jose": "^5.9.6",
+    "pdf-lib": "^1.17.1",
     "pdfkit": "^0.15.1",
     "resend": "^6.12.4",
     "server-only": "^0.0.1"

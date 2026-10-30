@@ -18,8 +18,6 @@ export const leadCapture = defineModule({
   name: "Lead Capture",
   description: "Contact forms, honeypot, rate limits, email notify.",
   routes: ["/contact", "/api/contact"],
-  // Supabase-only until an Airtable adapter ships (WAL-380, deferred). The
-  // implemented module package is Supabase-only; keep the catalog in sync.
   dataAdapters: ["supabase"],
 });
 
@@ -132,7 +130,6 @@ export const scheduling = defineModule({
 export const billing = defineModule({
   id: "billing",
   audience: "staff",
-  requires: ["admin"],
   name: "Billing",
   description: "Stripe payments, invoices, payment status.",
   routes: ["/billing", "/api/billing", "/api/stripe-webhook"],
@@ -167,6 +164,15 @@ export const crm = defineModule({
   dataAdapters: ["supabase"],
 });
 
+export const projects = defineModule({
+  id: "projects",
+  name: "Projects",
+  audience: "mixed",
+  description: "Shared project files, review status, and client feedback.",
+  routes: ["/projects", "/projects/:id", "/api/projects"],
+  dataAdapters: ["supabase"],
+});
+
 export const forensicCase = defineModule({
   id: "forensic-case",
   audience: "staff",
@@ -184,7 +190,13 @@ export const accounting = defineModule({
   name: "Accounting",
   description:
     "Tiller→Sheets export (default) + Wave GraphQL OAuth; ledger outbox sync.",
-  routes: ["/accounting", "/api/accounting", "/api/accounting/oauth/wave"],
+  routes: [
+    "/accounting",
+    "/accounting/corporate",
+    "/api/accounting",
+    "/api/accounting/corporate",
+    "/api/accounting/oauth/wave",
+  ],
   dataAdapters: ["supabase"],
 });
 
@@ -253,6 +265,7 @@ export const ALL_MODULES = [
   communications,
   ticketing,
   crm,
+  projects,
   forensicCase,
   accounting,
   reporting,

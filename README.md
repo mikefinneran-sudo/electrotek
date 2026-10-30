@@ -73,7 +73,7 @@ packages `app/` imports (transitively); `supabase/migrations/` holds this client
 migration set. It is a snapshot, not a subtree/submodule — shared BananaFORCE fixes must be
 ported here by hand.
 
-**Snapshot source:** `mikefinneran-sudo/bananaforce` @ `9610833` (origin/main, 2026-09-28).
+**Snapshot source:** `mikefinneran-sudo/bananaforce` @ `159a8c6` (et-expense-reports, PR #110, 2026-10-30).
 
 Deploys separately from the static site above, as its own Vercel project
 (`app.electrotekconsultants.com`, root directory `app`). The root `vercel.json` disables

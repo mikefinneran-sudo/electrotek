@@ -47,7 +47,7 @@ const quoteModule: ClientModule = {
   name: "Quote Engine",
   description: "Quote intake.",
   audience: "mixed",
-  dataAdapters: ["airtable"],
+  dataAdapters: [],
 };
 
 const orderingModule: ClientModule = {
@@ -82,12 +82,12 @@ test("validateClientConfig rejects unknown module ids", () => {
 
 test("validateClientConfig rejects adapter/module mismatches", () => {
   const errors = validateClientConfig(
-    createConfig({ data: { adapter: "airtable" } }),
-    [catalogModule],
+    createConfig({ modules: ["quote-engine"] }),
+    [quoteModule],
   );
 
   assert(
-    errors.includes('module "catalog" does not support data adapter "airtable"'),
+    errors.includes('module "quote-engine" does not support data adapter "supabase"'),
     "adapter mismatch should be reported",
   );
 });

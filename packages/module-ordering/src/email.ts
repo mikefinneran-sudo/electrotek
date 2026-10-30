@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { isDemo, logDemoSideEffect } from "@waltersignal/bananaforce-core/demo";
 import { formatPrice, tierLabel } from "@waltersignal/bananaforce-module-catalog/pricing";
 import type { CustomerTier } from "@waltersignal/bananaforce-module-catalog";
 
@@ -115,6 +116,10 @@ export function buildOrderNotificationEmail(order: OrderEmailData): OrderEmailCo
 export async function sendOrderNotification(
   order: OrderEmailData,
 ): Promise<SendOrderNotificationResult> {
+  if (isDemo()) {
+    logDemoSideEffect("ordering.notification", { orderId: order.orderId });
+    return { ok: false, skipped: true, error: "RESEND_API_KEY not set" };
+  }
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return { ok: false, skipped: true, error: "RESEND_API_KEY not set" };

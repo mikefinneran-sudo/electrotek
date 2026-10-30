@@ -1,4 +1,5 @@
-export type DataAdapter = "airtable" | "supabase";
+// Supabase is the only data store; Airtable is retired.
+export type DataAdapter = "supabase";
 
 export type AuthProvider = "google-oauth" | "supabase" | "jwt-token";
 
@@ -56,7 +57,6 @@ export interface ClientConfig {
   data: {
     adapter: DataAdapter;
     projectRef?: string;
-    bases?: Record<string, string>;
   };
   auth?: {
     // Staff auth in the implemented modules is Supabase Auth (session cookies).

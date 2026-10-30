@@ -202,7 +202,7 @@ function DashboardTab({
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
         <div style={{ flex: "1 1 20rem" }}>
-          <h2>Recent leads</h2>
+          <h2>Recent Leads</h2>
           {data.recentLeads.length === 0 ? (
             <p className="price-note" style={{ marginLeft: 0 }}>
               No leads yet.
@@ -225,7 +225,7 @@ function DashboardTab({
         </div>
 
         <div style={{ flex: "1 1 20rem" }}>
-          <h2>Recent inspections</h2>
+          <h2>Recent Inspections</h2>
           {data.recentInspections.length === 0 ? (
             <p className="price-note" style={{ marginLeft: 0 }}>
               No inspections yet.
@@ -337,7 +337,7 @@ function LeadsTab() {
         </p>
       ) : leads.length === 0 ? (
         <div className="empty">
-          <h2>No leads</h2>
+          <h2>No Leads</h2>
           <p>Website leads appear here as they come in.</p>
         </div>
       ) : (
@@ -526,7 +526,7 @@ function ClientDetailTab({
   if (!inspectionId) {
     return (
       <div className="empty">
-        <h2>No client selected</h2>
+        <h2>No Client Selected</h2>
         <p>Open a client from the Dashboard or Pipeline tab to see the full account.</p>
       </div>
     );

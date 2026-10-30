@@ -23,7 +23,7 @@ export function StaffPanel({
 
       {isAdmin ? (
         <form action={formAction} className="panel pad form" style={{ marginTop: "1.5rem" }}>
-          <h2 style={{ margin: 0, fontSize: "1.05rem" }}>Provision staff</h2>
+          <h2 style={{ margin: 0, fontSize: "1.05rem" }}>Provision Staff</h2>
           <label className="field">
             <span className="label">Email</span>
             <input className="input" name="email" type="email" required />

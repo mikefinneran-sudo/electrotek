@@ -6,7 +6,7 @@ export const contractEsignModule = {
   id: CONTRACT_ESIGN_MODULE_ID,
   name: "Contract E-Sign",
   description:
-    "Supabase-backed contract signing: turn an accepted inspection into a signed cleaning services agreement via a token-gated client sign link, capture an electronic signature, and store the executed PDF in Supabase Storage.",
+    "Supabase-backed contract signing: sign an uploaded agreement or turn an accepted inspection into a cleaning services agreement via a token-gated client link, capture an electronic signature, and store the executed PDF in Supabase Storage.",
   routes: ["/sign", "/contract", "/api/sign"],
   dataAdapters: ["supabase"],
   audience: "mixed",
@@ -50,3 +50,9 @@ export const moduleMounts = contractEsignMounts;
 
 export type { Contract, ContractStatus, SignAudit } from "./types";
 export { CONTRACT_STATUSES } from "./types";
+export type {
+  ContractFollowup,
+  DueFollowup,
+  FollowupChannel,
+  FollowupStatus,
+} from "./followups";

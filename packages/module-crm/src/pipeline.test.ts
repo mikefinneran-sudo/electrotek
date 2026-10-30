@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { decodeKeysetCursor, encodeKeysetCursor } from "./cursor";
 import { openVsClosed, pipelineByStage, weightedPipelineValue } from "./pipeline";
-import { escapeIlikePattern } from "./search";
+import { escapeIlikePattern, linkParts, newRecordLink } from "./search";
 import type { Opportunity, PipelineStage } from "./types";
 
 let passed = 0;
@@ -213,5 +213,25 @@ check(
 const { open: emptyOpen, closed: emptyClosed } = openVsClosed([]);
 check(emptyOpen.length === 0, "openVsClosed: empty open on no input");
 check(emptyClosed.length === 0, "openVsClosed: empty closed on no input");
+
+const ALL = ["pipeline", "cases", "accounts", "contacts", "tasks"];
+check(newRecordLink("account", ALL)?.tab === "accounts", "newRecordLink: account opens accounts tab");
+check(newRecordLink("opportunity", ALL)?.tab === "pipeline", "newRecordLink: opportunity opens pipeline tab");
+check(newRecordLink("invoice", ALL) === null, "newRecordLink: unknown kind ignored");
+check(newRecordLink("toString", ALL) === null, "newRecordLink: prototype keys ignored");
+check(newRecordLink("opportunity", ["cases", "accounts"]) === null, "newRecordLink: hidden tab ignored");
+check(newRecordLink(null, ALL) === null, "newRecordLink: no param");
+
+// --- linkParts --------------------------------------------------------------
+
+{
+  const obs = "obsidian://open?vault=ObsidianVault&file=%5B1%5D%20Notes";
+  const parts = linkParts(`Notes: ${obs}\nSite: https://example.com/a and javascript:alert(1)`);
+  check(parts.length === 5, "linkParts splits text and two links");
+  check(parts[1].href === obs, "linkParts links obsidian:// URLs whole");
+  check(parts[3].href === "https://example.com/a" && parts[4].href === undefined && parts[4].text.includes("javascript:"), "linkParts leaves javascript: as text");
+  check(parts[2].text === "\nSite: ", "linkParts keeps the text between links");
+  check(linkParts("no links").length === 1 && linkParts("").length === 0, "linkParts handles plain and empty text");
+}
 
 console.log(`pipeline tests passed (${passed})`);

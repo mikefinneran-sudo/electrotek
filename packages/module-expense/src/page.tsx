@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import "./expense.css";
 import type { ClientConfig } from "@waltersignal/bananaforce-core";
 import { uploadReceiptAndDraft } from "./actions";
 import { reportTotals } from "./lifecycle";
@@ -271,7 +272,7 @@ export function createExpensesPage(clientConfig: ClientConfig) {
           <main className="container expense-page">
             <header className="page-head">
               <span className="eyebrow">Expenses</span>
-              <h1>Report not found</h1>
+              <h1>Report Not Found</h1>
             </header>
             {tabs}
             <p className="callout">
@@ -336,13 +337,13 @@ export function createExpensesPage(clientConfig: ClientConfig) {
           />
           <section className="panel-group">
             <header className="panel-group-head">
-              <h2>Awaiting decision</h2>
+              <h2>Awaiting Decision</h2>
             </header>
             <ReportTable rows={pending} hrefFor={href} showSubmitter empty="Nothing waiting on a decision." />
           </section>
           <section className="panel-group">
             <header className="panel-group-head">
-              <h2>Approved, to reimburse</h2>
+              <h2>Approved, to Reimburse</h2>
             </header>
             <ReportTable rows={toPay} hrefFor={href} showSubmitter empty="Nothing approved and unpaid." />
           </section>
@@ -358,7 +359,7 @@ export function createExpensesPage(clientConfig: ClientConfig) {
         <main className="container expense-page">
           <header className="page-head">
             <span className="eyebrow">Expenses</span>
-            <h1>My reports</h1>
+            <h1>My Reports</h1>
           </header>
           {tabs}
           {notice}
@@ -394,7 +395,7 @@ export function createExpensesPage(clientConfig: ClientConfig) {
       <main className="container expense-page">
         <header className="page-head">
           <span className="eyebrow">Expenses</span>
-          <h1>My expenses</h1>
+          <h1>My Expenses</h1>
         </header>
         <ExpenseTabs
           view={view}

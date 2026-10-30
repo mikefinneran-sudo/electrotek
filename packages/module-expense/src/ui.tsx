@@ -331,7 +331,7 @@ export function DraftReviewForm({
 
       <form onSubmit={handleSubmit} className="expense-form">
         <div className="expense-form-head">
-          <h2>Review scanned receipt</h2>
+          <h2>Review Scanned Receipt</h2>
           {pendingCount > 1 ? (
             <span className="badge">{pendingCount - 1} more waiting</span>
           ) : null}
@@ -486,7 +486,7 @@ export function NewExpenseForm({
     <section className="panel pad expense-new" aria-label={mileage ? "Log mileage" : "Add an expense"}>
       <form onSubmit={handleSubmit} className="expense-form">
         <div className="expense-form-head">
-          <h2>{mileage ? "Log mileage" : "Add an expense"}</h2>
+          <h2>{mileage ? "Log Mileage" : "Add an Expense"}</h2>
         </div>
         <Errors errors={errors} />
         <input type="hidden" name="currency" value="usd" />

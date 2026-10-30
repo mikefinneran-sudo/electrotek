@@ -37,7 +37,13 @@ export function buildCsp(nonce: string, supabaseOrigin: string | null = null): s
     `img-src 'self' data: blob: https://*.supabase.co${supabase}`,
     "font-src 'self' data:",
     `connect-src 'self' https://*.supabase.co wss://*.supabase.co${supabase} https://api.stripe.com https://js.stripe.com https://checkout.stripe.com`,
-    "frame-src https://js.stripe.com https://checkout.stripe.com",
+    // 'self' lets a page frame the app's own responses (the contract sign page
+    // shows the agreement PDF inline); an explicit frame-src overrides default-src.
+    // Supabase: the projects module previews PDFs from a storage signed URL.
+    // https: the projects module shows a client's live link (any host) inline.
+    // frame-src only governs what these pages embed; frame-ancestors still
+    // forbids anyone framing the app.
+    "frame-src 'self' https:",
     "worker-src 'self' blob:",
     "form-action 'self'",
   ].join("; ");
@@ -84,5 +90,17 @@ export function applySecurityHeaders<Res extends HeaderBag>(
 
   response.headers.set("content-security-policy", csp);
   for (const [key, value] of STATIC_SECURITY_HEADERS) response.headers.set(key, value);
+  return response;
+}
+
+/**
+ * Let a non-HTML response (e.g. a PDF) be framed by the app's own pages. Call
+ * after applySecurityHeaders: it replaces the page CSP, which has nothing to
+ * govern in a PDF, with only the framing rule, and relaxes X-Frame-Options to
+ * match. Use it only on routes that serve documents, never on HTML pages.
+ */
+export function allowSameOriginFraming<Res extends HeaderBag>(response: Res): Res {
+  response.headers.set("content-security-policy", "frame-ancestors 'self'");
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
   return response;
 }

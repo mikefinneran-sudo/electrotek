@@ -3,6 +3,7 @@ import "server-only";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { ClientConfig } from "@waltersignal/bananaforce-core";
+import { isDemo } from "@waltersignal/bananaforce-core/demo";
 import { oauthErrorMessage } from "./oauth-error-text";
 import { formatPrice } from "@waltersignal/bananaforce-module-catalog/pricing";
 import { fetchLeadAttachmentsByLead } from "@waltersignal/bananaforce-module-lead-capture/server";
@@ -63,13 +64,16 @@ function jsonPreview(value: unknown): string {
   return raw.length > 180 ? `${raw.slice(0, 180)}...` : raw;
 }
 
-export function createAdminLoginPage(clientConfig: ClientConfig) {
+export function createAdminLoginPage(
+  clientConfig: ClientConfig,
+) {
   return async function AdminLoginPage({
     searchParams,
   }: {
     searchParams?: Promise<{ error?: string | string[] }>;
   } = {}) {
     const staffHome = clientConfig.auth?.staff?.staffHome ?? "/admin";
+    const demoSignInAction = isDemo() ? "/auth/demo" : undefined;
     const staff = await getStaffUser();
     if (staff) redirect(staffHome);
     const email = await getSignedInEmail();
@@ -83,7 +87,7 @@ export function createAdminLoginPage(clientConfig: ClientConfig) {
         <section className="container" style={{ maxWidth: 480 }}>
           <header className="page-head">
             <span className="eyebrow">Staff</span>
-            <h1>{clientConfig.brand.name} — sign in</h1>
+            <h1>{clientConfig.brand.name} — Sign In</h1>
           </header>
           <div className="panel pad">
             {errorMessage ? (
@@ -102,10 +106,19 @@ export function createAdminLoginPage(clientConfig: ClientConfig) {
                 </div>
               </div>
             ) : (
-              <StaffLoginForm
-                homeRoute={staffHome}
-                googleWorkspaceDomain={clientConfig.auth?.staff?.googleWorkspaceDomain}
-              />
+              <>
+                {demoSignInAction ? (
+                  <form action={demoSignInAction} method="post" style={{ marginBottom: "1rem" }}>
+                    <button className="btn block" type="submit">
+                      Try the demo
+                    </button>
+                  </form>
+                ) : null}
+                <StaffLoginForm
+                  homeRoute={staffHome}
+                  googleWorkspaceDomain={clientConfig.auth?.staff?.googleWorkspaceDomain}
+                />
+              </>
             )}
           </div>
         </section>
@@ -160,7 +173,7 @@ export function createAdminAuditPage() {
       return (
         <div>
           <header className="page-head">
-            <h1>Audit log</h1>
+            <h1>Audit Log</h1>
           </header>
           <div className="callout">Audit log access is limited to admins.</div>
         </div>
@@ -177,7 +190,7 @@ export function createAdminAuditPage() {
       return (
         <div>
           <header className="page-head">
-            <h1>Audit log</h1>
+            <h1>Audit Log</h1>
           </header>
           <div className="callout">Audit log is not configured.</div>
         </div>
@@ -207,7 +220,7 @@ export function createAdminAuditPage() {
     return (
       <div>
         <header className="page-head">
-          <h1>Audit log</h1>
+          <h1>Audit Log</h1>
           <p className="lede">{total} recorded event(s)</p>
         </header>
         {countError || rowsResult.error ? (
@@ -635,7 +648,7 @@ export function createAdminProductNewPage() {
     return (
       <div>
         <header className="page-head">
-          <h1>New product</h1>
+          <h1>New Product</h1>
           <p className="lede">Create a catalog item before receiving or adjusting stock.</p>
         </header>
         <NewProductForm
@@ -668,7 +681,7 @@ export function createAdminProductEditPage() {
     return (
       <div>
         <header className="page-head">
-          <h1>Edit product #{product.item_number as number}</h1>
+          <h1>Edit Product #{product.item_number as number}</h1>
         </header>
         <ProductEditForm
           product={{
@@ -717,7 +730,7 @@ export function createAdminEventsPage() {
     return (
       <div>
         <header className="page-head">
-          <h1>Event requests</h1>
+          <h1>Event Requests</h1>
         </header>
         <div className="order-list" style={{ marginTop: "1.5rem" }}>
           {rows.map((r) => (
@@ -767,7 +780,7 @@ export function createAdminWholesalePage() {
     return (
       <div>
         <header className="page-head">
-          <h1>Wholesale inquiries</h1>
+          <h1>Wholesale Inquiries</h1>
         </header>
         <div className="order-list" style={{ marginTop: "1.5rem" }}>
           {rows.map((r) => (
@@ -902,7 +915,7 @@ export function createAdminClientsPage() {
     return (
       <div>
         <header className="page-head">
-          <h1>Client issue reports</h1>
+          <h1>Client Issue Reports</h1>
           <p className="dashboard-lede">
             Issues submitted by clients through the token-gated portal.
           </p>

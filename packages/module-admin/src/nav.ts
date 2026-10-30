@@ -32,6 +32,14 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
 export const STAFF_NAV_ITEMS: readonly AdminNavItem[] = [
   { href: "/cases", label: "Case files", requires: ["forensic-case"] },
   { href: "/crm", label: "CRM", requires: ["crm"] },
+  { href: "/intake", label: "Walkthroughs", requires: ["quote-engine"] },
+  { href: "/schedule", label: "Schedule", requires: ["scheduling"] },
+  { href: "/contract", label: "Contracts", requires: ["contract-esign"] },
+  { href: "/visit", label: "Visits", requires: ["visit-checkflow"] },
+  { href: "/crew", label: "Crew", requires: ["crew-portal"] },
+  { href: "/messages", label: "Messages", requires: ["communications"] },
+  { href: "/reports", label: "Reports", requires: ["reporting"] },
+  { href: "/billing", label: "Invoices", requires: ["billing"] },
   { href: "/expenses", label: "Expenses", requires: ["expense"] },
 ];
 
@@ -39,13 +47,7 @@ export const STAFF_NAV_ITEMS: readonly AdminNavItem[] = [
 export function resolveStaffNav(enabledModuleIds: readonly string[]): AdminNavItem[] {
   const enabled = new Set(enabledModuleIds);
   return [...ADMIN_NAV_ITEMS, ...STAFF_NAV_ITEMS].filter((item) => {
-    if (!item.requires.every((moduleId) => enabled.has(moduleId))) return false;
-    // module-forensic-case supersedes the CRM workspace: a case file is where
-    // these staff work, and a case file already carries the same customer/
-    // contact records CRM shows. Two nav entries pointing at the same records
-    // read as two systems, so drop /crm once forensic-case is enabled.
-    if (item.href === "/crm" && enabled.has("forensic-case")) return false;
-    return true;
+    return item.requires.every((moduleId) => enabled.has(moduleId));
   });
 }
 
