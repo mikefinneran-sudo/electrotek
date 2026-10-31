@@ -44,6 +44,9 @@ importers:
       '@waltersignal/bananaforce-module-forensic-case':
         specifier: workspace:*
         version: link:../packages/module-forensic-case
+      '@waltersignal/bananaforce-module-licensing':
+        specifier: workspace:*
+        version: link:../packages/module-licensing
       '@waltersignal/bananaforce-modules':
         specifier: workspace:*
         version: link:../packages/modules
@@ -606,6 +609,43 @@ importers:
       resend:
         specifier: ^6.12.4
         version: 6.30.0
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      '@types/react':
+        specifier: ^19
+        version: 19.3.0
+      '@waltersignal/bananaforce-eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      eslint:
+        specifier: ^9.39.5
+        version: 9.39.5
+      next:
+        specifier: 16.3.8
+        version: 16.3.8(@types/node@20.19.43)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      tsx:
+        specifier: ^4.22.4
+        version: 4.23.15
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/module-licensing:
+    dependencies:
+      '@waltersignal/bananaforce-core':
+        specifier: workspace:*
+        version: link:../core
+      '@waltersignal/bananaforce-data-supabase':
+        specifier: workspace:*
+        version: link:../data-supabase
       server-only:
         specifier: ^0.0.1
         version: 0.0.1

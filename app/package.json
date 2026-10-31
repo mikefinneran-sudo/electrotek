@@ -19,6 +19,7 @@
     "@waltersignal/bananaforce-module-crm": "workspace:*",
     "@waltersignal/bananaforce-module-expense": "workspace:*",
     "@waltersignal/bananaforce-module-forensic-case": "workspace:*",
+    "@waltersignal/bananaforce-module-licensing": "workspace:*",
     "@waltersignal/bananaforce-modules": "workspace:*",
     "next": "16.3.8",
     "react": "19.2.4",
