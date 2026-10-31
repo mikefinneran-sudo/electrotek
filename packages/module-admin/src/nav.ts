@@ -41,6 +41,7 @@ export const STAFF_NAV_ITEMS: readonly AdminNavItem[] = [
   { href: "/reports", label: "Reports", requires: ["reporting"] },
   { href: "/billing", label: "Invoices", requires: ["billing"] },
   { href: "/expenses", label: "Expenses", requires: ["expense"] },
+  { href: "/licenses", label: "Licenses", requires: ["licensing"] },
 ];
 
 /** Every staff destination for a config: /admin surfaces plus top-level ones. */

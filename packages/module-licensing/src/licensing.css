@@ -1,0 +1,84 @@
+/* License register. Colours come from the app tokens; --danger falls back to
+   --red, then --warn, for apps that do not define it (same as expense.css). */
+
+.lic-page { padding-bottom: 48px; }
+
+.lic-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1px;
+  margin: 0 0 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--border);
+  overflow: hidden;
+}
+.lic-summary-item { background: var(--bg-elevated); padding: 12px 16px; }
+.lic-summary-item dt { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); }
+.lic-summary-item dd { margin: 4px 0 0; font-size: 22px; font-weight: 500; color: var(--text); }
+.lic-summary-expired dd { color: var(--danger, var(--red, var(--warn))); }
+.lic-summary-renewal_due dd { color: var(--warn); }
+
+.lic-alerts { display: grid; gap: 8px; margin-bottom: 16px; }
+.callout.lic-alert-critical,
+.callout.lic-error {
+  border-color: var(--danger, var(--red, var(--warn)));
+  background: color-mix(in srgb, var(--danger, var(--red, var(--warn))) 12%, transparent);
+  color: var(--text);
+}
+.callout.lic-alert-warning { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); color: var(--text); }
+.callout.lic-error p { margin: 0; }
+
+.lic-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.lic-link:hover { color: var(--accent-hover); text-decoration: underline; }
+.lic-alerts .lic-link { font-weight: 500; }
+
+.lic-add { margin-bottom: 18px; }
+.lic-add-summary,
+.lic-section-summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.lic-add-summary { padding: 12px 16px; }
+.lic-add-body { padding: 0 16px 16px; display: grid; gap: 12px; }
+
+.lic-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.lic-holder-filter { min-width: 12rem; }
+
+.lic-table td { vertical-align: top; }
+.lic-table tr.lic-selected td { background: var(--accent-muted); }
+.lic-sub { display: block; margin-top: 2px; font-size: 12px; color: var(--text-secondary); }
+.lic-nowrap { white-space: nowrap; }
+.lic-muted { font-size: 12px; color: var(--text-secondary); }
+
+.lic-detail { margin-top: 20px; }
+.lic-notes { margin: 0 0 18px; color: var(--text-secondary); white-space: pre-wrap; }
+.lic-section { padding-top: 18px; margin-top: 18px; border-top: 1px solid var(--border); }
+.lic-section h3 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: var(--text); }
+.lic-section form { display: grid; gap: 12px; margin-top: 12px; }
+.lic-section > .callout { margin-bottom: 12px; }
+
+.lic-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 12px 16px; align-items: start; }
+.lic-wide { grid-column: 1 / -1; }
+.lic-actions { display: flex; gap: 8px; }
+
+.lic-docs { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.lic-docs li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.lic-docs li .btn { margin-left: auto; }
+
+.lic-upload { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 12px 16px; align-items: end; }
+
+.badge.lic-active { color: var(--accent-hover); background: var(--accent-muted); border-color: var(--accent); }
+.badge.lic-renewal_due { color: var(--warn); background: color-mix(in srgb, var(--warn) 13%, transparent); border-color: var(--warn); }
+.badge.lic-expired {
+  color: var(--danger, var(--red, var(--warn)));
+  background: color-mix(in srgb, var(--danger, var(--red, var(--warn))) 13%, transparent);
+  border-color: var(--danger, var(--red, var(--warn)));
+}
+.badge.lic-perpetual { color: var(--text-tertiary); background: var(--bg-muted); border-color: var(--border); }

@@ -12,7 +12,7 @@ const config: ClientConfig = {
     projectRef: "oghdtqxkiddpqoagmwhr",
   },
   auth: {
-    // crm and expense are both staff-audience modules; there is no customer surface yet.
+    // crm, expense, forensic-case and licensing are staff-audience modules; there is no customer surface yet.
     staff: {
       provider: "supabase",
       staffHome: "/cases",
@@ -26,6 +26,7 @@ const config: ClientConfig = {
     "crm",
     "expense",
     "forensic-case",
+    "licensing",
   ],
 };
 

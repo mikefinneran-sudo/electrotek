@@ -229,6 +229,15 @@ export const expense = defineModule({
   dataAdapters: ["supabase"],
 });
 
+export const licensing = defineModule({
+  id: "licensing",
+  audience: "staff",
+  name: "Licenses",
+  description: "License and certification register with renewals, documents, and derived expiry status.",
+  routes: ["/licenses", "/api/licenses"],
+  dataAdapters: ["supabase"],
+});
+
 export const cms = defineModule({
   id: "cms",
   audience: "staff",
@@ -271,6 +280,7 @@ export const ALL_MODULES = [
   reporting,
   assetControls,
   expense,
+  licensing,
   cms,
   receptionist,
 ] as const;

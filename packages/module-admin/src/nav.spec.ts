@@ -46,6 +46,13 @@ describe("resolveStaffNav", () => {
   });
 });
 
+describe("licensing staff nav", () => {
+  it("shows /licenses only when licensing is enabled", () => {
+    expect(resolveStaffNav(["crm", "licensing"]).map((item) => item.href)).toContain("/licenses");
+    expect(resolveStaffNav(["crm", "expense"]).map((item) => item.href)).not.toContain("/licenses");
+  });
+});
+
 describe("case-file staff nav", () => {
   it("gives a forensic client a case files destination", () => {
     const nav = resolveStaffNav(["crm", "expense", "forensic-case"]);
