@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { resolveAdminNav, resolveStaffNav } from "./nav";
+import {
+  ADMIN_NAV_ITEMS,
+  STAFF_NAV_ITEMS,
+  applyNavLayout,
+  mergeNavLayout,
+  parseNavLayout,
+  resolveAdminNav,
+  resolveStaffNav,
+} from "./nav";
 
 describe("resolveStaffNav", () => {
   // apps/electrotek: crm + expense, no module-admin. This produced an EMPTY nav,
@@ -106,5 +114,87 @@ describe("billing staff nav", () => {
     const after = resolveStaffNav([...modules, "billing"]).map((item) => item.href);
 
     expect(after).toEqual(expect.arrayContaining(before));
+  });
+});
+
+describe("applyNavLayout (WAL-1078)", () => {
+  const base = resolveStaffNav(["admin", "crm", "expense", "billing"]);
+  const hrefs = (items: { href: string }[]) => items.map((i) => i.href);
+
+  it("hrefs are unique across both lists, so one layout can key on them", () => {
+    const all = hrefs([...ADMIN_NAV_ITEMS, ...STAFF_NAV_ITEMS]);
+    expect(new Set(all).size).toBe(all.length);
+  });
+
+  it("no layout keeps the default order and labels", () => {
+    const nav = applyNavLayout(base, null);
+    expect(hrefs(nav)).toEqual(hrefs(base));
+    expect(nav.every((i) => i.defaultLabel === i.label)).toBe(true);
+  });
+
+  it("puts saved hrefs first in saved order, the rest after in default order", () => {
+    const nav = applyNavLayout(base, { order: ["/expenses", "/crm"], labels: {} });
+    const rest = hrefs(base).filter((h) => h !== "/expenses" && h !== "/crm");
+    expect(hrefs(nav)).toEqual(["/expenses", "/crm", ...rest]);
+  });
+
+  it("renames by href and keeps the built-in label as defaultLabel", () => {
+    const crm = applyNavLayout(base, { order: [], labels: { "/crm": "Pipeline" } }).find(
+      (i) => i.href === "/crm",
+    );
+    expect(crm).toMatchObject({ label: "Pipeline", defaultLabel: "CRM" });
+  });
+
+  it("never shows an item whose module is off, even if the layout names it", () => {
+    const nav = applyNavLayout(resolveStaffNav(["crm"]), {
+      order: ["/expenses", "/crm"],
+      labels: { "/expenses": "Spend" },
+    });
+    expect(hrefs(nav)).toEqual(["/crm"]);
+  });
+});
+
+describe("parseNavLayout", () => {
+  it("returns null for anything that is not an object", () => {
+    for (const v of [null, undefined, "x", 3, [], true]) expect(parseNavLayout(v)).toBeNull();
+  });
+
+  it("drops bad entries instead of failing", () => {
+    expect(
+      parseNavLayout({
+        order: ["/crm", 5, "crm", "/crm", null],
+        labels: { "/crm": "  Pipeline  ", "/x": "", "/y": 7, nope: "z", "/long": "a".repeat(60) },
+      }),
+    ).toEqual({ order: ["/crm"], labels: { "/crm": "Pipeline", "/long": "a".repeat(40) } });
+  });
+
+  it("tolerates missing fields", () => {
+    expect(parseNavLayout({})).toEqual({ order: [], labels: {} });
+  });
+});
+
+describe("mergeNavLayout", () => {
+  const defaults = new Map([
+    ["/admin", "Dashboard"],
+    ["/admin/orders", "Orders"],
+    ["/crm", "CRM"],
+    ["/schedule", "Schedule"],
+  ]);
+  const stored = { order: ["/schedule", "/crm", "/admin/orders"], labels: { "/crm": "Clients", "/admin/orders": "Sales" } };
+
+  it("keeps stored entries the editor did not show (other sidebar, disabled modules)", () => {
+    const out = mergeNavLayout(stored, { order: ["/admin/orders", "/admin"], labels: { "/admin": "Home" } }, defaults);
+    expect(out.order).toEqual(["/admin/orders", "/admin", "/schedule", "/crm"]);
+    // Orders was in the editor with no label, so its rename is cleared; CRM's survives.
+    expect(out.labels).toEqual({ "/admin": "Home", "/crm": "Clients" });
+  });
+
+  it("drops unknown hrefs and labels equal to the default", () => {
+    const out = mergeNavLayout(null, { order: ["/nope", "/crm"], labels: { "/crm": "CRM", "/nope": "X" } }, defaults);
+    expect(out).toEqual({ order: ["/crm"], labels: {} });
+  });
+
+  it("an empty save resets everything", () => {
+    expect(mergeNavLayout(stored, { order: [], labels: {} }, defaults)).toEqual({ order: [], labels: {} });
   });
 });
