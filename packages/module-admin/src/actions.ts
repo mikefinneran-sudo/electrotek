@@ -9,6 +9,7 @@ import { getSupabaseServiceClient } from "@waltersignal/bananaforce-data-supabas
 import { getSupabaseServerClient } from "@waltersignal/bananaforce-data-supabase/server";
 import { requireStaff } from "./auth";
 import { parseMasterSheetRows } from "./master-sheet";
+import { ADMIN_NAV_ITEMS, NAV_LAYOUT_KEY, STAFF_NAV_ITEMS, mergeNavLayout, parseNavLayout } from "./nav";
 import { advanceOrderStatus } from "./server";
 import { ADMIN_TARGET_STATUSES, type OrderStatus } from "./types";
 
@@ -679,4 +680,47 @@ export async function removeStaffAction(formData: FormData): Promise<void> {
     });
   }
   revalidatePath("/admin/staff");
+}
+
+/**
+ * Save the client's sidebar order and labels (site_content "staff.nav").
+ * Admins only; the button is hidden for others, and this is the real gate.
+ * An empty order and no labels resets to defaults. A label equal to the
+ * built-in one is not stored, so the item follows future default renames.
+ */
+export async function saveNavLayout(input: {
+  order: string[];
+  labels: Record<string, string>;
+}): Promise<ActionResult> {
+  const me = await requireStaff();
+  if (me.role !== "admin") return { error: "Only admins can customize the sidebar." };
+
+  const defaults = new Map([...ADMIN_NAV_ITEMS, ...STAFF_NAV_ITEMS].map((i) => [i.href, i.label]));
+  const parsed = parseNavLayout(input);
+  if (!parsed) return { error: "That layout could not be read." };
+  const supabase = await getSupabaseServerClient();
+  const { data: before } = await supabase
+    .from("site_content")
+    .select("value")
+    .eq("key", NAV_LAYOUT_KEY)
+    .maybeSingle();
+
+  const value = mergeNavLayout(parseNavLayout(before?.value), parsed, defaults);
+  const { error } = await supabase
+    .from("site_content")
+    .upsert({ key: NAV_LAYOUT_KEY, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  if (error) return { error: "Could not save the sidebar. Try again." };
+
+  // audit_log is not writable by the authenticated role (0025); service client like the other staff actions.
+  await recordAudit(getSupabaseServiceClient(), {
+    actor_id: me.id,
+    actor_email: me.email,
+    action: "staff_nav.updated",
+    resource_type: "site_content",
+    resource_id: NAV_LAYOUT_KEY,
+    before: before?.value ?? null,
+    after: value,
+  });
+  revalidatePath("/", "layout");
+  return { ok: true };
 }

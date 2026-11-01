@@ -2,7 +2,8 @@ import "server-only";
 
 import type { ClientConfig } from "@waltersignal/bananaforce-core";
 import { getStaffUser } from "./auth";
-import { resolveStaffNav } from "./nav";
+import { applyNavLayout, resolveStaffNav } from "./nav";
+import { getNavLayout } from "./nav-layout";
 import { AdminShell } from "./shell";
 
 /**
@@ -21,7 +22,7 @@ import { AdminShell } from "./shell";
  * class of failure this codebase keeps producing. A layout cannot miss.
  */
 export function createStaffLayout(clientConfig: ClientConfig) {
-  const navItems = resolveStaffNav(clientConfig.modules);
+  const baseNav = resolveStaffNav(clientConfig.modules);
 
   return async function StaffLayout({ children }: { children: React.ReactNode }) {
     const staff = await getStaffUser();
@@ -32,11 +33,12 @@ export function createStaffLayout(clientConfig: ClientConfig) {
     return (
       <AdminShell
         brandName={clientConfig.brand.name}
-        navItems={navItems}
+        navItems={applyNavLayout(baseNav, await getNavLayout())}
         staffEmail={staff.email}
         staffName={staff.name}
         staffRole={staff.role}
         homeHref={clientConfig.auth?.staff?.staffHome ?? "/admin"}
+        canCustomize={staff.role === "admin"}
       >
         {children}
       </AdminShell>
