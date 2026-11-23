@@ -92,8 +92,12 @@ AS $$
   SELECT current_setting('request.jwt.claim.role_app', true) = 'admin';
 $$;
 
-GRANT USAGE ON SCHEMA public TO authenticated;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon; END IF; END $$;
+GRANT anon TO postgres;
+GRANT USAGE ON SCHEMA public TO authenticated, anon;
+GRANT SELECT ON public.site_content TO anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.site_content TO authenticated;
+CREATE POLICY "catalog_public_reads_site_content" ON public.site_content FOR SELECT USING (true);
 
 CREATE POLICY "admin_staff_all_site_content"
   ON public.site_content
@@ -153,3 +157,15 @@ VAL_B="$(docker exec "${CONTAINER}" psql -t -A -U postgres -d client_b -c "SELEC
 [[ "${VAL_B}" != *expenses* ]] || fail "client_b staff.nav leaked client_a data"
 
 echo "OK: staff_nav RLS (staff blocked, other keys allowed, admin writes, cross-tenant isolation)"
+# Anon and a non-staff user cannot read staff.nav, but can read other keys.
+ANON_NAV="$(docker exec -i "${CONTAINER}" psql -t -A -U postgres -d client_a <<'SQL'
+BEGIN; SET LOCAL ROLE anon; SELECT count(*) FROM public.site_content WHERE key = 'staff.nav'; COMMIT;
+SQL
+)"
+[[ "$(echo "${ANON_NAV}" | grep -E '^[0-9]+$' | head -1)" == "0" ]] || fail "anon must not read staff.nav (got ${ANON_NAV})"
+ANON_HERO="$(docker exec -i "${CONTAINER}" psql -t -A -U postgres -d client_a <<'SQL'
+BEGIN; SET LOCAL ROLE anon; SELECT count(*) FROM public.site_content WHERE key = 'homepage.hero'; COMMIT;
+SQL
+)"
+[[ "$(echo "${ANON_HERO}" | grep -E '^[0-9]+$' | head -1)" == "1" ]] || fail "anon must still read other keys (got ${ANON_HERO})"
+echo "OK: anon cannot read staff.nav"

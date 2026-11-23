@@ -699,11 +699,13 @@ export async function saveNavLayout(input: {
   const parsed = parseNavLayout(input);
   if (!parsed) return { error: "That layout could not be read." };
   const supabase = await getSupabaseServerClient();
-  const { data: before } = await supabase
+  const { data: before, error: readError } = await supabase
     .from("site_content")
     .select("value")
     .eq("key", NAV_LAYOUT_KEY)
     .maybeSingle();
+  // A failed read must not save: merging against nothing would drop the other sidebar's saved layout.
+  if (readError) return { error: "Could not load the saved sidebar. Try again." };
 
   const value = mergeNavLayout(parseNavLayout(before?.value), parsed, defaults);
   const { error } = await supabase
