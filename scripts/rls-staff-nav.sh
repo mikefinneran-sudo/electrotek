@@ -168,4 +168,12 @@ BEGIN; SET LOCAL ROLE anon; SELECT count(*) FROM public.site_content WHERE key =
 SQL
 )"
 [[ "$(echo "${ANON_HERO}" | grep -E '^[0-9]+$' | head -1)" == "1" ]] || fail "anon must still read other keys (got ${ANON_HERO})"
-echo "OK: anon cannot read staff.nav"
+for who in "" staff admin; do
+  N="$(docker exec -i "${CONTAINER}" psql -t -A -U postgres -d client_a <<SQL | grep -E '^[0-9]+$' | head -1
+BEGIN; SET LOCAL ROLE authenticated; SELECT set_config('request.jwt.claim.role_app', '${who}', true); SELECT count(*) FROM public.site_content WHERE key = 'staff.nav'; COMMIT;
+SQL
+)"
+  if [[ -z "${who}" ]]; then want=0; else want=1; fi
+  [[ "${N}" == "${want}" ]] || fail "read staff.nav as '${who:-non-staff}': want ${want}, got ${N}"
+done
+echo "OK: anon and non-staff cannot read staff.nav; staff and admin can"
