@@ -896,6 +896,36 @@ textarea.input { resize: vertical; }
 .admin-sidebar-foot { border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 1rem 0.75rem; font-size: 0.85rem; }
 .admin-user { display: block; color: rgba(255, 255, 255, 0.75); margin-bottom: 0.75rem; }
 .admin-role { color: var(--accent); }
+/* sidebar customize mode (WAL-1078) — inherits the sidebar's own text color, so it reads on light and dark */
+.admin-foot-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.admin-text-btn { border: none; background: none; padding: 0.25rem 0; font: inherit; font-size: 0.8rem; color: inherit; opacity: 0.7; cursor: pointer; }
+.admin-text-btn:hover:not(:disabled) { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+.admin-text-btn:disabled { opacity: 0.4; cursor: default; }
+.admin-nav-editor { gap: 0.75rem; }
+.admin-nav-rows { display: flex; flex-direction: column; gap: 0.15rem; margin: 0; padding: 0; list-style: none; }
+.admin-nav-row { display: flex; align-items: center; gap: 0.25rem; border-radius: var(--radius); }
+.admin-nav-row.dragging { opacity: 0.4; }
+.admin-nav-row.drop-before { box-shadow: inset 0 2px 0 var(--accent); }
+.admin-nav-row.drop-after { box-shadow: inset 0 -2px 0 var(--accent); }
+.admin-nav-handle { flex-shrink: 0; width: 1.25rem; text-align: center; font-size: 0.9rem; line-height: 2rem; opacity: 0.45; cursor: grab; user-select: none; touch-action: none; }
+.admin-nav-row:hover .admin-nav-handle { opacity: 0.9; }
+.admin-nav-handle:active { cursor: grabbing; }
+.admin-nav-input {
+  flex: 1;
+  min-width: 0;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, currentColor 4%, transparent);
+  font: inherit;
+  font-size: 0.88rem;
+  color: inherit;
+}
+.admin-nav-input::placeholder { color: inherit; opacity: 0.45; }
+.admin-nav-input:focus { outline: none; border-color: var(--accent); }
+.admin-nav-error { margin: 0; font-size: 0.8rem; color: var(--red, #c0392b); }
+.admin-nav-editor-actions { display: flex; gap: 0.5rem; }
 .admin-main { display: flex; min-width: 0; flex: 1; flex-direction: column; }
 .admin-mobile-bar, .admin-mobile-nav { display: flex; background: var(--bg); color: #fff; }
 .admin-mobile-bar { align-items: center; justify-content: space-between; padding: 0.75rem 1rem; }
