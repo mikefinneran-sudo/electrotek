@@ -224,7 +224,7 @@ function NavEditor({
               <span
                 className="admin-nav-handle"
                 aria-hidden="true"
-                title="Drag to reorder (Alt + arrow keys also move)"
+                title="Drag to Reorder (Alt + Arrow Keys Also Move)"
                 onPointerDown={() => {
                   if (!pending) setArmed(item.href);
                 }}
