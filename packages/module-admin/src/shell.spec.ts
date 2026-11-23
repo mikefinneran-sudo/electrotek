@@ -27,6 +27,7 @@ vi.mock("./actions", () => ({ saveNavLayout: vi.fn() }));
 function renderShell(navItems: AdminNavItem[], canCustomize = false) {
   return renderToStaticMarkup(
     createElement(
+      // eslint-disable-next-line react/no-children-prop -- AdminShellProps requires children; JSX is not available in .spec.ts
       AdminShell,
       {
         brandName: "Acme",
@@ -35,7 +36,6 @@ function renderShell(navItems: AdminNavItem[], canCustomize = false) {
         staffName: null,
         staffRole: "admin",
         canCustomize,
-        // eslint-disable-next-line react/no-children-prop -- AdminShellProps requires children; JSX is not available in .spec.ts
         children: createElement("p", null, "Content"),
       },
     ),
