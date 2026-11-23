@@ -23,7 +23,7 @@ export default defineConfig({
     // Convention carried over from bananaforce: `*.spec.ts` is a real Vitest
     // suite; `*.test.ts` is a legacy `node:assert` script invoked directly
     // via `tsx` from that package's own `test` script.
-    include: ["**/*.spec.{ts,tsx}"],
+    include: ["**/*.spec.ts"],
     exclude: ["**/node_modules/**", "**/dist/**", "**/.next/**"],
   },
 });

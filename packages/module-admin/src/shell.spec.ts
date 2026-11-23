@@ -1,5 +1,4 @@
-/** @jsxImportSource react */
-import type { ReactNode } from "react";
+import { createElement, type ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { AdminNavItem } from "./nav";
@@ -14,33 +13,31 @@ vi.mock("next/link", () => ({
     href: string;
     children: ReactNode;
     className?: string;
-  }) => (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  ),
+  }) => createElement("a", { href, className }, children),
 }));
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/crm" }));
 
 vi.mock("./sign-out", () => ({
-  SignOutButton: () => <button type="button">Sign out</button>,
+  SignOutButton: () => createElement("button", { type: "button" }, "Sign out"),
 }));
 
 vi.mock("./actions", () => ({ saveNavLayout: vi.fn() }));
 
 function renderShell(navItems: AdminNavItem[], canCustomize = false) {
   return renderToStaticMarkup(
-    <AdminShell
-      brandName="Acme"
-      navItems={navItems}
-      staffEmail="s@example.com"
-      staffName={null}
-      staffRole="admin"
-      canCustomize={canCustomize}
-    >
-      <p>Content</p>
-    </AdminShell>,
+    createElement(
+      AdminShell,
+      {
+        brandName: "Acme",
+        navItems,
+        staffEmail: "s@example.com",
+        staffName: null,
+        staffRole: "admin",
+        canCustomize,
+        children: createElement("p", null, "Content"),
+      },
+    ),
   );
 }
 
